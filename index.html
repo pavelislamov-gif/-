@@ -15,19 +15,28 @@
   .card { background:var(--card); padding: 18px; border-radius: 12px; border:1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
 
   .topbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .logoBox{
-    width:44px; height:44px; border-radius:10px;
-    background:linear-gradient(135deg,#7c3aed,#06b6d4);
-    display:flex; align-items:center; justify-content:center;
-    font-weight:900; overflow:hidden;
-  }
-  /* логотип-изображение */
-  .logoBox.logoImg{ background:transparent; border:1px solid var(--line); }
-  .logoBox.logoImg img{ width:100%; height:100%; object-fit:contain; padding:6px; }
+  .brand{ display:flex; align-items:center; gap:12px; min-width:0; }
 
-  .brand h1{ margin:0; font-size:20px; }
-  .brand .sub{ color:var(--muted); font-size:13px; margin-top:2px; }
+  /* === ЛОГО (без рамок) === */
+  .logoBox{
+    width:auto;
+    height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:visible; /* никаких рамок/обрезки */
+    border:none;
+    background:transparent;
+  }
+  .logoBox img{
+    height:44px;     /* логотип по высоте шапки */
+    width:auto;      /* сохраняем пропорции файла */
+    object-fit:contain;
+    display:block;
+  }
+
+  .brand h1{ margin:0; font-size:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .brand .sub{ color:var(--muted); font-size:13px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   label { font-weight: 700; display:block; margin: 10px 0 6px; color:#dbe2f5; }
   input, button { width:100%; padding: 10px; font-size: 16px; border-radius: 10px; border:1px solid var(--line); background:#0e1220; color:var(--text); }
@@ -36,11 +45,26 @@
   button.primary{ background:#2b3447; }
   button.danger{ background:var(--accent); border:none; }
   button.ghost{ background:transparent; }
+
   .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .hidden { display:none; }
   .msg-ok{ color:var(--ok); font-weight:800; }
   .msg-bad{ color:var(--bad); font-weight:800; }
   .muted{ color:var(--muted); }
+
+  /* === Маленькое поле ширины диска === */
+  .inlineField{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .inputTiny{
+    width:110px;        /* узкое поле */
+    padding:6px 10px;   /* ниже по высоте */
+    font-size:16px;     /* размер шрифта как везде */
+    border-radius:10px;
+  }
 
   .partsHead{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; }
   .partsList{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
@@ -158,8 +182,10 @@
     .stat .k{ font-size:10px; }
     .stat .v{ font-size:12px; }
     .barCard{ page-break-inside: avoid; }
-    .logoBox{ width:34px; height:34px; }
-    .logoBox.logoImg img{ padding:4px; }
+
+    /* логотип в печати пониже */
+    .logoBox{ height:28px; }
+    .logoBox img{ height:28px; }
   }
 </style>
 </head>
@@ -170,7 +196,7 @@
   <!-- LOGIN -->
   <div id="loginBox" class="card">
     <div class="brand">
-      <div class="logoBox logoImg"><img src="logo.png" alt="Logo"></div>
+      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
       <div>
         <h1>Master Cluster</h1>
         <div class="sub">Вход в систему раскроя профиля</div>
@@ -196,7 +222,7 @@
 
       <div class="topbar no-print">
         <div class="brand">
-          <div class="logoBox logoImg"><img src="logo.png" alt="Logo"></div>
+          <div class="logoBox"><img src="logo.png" alt="Logo"></div>
           <div>
             <h1>Раскрой алюминиевого профиля</h1>
             <div class="sub">Группировка одинаковых раскладок (2× + одна визуализация) для печати А4</div>
@@ -210,11 +236,14 @@
           <label>Длина профиля</label>
           <input id="stockLen" type="number" value="6000" min="1" step="1" />
         </div>
+
         <div>
           <label>Ширина диска (рез), мм</label>
-          <input id="cutWidth" type="number" value="5" min="0" step="0.1" />
-          <div class="muted" style="margin-top:6px; font-size:13px;">
-            Рез считается как <b>(k−1)×ширина диска</b> на палке (k — число заготовок).
+          <div class="inlineField">
+            <input id="cutWidth" class="inputTiny" type="number" value="5" min="0" step="0.1" />
+            <div class="muted" style="font-size:13px;">
+              Рез = <b>(k−1)×ширина диска</b>
+            </div>
           </div>
         </div>
       </div>
@@ -302,7 +331,7 @@ function cutWidthForCount(k, cutWidth){
 
 function pack(stockLen, cuts, cutWidth){
   const sorted = [...cuts].sort((a,b)=>b-a);
-  const bars = []; // {pieces:[], usedPieces}
+  const bars = [];
 
   for (const piece of sorted){
     let placed = false;
@@ -427,8 +456,7 @@ function calculate(){
   let totalUsed = 0;
   let totalWaste = 0;
 
-  // группировка одинаковых раскладок
-  const groupsMap = new Map(); // sig -> {count, piecesSample, vizSample}
+  const groupsMap = new Map();
   bars.forEach(b=>{
     const sig = signatureOfPieces(b.pieces);
     if (!groupsMap.has(sig)){
@@ -438,7 +466,6 @@ function calculate(){
       groupsMap.get(sig).count += 1;
     }
 
-    // суммарные итоги считаем по каждой палке
     const viz = renderViz(stockLen, cutWidth, b.pieces);
     totalCutWidth += viz.cutTotal;
     totalUsed += (viz.sumPieces + viz.cutTotal);
