@@ -24,7 +24,7 @@
   --gap:12px;
 }
 
-/* УБРАТЬ ВСЕ СКРУГЛЕНИЯ */
+/* УБРАТЬ СКРУГЛЕНИЯ ВЕЗДЕ */
 *{ box-sizing:border-box; border-radius:0 !important; }
 
 body{
@@ -36,7 +36,7 @@ body{
   line-height:var(--lh);
 }
 
-.container{ max-width: 1050px; margin: 0 auto; padding: 18px; }
+.container{ max-width:1050px; margin:0 auto; padding:18px; }
 
 .card{
   background:var(--card);
@@ -89,9 +89,10 @@ input, button{
   font-size:var(--fs);
   line-height:var(--lh);
 }
+
 input{
   width:100%;
-  padding: 0 12px;
+  padding:0 12px;
   border:1px solid var(--line);
   background:#0e1220;
   color:var(--text);
@@ -99,7 +100,7 @@ input{
 input::placeholder{ color:#6b7280; }
 
 button{
-  padding: 0 12px;
+  padding:0 12px;
   border:1px solid var(--line);
   background:#1e2533;
   color:var(--text);
@@ -110,8 +111,8 @@ button.primary{ background:#2b3447; }
 button.ghost{ background:transparent; }
 button.danger{ background:var(--accent); border:none; }
 
-.grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-.grid1{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); }
+.grid1{ display:grid; grid-template-columns:1fr; gap:var(--gap); }
 
 .inlineField{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .inputTiny{ width:120px; }
@@ -129,25 +130,22 @@ button.danger{ background:var(--accent); border:none; }
 
 .list{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 
-/* Обёртка строки: рамка отдельно, кнопки отдельно справа */
 .rowWrap{
   display:grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns:1fr auto;
   gap:10px;
   align-items:stretch;
 }
 
-/* Рамка строки */
 .rowBox{
   border:1px solid var(--line);
   background:var(--panel);
   padding:12px;
 }
 
-/* Внутри рамки: 2 колонки */
 .rowBoxGrid{
   display:grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns:1.2fr 0.8fr;
   gap:12px;
   align-items:end;
 }
@@ -159,7 +157,6 @@ button.danger{ background:var(--accent); border:none; }
   color:var(--muted);
 }
 
-/* Инпуты в строках */
 .rowBox input{
   border:1px solid rgba(255,255,255,0.18);
   background:rgba(255,255,255,0.06);
@@ -169,7 +166,6 @@ button.danger{ background:var(--accent); border:none; }
   border-color:#60a5fa;
 }
 
-/* Кнопки справа (НЕ в рамке) */
 .rowBtns{
   display:flex;
   flex-direction:column;
@@ -201,7 +197,7 @@ button.danger{ background:var(--accent); border:none; }
 .statsGrid{
   margin-top:10px;
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
 .stat{
@@ -220,13 +216,16 @@ button.danger{ background:var(--accent); border:none; }
   padding:12px;
 }
 .barTitle{
-  display:flex; justify-content:space-between; gap:10px; align-items:center;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
   margin-bottom:10px;
 }
 .barTitle b{ font-size:14px; }
 .barTitle span{ font-size:12px; color:var(--muted); }
 
-.barLine{ display:grid; grid-template-columns: 90px 1fr; gap:10px; align-items:center; }
+.barLine{ display:grid; grid-template-columns:90px 1fr; gap:10px; align-items:center; }
 .mult{
   border:1px solid var(--line);
   background:var(--panel2);
@@ -236,7 +235,7 @@ button.danger{ background:var(--accent); border:none; }
   white-space:pre-line;
 }
 
-/* ====== Визуализация (прямоугольная + текст не вылезает) ====== */
+/* ====== Визуализация (экран) ====== */
 .viz{
   height:28px;
   border:1px solid var(--line);
@@ -244,19 +243,24 @@ button.danger{ background:var(--accent); border:none; }
   overflow:hidden;
   display:flex;
 }
+
 .seg{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
+
   overflow:hidden;
   min-width:0;
+
   font-size:11px;
   font-weight:900;
   padding:0 6px;
   white-space:nowrap;
+
   color:#0b0f1c;
 }
+
 .seg .t{
   display:block;
   max-width:100%;
@@ -264,6 +268,7 @@ button.danger{ background:var(--accent); border:none; }
   text-overflow:clip;
   padding:0 2px;
 }
+
 .seg.cut{ background:#60a5fa; }
 .seg.kerf{
   background:#ff0000;
@@ -271,26 +276,55 @@ button.danger{ background:var(--accent); border:none; }
   box-shadow:0 0 4px rgba(255,0,0,.55);
   padding:0;
 }
-.seg.rest{ background:#9ca3af; color:#111; font-weight:900; }
+.seg.rest{ background:#9ca3af; color:#111; }
 
 .msg-ok{ color:var(--ok); font-weight:900; }
 .msg-bad{ color:var(--bad); font-weight:900; }
 
-/* ====== PRINT A4 ====== */
+/* ====== PRINT A4 (крупнее шрифт + пунктирные разделители) ====== */
 @media print{
   @page { size: A4; margin: 10mm; }
+
   body{ background:white; color:black; }
   .no-print{ display:none !important; }
   .container{ max-width:none; padding:0; }
   .card{ border:none; box-shadow:none; padding:0; }
-  .logoBox img{ height:28px; }
-  .statsGrid{ grid-template-columns: repeat(3, 1fr); gap:6px; }
-  .stat{ padding:6px; }
-  .stat .k{ font-size:10px; }
-  .stat .v{ font-size:12px; }
-  .viz{ height:18px; }
-  .seg{ font-size:8px; padding:0 4px; color:black !important; }
-  .barCard{ page-break-inside: avoid; }
+
+  /* статистика читабельнее */
+  .statsGrid{ grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .stat{ padding:8px; border:1px solid #000; background:#fff; }
+  .stat .k{ font-size:11px; color:#000; }
+  .stat .v{ font-size:14px; color:#000; }
+
+  .barCard{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
+  .mult{ border:1px solid #000; background:#fff; color:#000; }
+
+  /* визуализация крупнее */
+  .viz{
+    height:28px;
+    border:1px solid #000;
+    background:#fff;
+  }
+
+  .seg{
+    font-size:11px;
+    padding:0 6px;
+    color:#000 !important;
+    border-right:1px dashed #000;   /* пунктир между сегментами */
+  }
+  .seg:last-child{ border-right:none; }
+
+  .seg.cut{ background:#d9d9d9 !important; }
+  .seg.rest{ background:#f0f0f0 !important; color:#000 !important; }
+
+  /* рез — чёрный, толще, с пунктиром по краям */
+  .seg.kerf{
+    background:#000 !important;
+    min-width:10px;
+    box-shadow:none;
+    border-left:1px dashed #000;
+    border-right:1px dashed #000;
+  }
 }
 </style>
 </head>
@@ -403,16 +437,12 @@ button.danger{ background:var(--accent); border:none; }
 
 <script>
 /* ===== USERS ===== */
-const users = {
-  "masterclusterpro":"qwerty",
-  "mastercluster":"qwerty"
-};
+const users = { "masterclusterpro":"qwerty", "mastercluster":"qwerty" };
 
 function doLogin(){
   const l = document.getElementById("login").value.trim();
   const p = document.getElementById("password").value;
   const msg = document.getElementById("loginMsg");
-
   if(users[l] && users[l] === p){
     localStorage.setItem("authUser", l);
     showApp();
@@ -420,19 +450,12 @@ function doLogin(){
     msg.innerHTML = `<div class="msg-bad">Неверный логин или пароль</div>`;
   }
 }
-
-function logout(){
-  localStorage.removeItem("authUser");
-  location.reload();
-}
-
+function logout(){ localStorage.removeItem("authUser"); location.reload(); }
 function showApp(){
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("appBox").classList.remove("hidden");
   syncJobTitle();
 }
-
-/* автологин если уже входил */
 if(localStorage.getItem("authUser")) showApp();
 
 /* ===== Job title ===== */
@@ -447,7 +470,6 @@ function fmt(n){
   const r = Math.round(n);
   return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
 }
-
 function wireEnterAdd(containerEl, addFn){
   containerEl.querySelectorAll("input").forEach(inp=>{
     inp.addEventListener("keydown", e=>{
@@ -486,7 +508,7 @@ function fitVizText(vizEl){
   });
 }
 
-/* ===== Stocks (Профили) ===== */
+/* ===== Stocks ===== */
 const stocksList = document.getElementById("stocksList");
 
 function removeStockRow(btn){
@@ -494,11 +516,9 @@ function removeStockRow(btn){
   if(rows.length <= 1) return;
   btn.closest(".rowWrap").remove();
 }
-
 function addStockRow(focusNew=true, lenVal="", qtyVal=""){
   const wrap = document.createElement("div");
   wrap.className = "rowWrap stockRow";
-
   wrap.innerHTML = `
     <div class="rowBox">
       <div class="rowBoxGrid">
@@ -512,21 +532,18 @@ function addStockRow(focusNew=true, lenVal="", qtyVal=""){
         </div>
       </div>
     </div>
-
     <div class="rowBtns">
       <button class="btnMini primary" title="Добавить профиль" onclick="addStockRow(true)">+</button>
       <button class="btnMini danger" title="Удалить" onclick="removeStockRow(this)">−</button>
     </div>
   `;
-
   stocksList.appendChild(wrap);
   wireEnterAdd(wrap, addStockRow);
   if(focusNew) wrap.querySelector(".sLen").focus();
 }
-
 addStockRow(false, "6000", "");
 
-/* ===== Parts (Заготовки) ===== */
+/* ===== Parts ===== */
 const partsList = document.getElementById("partsList");
 
 function removePartRow(btn){
@@ -534,11 +551,9 @@ function removePartRow(btn){
   if(rows.length <= 1) return;
   btn.closest(".rowWrap").remove();
 }
-
 function addPartRow(focusNew=true, lenVal="", qtyVal="1"){
   const wrap = document.createElement("div");
   wrap.className = "rowWrap partRow";
-
   wrap.innerHTML = `
     <div class="rowBox">
       <div class="rowBoxGrid">
@@ -552,62 +567,48 @@ function addPartRow(focusNew=true, lenVal="", qtyVal="1"){
         </div>
       </div>
     </div>
-
     <div class="rowBtns">
       <button class="btnMini primary" title="Добавить заготовку" onclick="addPartRow(true)">+</button>
       <button class="btnMini danger" title="Удалить" onclick="removePartRow(this)">−</button>
     </div>
   `;
-
   partsList.appendChild(wrap);
   wireEnterAdd(wrap, addPartRow);
   if(focusNew) wrap.querySelector(".pLen").focus();
 }
-
 addPartRow(false);
 
-/* ===== Packing with multiple stock lengths ===== */
-function signatureBar(bar){
-  const piecesSig = [...bar.pieces].sort((a,b)=>b-a).join(",");
-  return `${bar.len}|${piecesSig}`;
-}
-
+/* ===== Packing ===== */
 function calcKerfTotal(pieceCount, cutWidth){
   return Math.max(0, pieceCount - 1) * cutWidth;
 }
-
 function canFit(barLen, pieces, addPiece, cutWidth){
   const nextPieces = pieces.length + 1;
   const sum = pieces.reduce((s,x)=>s+x,0) + addPiece;
   const kerf = calcKerfTotal(nextPieces, cutWidth);
   return (sum + kerf) <= barLen;
 }
-
 function remaining(barLen, pieces, cutWidth){
   const sum = pieces.reduce((s,x)=>s+x,0);
   const kerf = calcKerfTotal(pieces.length, cutWidth);
   return barLen - (sum + kerf);
 }
-
 function chooseNewStockLen(stocks, piece){
   const candidates = stocks
     .filter(s => s.len >= piece && (s.qty === null || s.qty > 0))
     .sort((a,b)=>a.len - b.len);
   return candidates.length ? candidates[0].len : null;
 }
-
 function decrementStock(stocks, len){
   const s = stocks.find(x => x.len === len);
   if(!s) return;
   if(s.qty === null) return;
   s.qty = Math.max(0, s.qty - 1);
 }
-
 function packMultiStock(stocksInput, cuts, cutWidth){
   const stocks = stocksInput.map(s=>({len:s.len, qty:s.qty}));
-
   const sortedCuts = [...cuts].sort((a,b)=>b-a);
-  const bars = []; // {len, pieces:[]}
+  const bars = [];
 
   for(const piece of sortedCuts){
     let bestIdx = -1;
@@ -616,8 +617,7 @@ function packMultiStock(stocksInput, cuts, cutWidth){
     for(let i=0;i<bars.length;i++){
       const b = bars[i];
       if(canFit(b.len, b.pieces, piece, cutWidth)){
-        const testPieces = b.pieces.concat([piece]);
-        const rem = remaining(b.len, testPieces, cutWidth);
+        const rem = remaining(b.len, b.pieces.concat([piece]), cutWidth);
         if(rem < bestRem){
           bestRem = rem;
           bestIdx = i;
@@ -681,6 +681,11 @@ function buildViz(barLen, cutWidth, pieces){
   return { viz, sumPieces, kerfTotal, rest, cutsCount };
 }
 
+function signatureBar(bar){
+  const piecesSig = [...bar.pieces].sort((a,b)=>b-a).join(",");
+  return `${bar.len}|${piecesSig}`;
+}
+
 function setStats(stats){
   const box = document.getElementById("statsBox");
   const grid = document.getElementById("statsGrid");
@@ -717,25 +722,17 @@ function readStocks(){
   rows.forEach((w, idx)=>{
     const lenStr = w.querySelector(".sLen").value.trim();
     const qtyStr = w.querySelector(".sQty").value.trim();
-
     if(lenStr === "" && qtyStr === "") return;
 
     const len = Number(lenStr);
-    if(!Number.isFinite(len) || len <= 0){
-      bad.push(idx+1);
-      return;
-    }
+    if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
 
     let qty = null;
     if(qtyStr !== ""){
       const q = Number(qtyStr);
-      if(!Number.isFinite(q) || q < 0){
-        bad.push(idx+1);
-        return;
-      }
+      if(!Number.isFinite(q) || q < 0){ bad.push(idx+1); return; }
       qty = Math.floor(q);
     }
-
     stocks.push({ len: Math.floor(len), qty });
   });
 
@@ -745,14 +742,10 @@ function readStocks(){
       merged.set(s.len, { len:s.len, qty:s.qty });
     }else{
       const ex = merged.get(s.len);
-      if(ex.qty === null || s.qty === null){
-        ex.qty = null;
-      }else{
-        ex.qty += s.qty;
-      }
+      if(ex.qty === null || s.qty === null) ex.qty = null;
+      else ex.qty += s.qty;
     }
   }
-
   return { stocks:[...merged.values()].sort((a,b)=>a.len-b.len), bad };
 }
 
@@ -764,7 +757,6 @@ function readParts(){
   rows.forEach((w, idx)=>{
     const lenStr = w.querySelector(".pLen").value.trim();
     const qtyStr = w.querySelector(".pQty").value.trim();
-
     if(lenStr === "" && qtyStr === "") return;
 
     const len = Number(lenStr);
@@ -774,7 +766,6 @@ function readParts(){
       bad.push(idx+1);
       return;
     }
-
     for(let i=0;i<Math.floor(qty);i++) cuts.push(Math.floor(len));
   });
 
