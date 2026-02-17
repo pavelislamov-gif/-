@@ -15,6 +15,7 @@
   --ok:#22c55e;
   --bad:#ef4444;
   --line:#2a3140;
+  --panel:#0c1020;
 }
 
 *{ box-sizing:border-box; }
@@ -47,6 +48,7 @@ body{
   justify-content:space-between;
   align-items:center;
   margin-bottom:18px;
+  gap:14px;
 }
 
 .brand{
@@ -71,17 +73,23 @@ body{
 .brand h1{
   margin:0;
   font-size:20px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .brand .sub{
   font-size:13px;
   color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 /* ================= FORMS ================= */
 
 label{
-  font-weight:600;
+  font-weight:650;
   font-size:14px;
   margin:10px 0 6px;
   display:block;
@@ -97,10 +105,12 @@ input{
   color:var(--text);
 }
 
+input::placeholder{ color:#6b7280; }
+
 button{
   padding:10px 14px;
   font-size:14px;
-  font-weight:700;
+  font-weight:750;
   border-radius:10px;
   border:1px solid var(--line);
   background:#1e2533;
@@ -115,6 +125,12 @@ button.ghost{ background:transparent; }
 .row{
   display:grid;
   grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.row1{
+  display:grid;
+  grid-template-columns:1fr;
   gap:16px;
 }
 
@@ -138,7 +154,8 @@ button.ghost{ background:transparent; }
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-top:20px;
+  margin-top:18px;
+  gap:12px;
 }
 
 .partsList{
@@ -155,10 +172,10 @@ button.ghost{ background:transparent; }
   padding:14px;
   border:1px solid var(--line);
   border-radius:12px;
-  background:#0c1020;
+  background:var(--panel);
 }
 
-/* Убираем двойные рамки */
+/* FIX: убираем эффект "рамки на рамке" */
 .partRow input{
   border:1px solid transparent;
   background:rgba(255,255,255,0.05);
@@ -170,43 +187,76 @@ button.ghost{ background:transparent; }
   box-shadow:inset 0 0 0 1px #60a5fa;
 }
 
-.partRow button{
+/* кнопки + и - внутри строки */
+.partActions{
+  display:flex;
+  gap:8px;
+  align-items:end;
+  justify-content:flex-end;
+}
+
+.btnMini{
+  width:46px;
   height:40px;
+  padding:0;
+  font-size:18px;
+  font-weight:900;
+  line-height:40px;
+  text-align:center;
 }
 
-/* ================= RESULT ================= */
-
-.result{
-  margin-top:25px;
+.btnMini.danger{
+  background:var(--accent);
+  border:none;
 }
 
-.resultGrid{
+/* ================= STATS ================= */
+
+.statsBox{
+  margin-top:18px;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--panel);
+}
+
+.statsTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.statsTitle b{ font-size:14px; }
+.statsTitle span{ font-size:12px; color:var(--muted); }
+
+.statsGrid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-  margin-top:15px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
 }
 
 .stat{
-  padding:12px;
+  padding:10px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:#0c1020;
+  background:#0b0f1c;
 }
+.stat .k{ font-size:12px; color:var(--muted); }
+.stat .v{ font-size:16px; font-weight:900; margin-top:4px; }
 
-.stat .k{
-  font-size:12px;
-  color:var(--muted);
-}
+.msg-ok{ color:var(--ok); font-weight:900; }
+.msg-bad{ color:var(--bad); font-weight:900; }
 
-.stat .v{
-  font-size:18px;
-  font-weight:800;
-  margin-top:4px;
+/* ================= RESULT (GROUP VIEW) ================= */
+
+.result{
+  margin-top:18px;
 }
 
 .bars{
-  margin-top:18px;
+  margin-top:14px;
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -216,8 +266,19 @@ button.ghost{ background:transparent; }
   padding:14px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:#0c1020;
+  background:var(--panel);
 }
+
+.barTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.barTitle b{ font-size:14px; }
+.barTitle span{ color:var(--muted); font-size:12px; }
 
 .barLine{
   display:grid;
@@ -231,16 +292,17 @@ button.ghost{ background:transparent; }
   padding:8px;
   border-radius:10px;
   border:1px solid var(--line);
-  font-weight:800;
+  font-weight:900;
+  background:#0b0f1c;
 }
 
-/* визуализация */
 .viz{
   height:30px;
   display:flex;
   overflow:hidden;
   border-radius:8px;
   border:1px solid var(--line);
+  background:#0b0f1c;
 }
 
 .seg{
@@ -249,33 +311,44 @@ button.ghost{ background:transparent; }
   align-items:center;
   justify-content:center;
   font-size:11px;
-  font-weight:700;
+  font-weight:800;
+  color:#0b0f1c;
+  padding:0 4px;
+  white-space:nowrap;
 }
 
 .seg.cut{ background:#60a5fa; }
 .seg.kerf{
   background:#ff0000;
-  min-width:6px;
+  min-width:8px;            /* толще рез */
+  box-shadow:0 0 4px rgba(255,0,0,.65);
 }
 .seg.rest{
   background:#9ca3af;
   color:#111;
+  font-weight:900;
 }
 
+/* helpers */
 .hidden{ display:none; }
+.hr{ height:1px; background:var(--line); margin:14px 0; }
 
 /* ================= PRINT ================= */
-
 @media print{
   @page{ size:A4; margin:10mm; }
   body{ background:white; color:black; }
   .no-print{ display:none !important; }
+  .container{ max-width:none; padding:0; }
   .card{ border:none; box-shadow:none; }
-  .viz{ height:18px; }
-  .seg{ font-size:8px; }
   .logoBox img{ height:28px; }
+  .viz{ height:18px; }
+  .seg{ font-size:8px; padding:0 2px; color:black !important; }
+  .statsGrid{ grid-template-columns: 1fr 1fr 1fr; gap:6px; }
+  .stat{ padding:6px; }
+  .stat .k{ font-size:10px; }
+  .stat .v{ font-size:12px; }
+  .barCard{ page-break-inside:avoid; }
 }
-
 </style>
 </head>
 
@@ -285,74 +358,95 @@ button.ghost{ background:transparent; }
 <!-- LOGIN -->
 <div id="loginBox" class="card">
   <div class="brand">
-    <div class="logoBox">
-      <img src="logo.png" alt="Logo">
-    </div>
+    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
     <div>
       <h1>CLUSTER X</h1>
       <div class="sub">Вход в систему раскроя профиля</div>
     </div>
   </div>
 
+  <div class="hr"></div>
+
   <label>Логин</label>
-  <input id="login" type="text">
+  <input id="login" type="text" placeholder="masterclusterpro">
 
   <label>Пароль</label>
-  <input id="password" type="password">
+  <input id="password" type="password" placeholder="qwerty">
 
   <button class="primary" onclick="doLogin()">Войти</button>
-  <div id="loginMsg"></div>
+  <div id="loginMsg" style="margin-top:10px;"></div>
 </div>
 
 <!-- APP -->
 <div id="appBox" class="hidden">
 <div class="card">
 
-<div class="topbar no-print">
-  <div class="brand">
-    <div class="logoBox">
-      <img src="logo.png" alt="Logo">
+  <div class="topbar no-print">
+    <div class="brand">
+      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
+      <div>
+        <h1>Раскрой алюминиевого профиля</h1>
+        <div class="sub" id="jobSub">—</div>
+      </div>
     </div>
+    <button class="danger" onclick="logout()">Выйти</button>
+  </div>
+
+  <div class="row1 no-print">
     <div>
-      <h1>Раскрой алюминиевого профиля</h1>
-      <div class="sub">Группировка одинаковых раскладок (2× + одна визуализация)</div>
-    </div>
-  </div>
-  <button class="danger" onclick="logout()">Выйти</button>
-</div>
-
-<div class="row no-print">
-  <div>
-    <label>Длина профиля</label>
-    <input id="stockLen" type="number" value="6000">
-  </div>
-
-  <div>
-    <label>Ширина диска (рез), мм</label>
-    <div class="inlineField">
-      <input id="cutWidth" class="inputTiny" type="number" value="5">
-      <div style="font-size:12px;color:var(--muted);">
-        Рез = (k−1)×ширина
+      <label>Название / что режем</label>
+      <input id="jobName" type="text" placeholder="Например: Рама 40×40, заказ №12" oninput="syncJobTitle()">
+      <div style="font-size:12px;color:var(--muted);margin-top:6px;">
+        Это название попадёт в печать / PDF.
       </div>
     </div>
   </div>
-</div>
 
-<div class="partsHead no-print">
-  <div>
-    <label style="margin:0;">Заготовки</label>
+  <div class="row no-print">
+    <div>
+      <label>Длина профиля</label>
+      <input id="stockLen" type="number" value="6000" min="1" step="1">
+    </div>
+
+    <div>
+      <label>Ширина диска (рез), мм</label>
+      <div class="inlineField">
+        <input id="cutWidth" class="inputTiny" type="number" value="5" min="0" step="0.1">
+        <div style="font-size:12px;color:var(--muted);">
+          Рез = (k−1)×ширина
+        </div>
+      </div>
+    </div>
   </div>
-  <button class="primary" onclick="addPartRow()">+ Добавить</button>
-</div>
 
-<div id="partsList" class="partsList no-print"></div>
+  <div class="partsHead no-print">
+    <div>
+      <label style="margin:0;">Заготовки</label>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+        Добавляй строки кнопкой <b>+</b> (вверху или в строке). Enter тоже добавляет.
+      </div>
+    </div>
+    <button class="primary" onclick="addPartRow(true)">+ Заготовка</button>
+  </div>
 
-<div class="row no-print" style="margin-top:14px;">
-  <button class="primary" onclick="calculate()">Рассчитать</button>
-  <button class="ghost" onclick="window.print()">Печать / PDF</button>
-</div>
+  <div id="partsList" class="partsList no-print"></div>
 
-<div id="result" class="result"></div>
+  <div class="row no-print" style="margin-top:14px;">
+    <button class="primary" onclick="calculate()">Рассчитать</button>
+    <button class="ghost" onclick="window.print()">Печать / PDF</button>
+  </div>
+
+  <!-- Статистика ниже -->
+  <div id="statsBox" class="statsBox hidden">
+    <div class="statsTitle">
+      <b>Статистика</b>
+      <span id="statsHint">—</span>
+    </div>
+    <div class="statsGrid" id="statsGrid"></div>
+  </div>
+
+  <!-- Группировки + визуализация -->
+  <div id="result" class="result"></div>
 
 </div>
 </div>
@@ -360,6 +454,7 @@ button.ghost{ background:transparent; }
 </div>
 
 <script>
+/* ===== USERS ===== */
 const users = {
   "masterclusterpro":"qwerty",
   "mastercluster":"qwerty"
@@ -368,147 +463,298 @@ const users = {
 function doLogin(){
   const l=document.getElementById("login").value.trim();
   const p=document.getElementById("password").value;
+  const msg=document.getElementById("loginMsg");
+
   if(users[l] && users[l]===p){
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("appBox").classList.remove("hidden");
+    localStorage.setItem("authUser", l);
+    showApp();
   }else{
-    document.getElementById("loginMsg").innerHTML="<div style='color:red'>Ошибка входа</div>";
+    msg.innerHTML="<div class='msg-bad'>Неверный логин или пароль</div>";
   }
 }
 
-function logout(){ location.reload(); }
+function showApp(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("appBox").classList.remove("hidden");
+  syncJobTitle();
+}
 
+function logout(){
+  localStorage.removeItem("authUser");
+  location.reload();
+}
+
+if(localStorage.getItem("authUser")) showApp();
+
+/* ===== Job name sync ===== */
+function syncJobTitle(){
+  const name = (document.getElementById("jobName").value || "").trim();
+  document.getElementById("jobSub").textContent = name ? name : "—";
+  document.title = name ? ("Раскрой — " + name) : "Система раскроя профиля";
+}
+
+/* ===== Parts UI ===== */
 const partsList=document.getElementById("partsList");
 
-function addPartRow(){
+function wireEnterToAdd(row){
+  row.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("keydown", e=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        addPartRow(true);
+      }
+    });
+  });
+}
+
+function removeRow(btn){
+  const rows = document.querySelectorAll(".partRow");
+  if(rows.length <= 1) return; // минимум одна строка
+  btn.closest(".partRow").remove();
+}
+
+function addPartRow(focusNew = true){
   const row=document.createElement("div");
   row.className="partRow";
   row.innerHTML=`
     <div>
-      <small>Длина</small>
-      <input class="pLen" type="number">
+      <label style="margin:0 0 6px;font-size:12px;color:var(--muted);font-weight:700;">Длина</label>
+      <input class="pLen" type="number" min="1" step="1" placeholder="Например 1212">
     </div>
     <div>
-      <small>Количество</small>
-      <input class="pQty" type="number" value="1">
+      <label style="margin:0 0 6px;font-size:12px;color:var(--muted);font-weight:700;">Количество</label>
+      <input class="pQty" type="number" min="1" step="1" value="1">
     </div>
-    <div>
-      <small>&nbsp;</small>
-      <button class="danger" onclick="this.closest('.partRow').remove()">Удалить</button>
+    <div class="partActions">
+      <button class="btnMini primary" title="Добавить строку" onclick="addPartRow(true)">+</button>
+      <button class="btnMini danger" title="Удалить строку" onclick="removeRow(this)">−</button>
     </div>
   `;
   partsList.appendChild(row);
+  wireEnterToAdd(row);
+  if(focusNew) row.querySelector(".pLen").focus();
 }
 
-addPartRow();
+/* стартовая строка */
+addPartRow(false);
 
-function calculate(){
-  const stockLen=Number(document.getElementById("stockLen").value);
-  const cutWidth=Number(document.getElementById("cutWidth").value);
+/* ===== Cutting logic ===== */
+function fmt(n){
+  const r = Math.round(n);
+  return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
+}
 
-  const rows=[...document.querySelectorAll(".partRow")];
-  let cuts=[];
-  rows.forEach(r=>{
-    const len=Number(r.querySelector(".pLen").value);
-    const qty=Number(r.querySelector(".pQty").value);
-    if(len>0 && qty>0){
-      for(let i=0;i<qty;i++) cuts.push(len);
-    }
-  });
+function signatureOfPieces(pieces){
+  return [...pieces].sort((a,b)=>b-a).join(",");
+}
 
-  cuts.sort((a,b)=>b-a);
-  let bars=[];
+function packFFD(stockLen, cuts, cutWidth){
+  const sorted = [...cuts].sort((a,b)=>b-a);
+  const bars = []; // array of arrays (pieces)
 
-  for(const piece of cuts){
-    let placed=false;
+  for(const piece of sorted){
+    let placed = false;
+
     for(const bar of bars){
-      const k=bar.length+1;
-      const sum=bar.reduce((s,x)=>s+x,0)+piece;
-      const kerf=(k-1)*cutWidth;
-      if(sum+kerf<=stockLen){
+      const nextCount = bar.length + 1;
+      const nextSum = bar.reduce((s,x)=>s+x,0) + piece;
+      const nextKerf = Math.max(0, nextCount - 1) * cutWidth;
+
+      if(nextSum + nextKerf <= stockLen){
         bar.push(piece);
-        placed=true;
+        placed = true;
         break;
       }
     }
-    if(!placed) bars.push([piece]);
-  }
 
-  renderResult(stockLen,cutWidth,bars);
+    if(!placed){
+      bars.push([piece]);
+    }
+  }
+  return bars;
 }
 
-function renderResult(stockLen,cutWidth,bars){
-  const result=document.getElementById("result");
-  result.innerHTML="";
+function buildViz(stockLen, cutWidth, pieces){
+  const wrap = document.createElement("div");
+  wrap.className = "viz";
 
-  const totalStock=bars.length*stockLen;
+  const sorted = [...pieces].sort((a,b)=>b-a);
+  const sumPieces = sorted.reduce((s,x)=>s+x,0);
+  const cutsCount = Math.max(0, sorted.length - 1);
+  const kerfTotal = cutsCount * cutWidth;
+  const rest = stockLen - (sumPieces + kerfTotal);
 
-  let totalWaste=0;
+  sorted.forEach((p, i)=>{
+    const seg = document.createElement("div");
+    seg.className = "seg cut";
+    seg.style.width = (p/stockLen*100) + "%";
+    seg.textContent = p;
+    wrap.appendChild(seg);
 
-  const groups={};
-
-  bars.forEach(b=>{
-    const key=b.slice().sort((a,b)=>b-a).join(",");
-    if(!groups[key]) groups[key]={count:0,pieces:b};
-    groups[key].count++;
-
-    const sum=b.reduce((s,x)=>s+x,0);
-    const waste=stockLen-(sum+(b.length-1)*cutWidth);
-    totalWaste+=waste;
+    if(i !== sorted.length - 1 && cutWidth > 0){
+      const k = document.createElement("div");
+      k.className = "seg kerf";
+      const percent = (cutWidth/stockLen*100);
+      k.style.width = Math.max(percent, 0.8) + "%"; // чтобы рез всегда был виден
+      wrap.appendChild(k);
+    }
   });
 
-  result.innerHTML+=`
-    <div style="font-weight:800;margin-bottom:10px;">
-      Нужно профилей: ${bars.length} | Общая длина: ${totalStock} | Отход: ${Math.round(totalWaste)}
-    </div>
-  `;
+  const rs = document.createElement("div");
+  rs.className = "seg rest";
+  rs.style.width = Math.max(0, rest/stockLen*100) + "%";
+  rs.textContent = fmt(rest);
+  wrap.appendChild(rs);
 
-  Object.values(groups).forEach(g=>{
-    const card=document.createElement("div");
-    card.className="barCard";
+  return { wrap, sumPieces, kerfTotal, rest, cutsCount };
+}
 
-    const line=document.createElement("div");
-    line.className="barLine";
+function setStats(stats){
+  const box = document.getElementById("statsBox");
+  const grid = document.getElementById("statsGrid");
+  const hint = document.getElementById("statsHint");
 
-    const mult=document.createElement("div");
-    mult.className="mult";
-    mult.textContent=g.count+"×";
+  grid.innerHTML = "";
+  hint.textContent = stats.hint || "—";
 
-    const viz=document.createElement("div");
-    viz.className="viz";
+  const items = [
+    ["Нужно профилей", stats.bars],
+    ["Общая длина профиля", stats.totalStock],
+    ["Сумма заготовок", stats.totalCuts],
+    ["Суммарная ширина резов", stats.totalKerf],
+    ["Отход", stats.totalWaste],
+    ["Эффективность", stats.eff]
+  ];
 
-    const pieces=g.pieces.slice().sort((a,b)=>b-a);
+  items.forEach(([k,v])=>{
+    const d = document.createElement("div");
+    d.className = "stat";
+    d.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+    grid.appendChild(d);
+  });
 
-    pieces.forEach((p,i)=>{
-      const seg=document.createElement("div");
-      seg.className="seg cut";
-      seg.style.width=(p/stockLen*100)+"%";
-      seg.textContent=p;
-      viz.appendChild(seg);
+  box.classList.remove("hidden");
+}
 
-      if(i!==pieces.length-1){
-        const k=document.createElement("div");
-        k.className="seg kerf";
-        let percent=(cutWidth/stockLen*100);
-        k.style.width=Math.max(percent,0.8)+"%";
-        viz.appendChild(k);
-      }
-    });
+function calculate(){
+  const stockLen = Number(document.getElementById("stockLen").value);
+  const cutWidth = Number(document.getElementById("cutWidth").value);
 
-    const sum=pieces.reduce((s,x)=>s+x,0);
-    const waste=stockLen-(sum+(pieces.length-1)*cutWidth);
-    const rest=document.createElement("div");
-    rest.className="seg rest";
-    rest.style.width=(waste/stockLen*100)+"%";
-    rest.textContent=Math.round(waste);
-    viz.appendChild(rest);
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  if(!Number.isFinite(stockLen) || stockLen <= 0){
+    result.innerHTML = `<div class="msg-bad">Введите корректную длину профиля.</div>`;
+    return;
+  }
+  if(!Number.isFinite(cutWidth) || cutWidth < 0){
+    result.innerHTML = `<div class="msg-bad">Ширина диска должна быть 0 или больше.</div>`;
+    return;
+  }
+
+  const rows = [...document.querySelectorAll(".partRow")];
+  const cuts = [];
+  const bad = [];
+
+  rows.forEach((r, idx)=>{
+    const len = Number(r.querySelector(".pLen").value);
+    const qty = Number(r.querySelector(".pQty").value);
+
+    if(!len || len <= 0 || !qty || qty <= 0){
+      // пустые строки игнорируем, но если частично заполнена — считаем ошибкой
+      const hasAny = (r.querySelector(".pLen").value.trim() !== "" || r.querySelector(".pQty").value.trim() !== "");
+      if(hasAny) bad.push(idx+1);
+      return;
+    }
+    for(let i=0;i<qty;i++) cuts.push(len);
+  });
+
+  if(bad.length){
+    result.innerHTML = `<div class="msg-bad">Ошибка в строках: ${bad.join(", ")} (проверь длину/кол-во)</div>`;
+    return;
+  }
+
+  if(cuts.length === 0){
+    result.innerHTML = `<div class="msg-bad">Добавьте заготовки.</div>`;
+    return;
+  }
+
+  const tooLong = cuts.find(x=>x > stockLen);
+  if(tooLong){
+    result.innerHTML = `<div class="msg-bad">Заготовка ${tooLong} больше длины профиля ${stockLen}.</div>`;
+    return;
+  }
+
+  const bars = packFFD(stockLen, cuts, cutWidth);
+
+  // Группируем одинаковые раскладки
+  const groups = new Map(); // sig -> {count, piecesSample, sampleViz}
+  let totalKerf = 0;
+  let totalWaste = 0;
+
+  bars.forEach(pieces=>{
+    const sig = signatureOfPieces(pieces);
+    if(!groups.has(sig)){
+      const viz = buildViz(stockLen, cutWidth, pieces);
+      groups.set(sig, { count: 1, piecesSample: pieces, sampleViz: viz });
+    }else{
+      groups.get(sig).count++;
+    }
+    const viz = buildViz(stockLen, cutWidth, pieces);
+    totalKerf += viz.kerfTotal;
+    totalWaste += viz.rest;
+  });
+
+  const totalStock = bars.length * stockLen;
+  const totalCuts = cuts.reduce((s,x)=>s+x,0);
+  const eff = totalStock > 0 ? (totalCuts / totalStock * 100) : 0;
+
+  setStats({
+    bars: String(bars.length),
+    totalStock: fmt(totalStock),
+    totalCuts: fmt(totalCuts),
+    totalKerf: fmt(totalKerf),
+    totalWaste: fmt(totalWaste),
+    eff: fmt(eff) + "%",
+    hint: (document.getElementById("jobName").value || "").trim() || "Без названия"
+  });
+
+  // Рисуем группы
+  const wrap = document.createElement("div");
+  wrap.className = "bars";
+
+  const arr = [...groups.values()].sort((a,b)=>{
+    if(b.count !== a.count) return b.count - a.count;
+    return a.sampleViz.rest - b.sampleViz.rest;
+  });
+
+  arr.forEach((g, idx)=>{
+    const card = document.createElement("div");
+    card.className = "barCard";
+
+    const title = document.createElement("div");
+    title.className = "barTitle";
+    title.innerHTML = `<b>Раскладка #${idx+1}</b><span>Заготовок: ${g.piecesSample.length} · Резов: ${g.sampleViz.cutsCount} · Остаток: ${fmt(g.sampleViz.rest)}</span>`;
+
+    const line = document.createElement("div");
+    line.className = "barLine";
+
+    const mult = document.createElement("div");
+    mult.className = "mult";
+    mult.textContent = `${g.count}×`;
+
+    const viz = buildViz(stockLen, cutWidth, g.piecesSample).wrap;
 
     line.appendChild(mult);
     line.appendChild(viz);
 
+    card.appendChild(title);
     card.appendChild(line);
-    result.appendChild(card);
+
+    wrap.appendChild(card);
   });
+
+  result.appendChild(wrap);
 }
 </script>
 </body>
