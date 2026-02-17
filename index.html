@@ -14,8 +14,8 @@
   --text:#e7eaf0;
   --line:#2a3140;
   --accent:#b71c1c;
+  --bad:#ff6666;
 }
-
 *{ box-sizing:border-box; border-radius:0 !important; }
 
 body{
@@ -23,33 +23,23 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  font-size:15px;
 }
 
-.container{ max-width:1100px; margin:auto; padding:20px; }
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  padding:20px;
-}
+.container{ max-width:1200px; margin:auto; padding:20px; }
+.card{ background:var(--card); border:1px solid var(--line); padding:20px; }
 
 .hidden{ display:none; }
 
-h1{ margin:0; font-size:20px; }
-h3{ margin:0 0 8px; font-size:16px; }
-
-label{ display:block; margin-top:12px; font-weight:700; font-size:13px; }
+h1{ margin:0 0 15px; }
 
 input,button{
-  height:38px;
+  height:36px;
   border:1px solid var(--line);
   background:#111827;
   color:white;
   padding:0 10px;
-  font-size:14px;
 }
-
-button{ cursor:pointer; font-weight:800; }
+button{ cursor:pointer; font-weight:700; }
 button.primary{ background:#1f2937; }
 button.danger{ background:var(--accent); border:none; }
 
@@ -60,10 +50,18 @@ button.danger{ background:var(--accent); border:none; }
   display:grid;
   grid-template-columns:1fr 1fr auto;
   gap:10px;
-  align-items:end;
   border:1px solid var(--line);
   padding:10px;
   background:var(--panel);
+}
+
+.err{
+  margin-top:12px;
+  padding:10px;
+  border:1px solid var(--accent);
+  color:var(--bad);
+  background:rgba(183,28,28,.12);
+  font-weight:800;
 }
 
 .stats{
@@ -84,29 +82,23 @@ button.danger{ background:var(--accent); border:none; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
-/* РАСКЛАДКА: слева блок, справа визуализация */
 .bar{
   display:grid;
   grid-template-columns:120px 1fr;
   gap:15px;
-  align-items:center;
   border:1px solid var(--line);
   padding:10px;
   background:var(--panel);
 }
 
-/* Левый блок */
 .mult{
   border:1px solid var(--line);
   padding:10px;
   text-align:center;
   font-weight:900;
-  font-size:14px;
   background:var(--panel2);
-  line-height:1.2;
 }
 
-/* Визуализация */
 .viz{
   display:flex;
   height:30px;
@@ -121,35 +113,25 @@ button.danger{ background:var(--accent); border:none; }
   justify-content:center;
   font-weight:900;
   font-size:13px;
-
   overflow:hidden;
   min-width:0;
   white-space:nowrap;
-  text-overflow:clip;
-
-  position:relative;
   padding:0 6px;
-  color:#0b0f1c;
+  position:relative;
 }
 .seg span{
   display:block;
   max-width:100%;
   overflow:hidden;
-  text-overflow:clip;
 }
 
-.seg.cut{ background:#3b82f6; }
-
-/* ХВОСТ: серый всегда */
-.seg.rest{ background:#9ca3af; color:#111; }
+.seg.cut{ background:#3b82f6; color:#000; }
+.seg.rest{ background:#9ca3af; color:#000; }
 
 .seg.kerf{
   background:#111;
   min-width:8px;
-  padding:0;
 }
-
-/* ОДНА пунктирная линия — по центру “реза/границы” */
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -158,55 +140,6 @@ button.danger{ background:var(--accent); border:none; }
   left:50%;
   transform:translateX(-50%);
   border-left:1px dashed #fff;
-  opacity:0.9;
-}
-
-/* ===== PRINT A4 ===== */
-@media print{
-  @page{ size:A4; margin:10mm; }
-  body{ background:white; color:black; }
-  .no-print{ display:none !important; }
-  .card{ border:none; padding:0; }
-  input,button{ display:none; }
-
-  .stats{
-    border:1px solid #000;
-    background:#fff;
-  }
-  .stat{
-    border:1px solid #000;
-    background:#fff;
-    color:#000;
-  }
-
-  .bar{
-    border:1px solid #000;
-    background:#fff;
-  }
-  .mult{
-    border:1px solid #000;
-    background:#fff;
-    color:#000;
-  }
-
-  .viz{
-    height:28px;
-    border:1px solid #000;
-    background:#fff;
-  }
-  .seg{
-    font-size:12px;
-    color:#000 !important;
-  }
-  .seg.cut{ background:#d9d9d9 !important; }
-  .seg.rest{ background:#bfbfbf !important; color:#000 !important; } /* хвост серый на печати */
-  .seg.kerf{
-    background:#fff !important;
-    min-width:10px;
-  }
-  .seg.kerf::after{
-    border-left:1px dashed #000;
-  }
 }
 </style>
 </head>
@@ -217,248 +150,202 @@ button.danger{ background:var(--accent); border:none; }
 <!-- LOGIN -->
 <div id="loginBox" class="card">
   <h1>Вход</h1>
-  <label>Логин</label>
-  <input id="login" placeholder="masterclusterpro"/>
-  <label>Пароль</label>
-  <input id="password" type="password" placeholder="qwerty"/>
-  <button class="primary" style="width:100%;margin-top:12px;" onclick="doLogin()">Войти</button>
-  <div id="msg" style="margin-top:10px;color:#ff6666;font-weight:800;"></div>
+  <input id="login" placeholder="Логин"><br><br>
+  <input id="password" type="password" placeholder="Пароль"><br><br>
+  <button class="primary" onclick="doLogin()">Войти</button>
+  <div id="msg" class="err hidden"></div>
 </div>
 
 <!-- APP -->
 <div id="appBox" class="hidden">
 <div class="card">
 
-  <h1>Раскрой профиля</h1>
+<h1>Раскрой профиля</h1>
 
-  <div class="no-print">
-    <label>Название</label>
-    <input id="job" placeholder="Например: заказ №12 / изделие"/>
+<label>Название</label>
+<input id="job">
 
-    <label>Ширина диска (мм)</label>
-    <input id="kerf" type="number" value="5" min="0" step="0.1"/>
-  </div>
+<label>Ширина диска (мм)</label>
+<input id="kerf" type="number" value="5">
 
-  <div class="section no-print">
-    <h3>Профили</h3>
-    <div id="stocks" class="list"></div>
-    <button class="primary" onclick="addStock()">+ Профиль</button>
-  </div>
+<div class="section">
+<h3>Профили</h3>
+<div id="stocks" class="list"></div>
+<button class="primary" onclick="addStock()">+ Профиль</button>
+</div>
 
-  <div class="section no-print">
-    <h3>Заготовки</h3>
-    <div id="parts" class="list"></div>
-    <button class="primary" onclick="addPart()">+ Заготовка</button>
-  </div>
+<div class="section">
+<h3>Заготовки</h3>
+<div id="parts" class="list"></div>
+<button class="primary" onclick="addPart()">+ Заготовка</button>
+</div>
 
-  <div class="section no-print" style="display:flex;gap:10px;">
-    <button class="primary" onclick="calculate()">Рассчитать</button>
-    <button onclick="window.print()">Печать / PDF</button>
-    <button class="danger" onclick="logout()">Выйти</button>
-  </div>
+<div class="section">
+<button class="primary" onclick="calculate()">Рассчитать</button>
+<button class="danger" onclick="logout()">Выйти</button>
+</div>
 
-  <div id="stats" class="stats hidden"></div>
-  <div id="result" class="bars"></div>
+<div id="appErr" class="err hidden"></div>
+<div id="stats" class="stats hidden"></div>
+<div id="result" class="bars"></div>
 
 </div>
 </div>
-
 </div>
 
 <script>
-/* USERS */
-const users = {
+const users={
   "masterclusterpro":"qwerty",
   "mastercluster":"qwerty"
 };
 
 function doLogin(){
-  const l = document.getElementById("login").value.trim();
-  const p = document.getElementById("password").value;
-  const msg = document.getElementById("msg");
-
-  if(users[l] && users[l] === p){
-    localStorage.setItem("authUser", l);
-    showApp();
+  const l=login.value.trim();
+  const p=password.value;
+  if(users[l] && users[l]===p){
+    localStorage.setItem("auth",l);
+    loginBox.classList.add("hidden");
+    appBox.classList.remove("hidden");
   }else{
-    msg.textContent = "Неверный логин или пароль";
+    msg.textContent="Неверный логин или пароль";
+    msg.classList.remove("hidden");
   }
 }
-function logout(){
-  localStorage.removeItem("authUser");
-  location.reload();
-}
-function showApp(){
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("appBox").classList.remove("hidden");
-}
-if(localStorage.getItem("authUser")) showApp();
-
-function fmt(n){
-  const r = Math.round(n);
-  return (Math.abs(n-r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
+function logout(){ localStorage.removeItem("auth"); location.reload(); }
+if(localStorage.getItem("auth")){
+  loginBox.classList.add("hidden");
+  appBox.classList.remove("hidden");
 }
 
-/* Умная подгонка текста, чтобы не вылезал */
-function fitSegmentText(vizEl){
-  requestAnimationFrame(() => {
-    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
-    segs.forEach(seg=>{
-      const t = seg.querySelector("span");
-      if(!t) return;
-
-      t.style.fontSize = "";
-      t.style.display = "block";
-
-      if(t.scrollWidth <= seg.clientWidth) return;
-
-      const sizes = [12, 11, 10, 9, 8, 7];
-      for(const s of sizes){
-        t.style.fontSize = s + "px";
-        if(t.scrollWidth <= seg.clientWidth) return;
-      }
-
-      t.style.display = "none";
-    });
-  });
+function addStock(val="6000"){
+  const r=document.createElement("div");
+  r.className="row";
+  r.innerHTML=`<input class="sLen" value="${val}">
+               <div></div>
+               <button onclick="this.parentElement.remove();calculate()">−</button>`;
+  stocks.appendChild(r);
 }
-
-/* UI */
-function addStock(lenVal="6000", qtyVal=""){
-  const div = document.createElement("div");
-  div.className = "row";
-  div.innerHTML = `
-    <input class="sLen" type="number" placeholder="Длина" value="${lenVal}">
-    <input class="sQty" type="number" placeholder="Кол-во (пусто = ∞)" value="${qtyVal}">
-    <button class="danger" onclick="this.parentElement.remove()">−</button>
-  `;
-  document.getElementById("stocks").appendChild(div);
+function addPart(val="",qty="1"){
+  const r=document.createElement("div");
+  r.className="row";
+  r.innerHTML=`<input class="pLen" value="${val}">
+               <input class="pQty" value="${qty}">
+               <button onclick="this.parentElement.remove();calculate()">−</button>`;
+  parts.appendChild(r);
 }
-function addPart(lenVal="", qtyVal="1"){
-  const div = document.createElement("div");
-  div.className = "row";
-  div.innerHTML = `
-    <input class="pLen" type="number" placeholder="Длина" value="${lenVal}">
-    <input class="pQty" type="number" min="1" value="${qtyVal}">
-    <button class="danger" onclick="this.parentElement.remove()">−</button>
-  `;
-  document.getElementById("parts").appendChild(div);
-}
+addStock();
+addPart();
 
-addStock("6000","");
-addPart("","1");
+function fmt(n){ return Math.round(n*100)/100; }
 
-function readStocks(){
-  const rows = [...document.querySelectorAll("#stocks .row")];
-  const stocks = [];
-  for(const r of rows){
-    const len = Number(r.querySelector(".sLen").value);
-    if(!Number.isFinite(len) || len<=0) continue;
-    stocks.push({len:Math.floor(len)});
-  }
-  return stocks.sort((a,b)=>a.len-b.len);
-}
-function readParts(){
-  const rows = [...document.querySelectorAll("#parts .row")];
-  const parts = [];
-  for(const r of rows){
-    const len = Number(r.querySelector(".pLen").value);
-    const qty = Number(r.querySelector(".pQty").value);
-    if(!Number.isFinite(len) || len<=0) continue;
-    if(!Number.isFinite(qty) || qty<=0) continue;
-    for(let i=0;i<Math.floor(qty);i++) parts.push(Math.floor(len));
-  }
-  return parts;
-}
-
-/* CALC (простая раскладка в одну палку) */
 function calculate(){
-  const kerf = Math.max(0, Number(document.getElementById("kerf").value)||0);
-  const stocks = readStocks();
-  const parts = readParts();
+  appErr.classList.add("hidden");
+  stats.classList.add("hidden");
+  result.innerHTML="";
 
-  const statsEl = document.getElementById("stats");
-  const resEl = document.getElementById("result");
-  statsEl.innerHTML = "";
-  resEl.innerHTML = "";
+  const kerf=parseFloat(document.getElementById("kerf").value)||0;
 
-  if(stocks.length===0 || parts.length===0) return;
+  const stock=parseInt(document.querySelector(".sLen").value);
+  if(!stock){ appErr.textContent="Введите длину профиля"; appErr.classList.remove("hidden"); return; }
 
-  const stock = stocks[0].len;
-  parts.sort((a,b)=>b-a);
-
-  let usedSumWithKerf = 0;
-  const used = [];
-
-  for(const p of parts){
-    const addKerf = (used.length>0) ? kerf : 0;
-    if(usedSumWithKerf + addKerf + p <= stock){
-      usedSumWithKerf += addKerf + p;
-      used.push(p);
-    }
-  }
-
-  const rest = stock - usedSumWithKerf;
-  const kerfTotal = Math.max(0, used.length-1) * kerf;
-
-  statsEl.classList.remove("hidden");
-  statsEl.innerHTML = `
-    <div class="stat"><b>Профиль</b><br>${stock}</div>
-    <div class="stat"><b>Сумма деталей</b><br>${used.reduce((s,x)=>s+x,0)}</div>
-    <div class="stat"><b>Суммарный рез</b><br>${fmt(kerfTotal)}</div>
-    <div class="stat"><b>Остаток</b><br>${fmt(rest)}</div>
-    <div class="stat"><b>Заготовок</b><br>${used.length}</div>
-    <div class="stat"><b>Название</b><br>${(document.getElementById("job").value||"Без названия")}</div>
-  `;
-
-  const viz = document.createElement("div");
-  viz.className = "viz";
-
-  // детали + резы
-  used.forEach((p,i)=>{
-    const seg = document.createElement("div");
-    seg.className = "seg cut";
-    seg.style.width = (p/stock*100) + "%";
-    seg.innerHTML = `<span>${p}</span>`;
-    viz.appendChild(seg);
-
-    // рез между деталями
-    if(i < used.length-1){
-      const k = document.createElement("div");
-      k.className = "seg kerf";
-      k.style.width = Math.max((kerf/stock*100), 0.8) + "%";
-      viz.appendChild(k);
+  let partsList=[];
+  document.querySelectorAll(".pLen").forEach((el,i)=>{
+    const len=parseInt(el.value);
+    const qty=parseInt(document.querySelectorAll(".pQty")[i].value)||1;
+    if(len){
+      for(let j=0;j<qty;j++) partsList.push(len);
     }
   });
-
-  // ДОБАВЛЯЕМ ПУНКТИР МЕЖДУ ПОСЛЕДНЕЙ ДЕТАЛЬЮ И ХВОСТОМ (всегда, если есть детали и есть остаток)
-  if(used.length > 0 && rest > 0){
-    const borderK = document.createElement("div");
-    borderK.className = "seg kerf";
-    borderK.style.width = "0.8%";        // тонкая “метка границы”
-    viz.appendChild(borderK);
+  if(partsList.length===0){
+    appErr.textContent="Добавьте заготовки";
+    appErr.classList.remove("hidden");
+    return;
   }
 
-  // хвост
-  const rs = document.createElement("div");
-  rs.className = "seg rest";
-  rs.style.width = Math.max(0,(rest/stock*100)) + "%";
-  rs.innerHTML = `<span>${fmt(rest)}</span>`;
-  viz.appendChild(rs);
+  partsList.sort((a,b)=>b-a);
 
-  fitSegmentText(viz);
+  const bars=[];
 
-  const bar = document.createElement("div");
-  bar.className = "bar";
+  for(const piece of partsList){
+    let placed=false;
 
-  const mult = document.createElement("div");
-  mult.className = "mult";
-  mult.innerHTML = `1×<br>${stock}`;
+    for(const bar of bars){
+      const addKerf=bar.parts.length>0?kerf:0;
+      if(bar.sum+addKerf+piece<=stock){
+        bar.parts.push(piece);
+        bar.sum+=addKerf+piece;
+        placed=true;
+        break;
+      }
+    }
 
-  bar.appendChild(mult);
-  bar.appendChild(viz);
+    if(!placed){
+      bars.push({parts:[piece],sum:piece});
+    }
+  }
 
-  resEl.appendChild(bar);
+  // группировка
+  const groups={};
+  bars.forEach(bar=>{
+    const key=bar.parts.slice().sort((a,b)=>b-a).join(",");
+    if(!groups[key]) groups[key]={count:0,layout:bar.parts};
+    groups[key].count++;
+  });
+
+  stats.classList.remove("hidden");
+  stats.innerHTML=`
+    <div class="stat"><b>Палок</b><br>${bars.length}</div>
+    <div class="stat"><b>Профиль</b><br>${stock}</div>
+    <div class="stat"><b>Деталей</b><br>${partsList.length}</div>
+  `;
+
+  Object.values(groups).forEach(g=>{
+    const barDiv=document.createElement("div");
+    barDiv.className="bar";
+
+    const mult=document.createElement("div");
+    mult.className="mult";
+    mult.innerHTML=`${g.count}×<br>${stock}`;
+
+    const viz=document.createElement("div");
+    viz.className="viz";
+
+    let usedSum=0;
+    g.layout.forEach((p,i)=>{
+      const seg=document.createElement("div");
+      seg.className="seg cut";
+      seg.style.width=(p/stock*100)+"%";
+      seg.innerHTML=`<span>${p}</span>`;
+      viz.appendChild(seg);
+
+      if(i<g.layout.length-1){
+        const k=document.createElement("div");
+        k.className="seg kerf";
+        k.style.width=Math.max((kerf/stock*100),0.8)+"%";
+        viz.appendChild(k);
+      }
+      usedSum+=p;
+      if(i>0) usedSum+=kerf;
+    });
+
+    const rest=stock-usedSum;
+    if(rest>0){
+      const border=document.createElement("div");
+      border.className="seg kerf";
+      border.style.width="0.8%";
+      viz.appendChild(border);
+
+      const rs=document.createElement("div");
+      rs.className="seg rest";
+      rs.style.width=(rest/stock*100)+"%";
+      rs.innerHTML=`<span>${fmt(rest)}</span>`;
+      viz.appendChild(rs);
+    }
+
+    barDiv.appendChild(mult);
+    barDiv.appendChild(viz);
+    result.appendChild(barDiv);
+  });
 }
 </script>
 </body>
