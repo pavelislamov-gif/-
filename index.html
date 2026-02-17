@@ -122,8 +122,8 @@ button.danger{ background:var(--accent); border:none; }
   font-weight:900;
   font-size:13px;
 
-  overflow:hidden;        /* НЕ ДАЁМ ВЫЛЕЗАТЬ */
-  min-width:0;            /* важно для flex */
+  overflow:hidden;
+  min-width:0;
   white-space:nowrap;
   text-overflow:clip;
 
@@ -131,8 +131,6 @@ button.danger{ background:var(--accent); border:none; }
   padding:0 6px;
   color:#0b0f1c;
 }
-
-/* текст внутри сегмента */
 .seg span{
   display:block;
   max-width:100%;
@@ -141,14 +139,17 @@ button.danger{ background:var(--accent); border:none; }
 }
 
 .seg.cut{ background:#3b82f6; }
+
+/* ХВОСТ: серый всегда */
 .seg.rest{ background:#9ca3af; color:#111; }
+
 .seg.kerf{
   background:#111;
   min-width:8px;
   padding:0;
 }
 
-/* ОДНА пунктирная линия — только по центру реза */
+/* ОДНА пунктирная линия — по центру “реза/границы” */
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -166,7 +167,7 @@ button.danger{ background:var(--accent); border:none; }
   body{ background:white; color:black; }
   .no-print{ display:none !important; }
   .card{ border:none; padding:0; }
-  input,button{ display:none; } /* печатаем как документ */
+  input,button{ display:none; }
 
   .stats{
     border:1px solid #000;
@@ -198,7 +199,7 @@ button.danger{ background:var(--accent); border:none; }
     color:#000 !important;
   }
   .seg.cut{ background:#d9d9d9 !important; }
-  .seg.rest{ background:#f0f0f0 !important; color:#000 !important; }
+  .seg.rest{ background:#bfbfbf !important; color:#000 !important; } /* хвост серый на печати */
   .seg.kerf{
     background:#fff !important;
     min-width:10px;
@@ -293,6 +294,35 @@ function showApp(){
 }
 if(localStorage.getItem("authUser")) showApp();
 
+function fmt(n){
+  const r = Math.round(n);
+  return (Math.abs(n-r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
+}
+
+/* Умная подгонка текста, чтобы не вылезал */
+function fitSegmentText(vizEl){
+  requestAnimationFrame(() => {
+    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+    segs.forEach(seg=>{
+      const t = seg.querySelector("span");
+      if(!t) return;
+
+      t.style.fontSize = "";
+      t.style.display = "block";
+
+      if(t.scrollWidth <= seg.clientWidth) return;
+
+      const sizes = [12, 11, 10, 9, 8, 7];
+      for(const s of sizes){
+        t.style.fontSize = s + "px";
+        if(t.scrollWidth <= seg.clientWidth) return;
+      }
+
+      t.style.display = "none";
+    });
+  });
+}
+
 /* UI */
 function addStock(lenVal="6000", qtyVal=""){
   const div = document.createElement("div");
@@ -318,65 +348,16 @@ function addPart(lenVal="", qtyVal="1"){
 addStock("6000","");
 addPart("","1");
 
-function fmt(n){
-  const r = Math.round(n);
-  return (Math.abs(n-r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
-}
-
-/* Умная подгонка текста, чтобы не вылезал */
-function fitSegmentText(vizEl){
-  requestAnimationFrame(() => {
-    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
-    segs.forEach(seg=>{
-      const t = seg.querySelector("span");
-      if(!t) return;
-
-      // reset
-      t.style.fontSize = "";
-      t.style.display = "block";
-
-      if(t.scrollWidth <= seg.clientWidth) return;
-
-      // уменьшение
-      const sizes = [12, 11, 10, 9, 8, 7];
-      for(const s of sizes){
-        t.style.fontSize = s + "px";
-        if(t.scrollWidth <= seg.clientWidth) return;
-      }
-
-      // не влезло — скрыть (главное: НЕ вылезает)
-      t.style.display = "none";
-    });
-  });
-}
-
-/* READ INPUTS */
 function readStocks(){
   const rows = [...document.querySelectorAll("#stocks .row")];
   const stocks = [];
   for(const r of rows){
     const len = Number(r.querySelector(".sLen").value);
-    const qtyStr = r.querySelector(".sQty").value.trim();
     if(!Number.isFinite(len) || len<=0) continue;
-    let qty = null;
-    if(qtyStr !== ""){
-      const q = Number(qtyStr);
-      if(Number.isFinite(q) && q>=0) qty = Math.floor(q);
-    }
-    stocks.push({len:Math.floor(len), qty});
+    stocks.push({len:Math.floor(len)});
   }
-  const m = new Map();
-  for(const s of stocks){
-    if(!m.has(s.len)) m.set(s.len, {len:s.len, qty:s.qty});
-    else{
-      const ex = m.get(s.len);
-      if(ex.qty===null || s.qty===null) ex.qty=null;
-      else ex.qty += s.qty;
-    }
-  }
-  return [...m.values()].sort((a,b)=>a.len-b.len);
+  return stocks.sort((a,b)=>a.len-b.len);
 }
-
 function readParts(){
   const rows = [...document.querySelectorAll("#parts .row")];
   const parts = [];
@@ -433,6 +414,7 @@ function calculate(){
   const viz = document.createElement("div");
   viz.className = "viz";
 
+  // детали + резы
   used.forEach((p,i)=>{
     const seg = document.createElement("div");
     seg.className = "seg cut";
@@ -440,7 +422,8 @@ function calculate(){
     seg.innerHTML = `<span>${p}</span>`;
     viz.appendChild(seg);
 
-    if(i < used.length-1 && kerf>0){
+    // рез между деталями
+    if(i < used.length-1){
       const k = document.createElement("div");
       k.className = "seg kerf";
       k.style.width = Math.max((kerf/stock*100), 0.8) + "%";
@@ -448,13 +431,21 @@ function calculate(){
     }
   });
 
+  // ДОБАВЛЯЕМ ПУНКТИР МЕЖДУ ПОСЛЕДНЕЙ ДЕТАЛЬЮ И ХВОСТОМ (всегда, если есть детали и есть остаток)
+  if(used.length > 0 && rest > 0){
+    const borderK = document.createElement("div");
+    borderK.className = "seg kerf";
+    borderK.style.width = "0.8%";        // тонкая “метка границы”
+    viz.appendChild(borderK);
+  }
+
+  // хвост
   const rs = document.createElement("div");
   rs.className = "seg rest";
   rs.style.width = Math.max(0,(rest/stock*100)) + "%";
   rs.innerHTML = `<span>${fmt(rest)}</span>`;
   viz.appendChild(rs);
 
-  // подгоняем текст, чтобы не вылезал
   fitSegmentText(viz);
 
   const bar = document.createElement("div");
