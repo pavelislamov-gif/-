@@ -84,7 +84,7 @@
     border-radius:10px;
     background:#0b0f1c;
     overflow:hidden;
-    height:34px;
+    height:36px;
     display:flex;
   }
   .seg{
@@ -93,7 +93,7 @@
     align-items:center;
     justify-content:center;
     font-size:12px;
-    font-weight:800;
+    font-weight:900;
     color:#0b0f1c;
     border-right:1px solid rgba(0,0,0,.25);
     min-width: 2px;
@@ -102,13 +102,19 @@
     white-space:nowrap;
   }
   .seg.cut{ background:#60a5fa; }
-  .seg.kerf{ background:#f87171; color:#0b0f1c; font-weight:900; padding:0; }
+  /* Толстая яркая полоса реза */
+  .seg.kerf{
+    background:#ff0000;
+    min-width:6px;                 /* делает рез толще */
+    box-shadow:0 0 4px rgba(255,0,0,0.65);
+    border-right:1px solid rgba(0,0,0,0.4);
+    padding:0;
+  }
   .seg.rest{ background:#9ca3af; color:#111827; font-weight:900; }
 
   .listText{ margin-top:10px; color:#dbe2f5; font-size:14px; line-height:1.4; }
   .hr{ height:1px; background:var(--line); margin:12px 0; }
 
-  /* PRINT */
   @media print {
     body{ background:white; color:black; }
     .no-print{ display:none !important; }
@@ -142,7 +148,7 @@
     <button class="primary" onclick="doLogin()">Войти</button>
     <div id="loginMsg" style="margin-top:10px;"></div>
     <div class="muted" style="margin-top:10px; font-size:13px;">
-      Подсказка: доступ ограничен для сотрудников.
+      Доступ только для сотрудников.
     </div>
   </div>
 
@@ -167,10 +173,10 @@
           <input id="stockLen" type="number" value="6000" min="1" step="1" />
         </div>
         <div>
-          <label>Керф (рез), мм</label>
+          <label>Ширина диска (рез), мм</label>
           <input id="kerf" type="number" value="5" min="0" step="0.1" />
           <div class="muted" style="margin-top:6px; font-size:13px;">
-            Керф считается как <b>(k−1)×керф</b> на палке (k — число заготовок на палке).
+            Рез считается как <b>(k−1)×ширина диска</b> на палке (k — число заготовок).
           </div>
         </div>
       </div>
@@ -249,17 +255,18 @@ function addPartRow(lenVal = "", qtyVal = 1){
   partsListEl.appendChild(row);
 }
 
-/* стартовые 2 строки, чтобы не было пусто */
+/* стартовые 2 строки */
 addPartRow("", 1);
 addPartRow("", 1);
 
 /* ========= Раскрой ========= */
-function kerfForCount(k, kerf){
-  return Math.max(0, k - 1) * kerf; // k-1
+function cutWidthForCount(k, cutWidth){
+  // k заготовок -> (k-1) резов
+  return Math.max(0, k - 1) * cutWidth;
 }
 
-function pack(stockLen, cuts, kerf){
-  // First-Fit Decreasing (быстро и хорошо для цеха)
+function pack(stockLen, cuts, cutWidth){
+  // First-Fit Decreasing
   const sorted = [...cuts].sort((a,b)=>b-a);
   const bars = []; // {pieces:[], usedPieces}
 
@@ -269,8 +276,8 @@ function pack(stockLen, cuts, kerf){
     for (const bar of bars){
       const nextCount = bar.pieces.length + 1;
       const nextUsed = bar.usedPieces + piece;
-      const nextKerf = kerfForCount(nextCount, kerf);
-      if (nextUsed + nextKerf <= stockLen){
+      const nextCut = cutWidthForCount(nextCount, cutWidth);
+      if (nextUsed + nextCut <= stockLen){
         bar.pieces.push(piece);
         bar.usedPieces = nextUsed;
         placed = true;
@@ -292,17 +299,16 @@ function fmt(n){
 }
 
 /* визуализация одной палки */
-function renderViz(stockLen, kerf, pieces){
+function renderViz(stockLen, cutWidth, pieces){
   const k = pieces.length;
-  const kerfCount = Math.max(0, k-1);
-  const kerfTotal = kerfCount * kerf;
+  const cutCount = Math.max(0, k-1);
+  const cutTotal = cutCount * cutWidth;
   const sumPieces = pieces.reduce((s,x)=>s+x,0);
-  const rest = stockLen - (sumPieces + kerfTotal);
+  const rest = stockLen - (sumPieces + cutTotal);
 
   const wrap = document.createElement("div");
   wrap.className = "viz";
 
-  // Сегменты: кусок + (керф) + кусок + ... + остаток
   pieces.forEach((p, idx)=>{
     const cutSeg = document.createElement("div");
     cutSeg.className = "seg cut";
@@ -311,17 +317,19 @@ function renderViz(stockLen, kerf, pieces){
     cutSeg.textContent = p;
     wrap.appendChild(cutSeg);
 
-    if (idx !== pieces.length - 1 && kerf > 0){
+    if (idx !== pieces.length - 1 && cutWidth > 0){
       const kSeg = document.createElement("div");
       kSeg.className = "seg kerf";
-      kSeg.style.width = (kerf / stockLen * 100) + "%";
-      kSeg.title = `Керф: ${kerf}`;
-      kSeg.textContent = ""; // можно поставить "|" если надо
+
+      // делаем рез визуально толще: минимум 0.8% ширины
+      let percent = (cutWidth / stockLen * 100);
+      kSeg.style.width = Math.max(percent, 0.8) + "%";
+
+      kSeg.title = `Рез (ширина диска): ${cutWidth}`;
       wrap.appendChild(kSeg);
     }
   });
 
-  // Остаток
   const restSeg = document.createElement("div");
   restSeg.className = "seg rest";
   restSeg.style.width = Math.max(0, rest / stockLen * 100) + "%";
@@ -329,12 +337,12 @@ function renderViz(stockLen, kerf, pieces){
   restSeg.textContent = fmt(rest);
   wrap.appendChild(restSeg);
 
-  return { wrap, sumPieces, kerfTotal, rest };
+  return { wrap, sumPieces, cutTotal, rest };
 }
 
 function calculate(){
   const stockLen = Number(document.getElementById("stockLen").value);
-  const kerf = Number(document.getElementById("kerf").value);
+  const cutWidth = Number(document.getElementById("kerf").value);
 
   const resultEl = document.getElementById("result");
   resultEl.innerHTML = "";
@@ -343,12 +351,11 @@ function calculate(){
     resultEl.innerHTML = `<div class="msg-bad">Введите корректную длину профиля.</div>`;
     return;
   }
-  if (!Number.isFinite(kerf) || kerf < 0){
-    resultEl.innerHTML = `<div class="msg-bad">Керф должен быть 0 или больше.</div>`;
+  if (!Number.isFinite(cutWidth) || cutWidth < 0){
+    resultEl.innerHTML = `<div class="msg-bad">Ширина диска должна быть 0 или больше.</div>`;
     return;
   }
 
-  // собрать cuts из строк
   const rows = [...document.querySelectorAll(".partRow")];
   const cuts = [];
   const badRows = [];
@@ -372,24 +379,21 @@ function calculate(){
     return;
   }
 
-  // проверка на слишком длинные заготовки
   const tooLong = cuts.find(x=>x > stockLen);
   if (tooLong){
     resultEl.innerHTML = `<div class="msg-bad">Заготовка ${tooLong} больше длины профиля ${stockLen}.</div>`;
     return;
   }
 
-  const bars = pack(stockLen, cuts, kerf);
+  const bars = pack(stockLen, cuts, cutWidth);
 
-  // итоги
-  const totalStockLen = bars.length * stockLen;              // сколько общей длины профиля нужно
+  const totalStockLen = bars.length * stockLen;      // общая длина профиля
   const totalCutsLen = cuts.reduce((s,x)=>s+x,0);
 
-  let totalKerf = 0;
-  let totalUsed = 0; // pieces + kerf
+  let totalCutWidth = 0;
+  let totalUsed = 0;
   let totalWaste = 0;
 
-  // шапка результата
   const head = document.createElement("div");
   head.innerHTML = `
     <div class="msg-ok">Готово. Нужно профилей: <b>${bars.length}</b></div>
@@ -406,7 +410,6 @@ function calculate(){
   `;
   resultEl.appendChild(head);
 
-  // бары + визуализация
   const barsWrap = document.createElement("div");
   barsWrap.className = "bars";
 
@@ -414,9 +417,9 @@ function calculate(){
     const card = document.createElement("div");
     card.className = "barCard";
 
-    const viz = renderViz(stockLen, kerf, b.pieces);
-    totalKerf += viz.kerfTotal;
-    totalUsed += (viz.sumPieces + viz.kerfTotal);
+    const viz = renderViz(stockLen, cutWidth, b.pieces);
+    totalCutWidth += viz.cutTotal;
+    totalUsed += (viz.sumPieces + viz.cutTotal);
     totalWaste += viz.rest;
 
     card.innerHTML = `
@@ -437,22 +440,21 @@ function calculate(){
 
   resultEl.appendChild(barsWrap);
 
-  // нижние итоги
   const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
   const tail = document.createElement("div");
   tail.style.marginTop = "12px";
   tail.innerHTML = `
     <div class="resultGrid">
       <div class="stat">
-        <div class="k">Керф суммарно</div>
-        <div class="v">${fmt(totalKerf)}</div>
+        <div class="k">Суммарная ширина резов</div>
+        <div class="v">${fmt(totalCutWidth)}</div>
       </div>
       <div class="stat">
         <div class="k">Отход суммарно</div>
         <div class="v">${fmt(totalWaste)}</div>
       </div>
       <div class="stat">
-        <div class="k">Израсходовано (заготовки+керф)</div>
+        <div class="k">Израсходовано (заготовки+рез)</div>
         <div class="v">${fmt(totalUsed)}</div>
       </div>
       <div class="stat">
