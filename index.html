@@ -24,11 +24,8 @@
   --gap:12px;
 }
 
-/* УБРАНЫ ВСЕ СКРУГЛЕНИЯ */
-*{
-  box-sizing:border-box;
-  border-radius:0 !important;
-}
+/* УБРАТЬ ВСЕ СКРУГЛЕНИЯ */
+*{ box-sizing:border-box; border-radius:0 !important; }
 
 body{
   margin:0;
@@ -39,11 +36,7 @@ body{
   line-height:var(--lh);
 }
 
-.container{
-  max-width:1050px;
-  margin:0 auto;
-  padding:18px;
-}
+.container{ max-width: 1050px; margin: 0 auto; padding: 18px; }
 
 .card{
   background:var(--card);
@@ -58,6 +51,7 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:14px;
   margin-bottom:14px;
 }
 
@@ -65,199 +59,184 @@ body{
   display:flex;
   align-items:center;
   gap:12px;
+  min-width:0;
 }
-.logoBox{
-  height:44px;
-  display:flex;
-  align-items:center;
-}
-.logoBox img{
-  height:44px;
-  width:auto;
-}
+.logoBox{ height:44px; display:flex; align-items:center; }
+.logoBox img{ height:44px; width:auto; display:block; }
 
 .brand h1{
   margin:0;
   font-size:20px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .brand .sub{
   font-size:13px;
   color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-label{
-  display:block;
-  margin:10px 0 6px;
-  font-weight:700;
-  font-size:13px;
-}
+.hr{ height:1px; background:var(--line); margin:14px 0; }
 
-.smallhint{
-  font-size:12px;
-  color:var(--muted);
-}
+label{ display:block; margin:10px 0 6px; font-weight:700; font-size:13px; color:#dbe2f5; }
+.smallhint{ margin-top:6px; font-size:12px; color:var(--muted); }
 
 input, button{
   height:var(--h);
   font-size:var(--fs);
   line-height:var(--lh);
 }
-
 input{
   width:100%;
-  padding:0 12px;
+  padding: 0 12px;
   border:1px solid var(--line);
   background:#0e1220;
   color:var(--text);
 }
+input::placeholder{ color:#6b7280; }
 
 button{
-  padding:0 12px;
+  padding: 0 12px;
   border:1px solid var(--line);
   background:#1e2533;
   color:var(--text);
   font-weight:800;
   cursor:pointer;
 }
-
 button.primary{ background:#2b3447; }
 button.ghost{ background:transparent; }
 button.danger{ background:var(--accent); border:none; }
 
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:var(--gap);
-}
-.grid1{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--gap);
-}
+.grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.grid1{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
 
-.inlineField{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
+.inlineField{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .inputTiny{ width:120px; }
 
-/* ===== Списки ===== */
-
+/* ====== Списки ====== */
 .sectionHead{
   display:flex;
-  justify-content:space-between;
   align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
   margin-top:16px;
 }
+.sectionTitle{ margin:0; font-size:14px; font-weight:900; }
+.sectionSub{ margin-top:4px; font-size:12px; color:var(--muted); }
 
-.list{
-  margin-top:12px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+.list{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 
+/* Обёртка строки: рамка отдельно, кнопки отдельно справа */
 .rowWrap{
   display:grid;
-  grid-template-columns:1fr auto;
+  grid-template-columns: 1fr auto;
   gap:10px;
+  align-items:stretch;
 }
 
+/* Рамка строки */
 .rowBox{
   border:1px solid var(--line);
   background:var(--panel);
   padding:12px;
 }
 
+/* Внутри рамки: 2 колонки */
 .rowBoxGrid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr;
   gap:12px;
+  align-items:end;
 }
 
+.fieldLabel{
+  margin:0 0 6px;
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted);
+}
+
+/* Инпуты в строках */
+.rowBox input{
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.06);
+}
+.rowBox input:focus{
+  outline:none;
+  border-color:#60a5fa;
+}
+
+/* Кнопки справа (НЕ в рамке) */
 .rowBtns{
   display:flex;
   flex-direction:column;
   gap:8px;
   justify-content:center;
+  align-items:stretch;
 }
-
 .btnMini{
   width:52px;
+  height:var(--h);
+  padding:0;
   font-size:18px;
   font-weight:900;
+  line-height:var(--h);
+  text-align:center;
 }
+.btnMini.danger{ background:var(--accent); border:none; }
 
-/* ===== Статистика ===== */
-
+/* ====== Статистика ====== */
 .statsBox{
   margin-top:16px;
   border:1px solid var(--line);
   background:var(--panel);
   padding:12px;
 }
-
+.statsTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
+.statsTop b{ font-size:14px; }
+.statsTop span{ font-size:12px; color:var(--muted); }
 .statsGrid{
   margin-top:10px;
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap:10px;
 }
-
 .stat{
   border:1px solid var(--line);
   background:var(--panel2);
   padding:10px;
 }
+.stat .k{ font-size:12px; color:var(--muted); }
+.stat .v{ margin-top:4px; font-size:16px; font-weight:900; }
 
-.stat .k{
-  font-size:12px;
-  color:var(--muted);
-}
-.stat .v{
-  font-size:16px;
-  font-weight:900;
-  margin-top:4px;
-}
-
-/* ===== Визуализация ===== */
-
-.bars{
-  margin-top:12px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
+.result{ margin-top:14px; }
+.bars{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 .barCard{
   border:1px solid var(--line);
   background:var(--panel);
   padding:12px;
 }
-
 .barTitle{
-  display:flex;
-  justify-content:space-between;
+  display:flex; justify-content:space-between; gap:10px; align-items:center;
   margin-bottom:10px;
 }
+.barTitle b{ font-size:14px; }
+.barTitle span{ font-size:12px; color:var(--muted); }
 
-.barLine{
-  display:grid;
-  grid-template-columns:90px 1fr;
-  gap:10px;
-}
-
+.barLine{ display:grid; grid-template-columns: 90px 1fr; gap:10px; align-items:center; }
 .mult{
   border:1px solid var(--line);
   background:var(--panel2);
   padding:8px;
-  text-align:center;
   font-weight:900;
+  text-align:center;
   white-space:pre-line;
 }
 
+/* ====== Визуализация (прямоугольная + текст не вылезает) ====== */
 .viz{
   height:28px;
   border:1px solid var(--line);
@@ -265,55 +244,53 @@ button.danger{ background:var(--accent); border:none; }
   overflow:hidden;
   display:flex;
 }
-
 .seg{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
+  min-width:0;
   font-size:11px;
   font-weight:900;
   padding:0 6px;
   white-space:nowrap;
+  color:#0b0f1c;
 }
-
-.seg.cut{ background:#60a5fa; }
-.seg.kerf{ background:#ff0000; min-width:8px; }
-.seg.rest{ background:#9ca3af; color:#111; }
-
 .seg .t{
+  display:block;
   max-width:100%;
   overflow:hidden;
+  text-overflow:clip;
+  padding:0 2px;
 }
+.seg.cut{ background:#60a5fa; }
+.seg.kerf{
+  background:#ff0000;
+  min-width:8px;
+  box-shadow:0 0 4px rgba(255,0,0,.55);
+  padding:0;
+}
+.seg.rest{ background:#9ca3af; color:#111; font-weight:900; }
 
-/* ===== Печать ===== */
+.msg-ok{ color:var(--ok); font-weight:900; }
+.msg-bad{ color:var(--bad); font-weight:900; }
 
+/* ====== PRINT A4 ====== */
 @media print{
-  @page{ size:A4; margin:10mm; }
-
-  body{
-    background:white;
-    color:black;
-  }
-
-  .no-print{
-    display:none !important;
-  }
-
-  .card{
-    border:none;
-    padding:0;
-  }
-
-  .viz{
-    height:18px;
-  }
-
-  .seg{
-    font-size:8px;
-    color:black !important;
-  }
+  @page { size: A4; margin: 10mm; }
+  body{ background:white; color:black; }
+  .no-print{ display:none !important; }
+  .container{ max-width:none; padding:0; }
+  .card{ border:none; box-shadow:none; padding:0; }
+  .logoBox img{ height:28px; }
+  .statsGrid{ grid-template-columns: repeat(3, 1fr); gap:6px; }
+  .stat{ padding:6px; }
+  .stat .k{ font-size:10px; }
+  .stat .v{ font-size:12px; }
+  .viz{ height:18px; }
+  .seg{ font-size:8px; padding:0 4px; color:black !important; }
+  .barCard{ page-break-inside: avoid; }
 }
 </style>
 </head>
@@ -321,39 +298,604 @@ button.danger{ background:var(--accent); border:none; }
 <body>
 <div class="container">
 
-<!-- LOGIN -->
-<div id="loginBox" class="card">
-  <div class="brand">
-    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-    <div>
-      <h1>CLUSTER X</h1>
-      <div class="sub">Вход в систему раскроя профиля</div>
+  <!-- LOGIN -->
+  <div id="loginBox" class="card">
+    <div class="brand">
+      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
+      <div>
+        <h1>CLUSTER X</h1>
+        <div class="sub">Вход в систему раскроя профиля</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <label>Логин</label>
+    <input id="login" type="text" placeholder="masterclusterpro">
+
+    <label>Пароль</label>
+    <input id="password" type="password" placeholder="qwerty">
+
+    <button class="primary" style="width:100%; margin-top:12px;" onclick="doLogin()">Войти</button>
+    <div id="loginMsg" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- APP -->
+  <div id="appBox" class="hidden">
+    <div class="card">
+
+      <div class="topbar no-print">
+        <div class="brand">
+          <div class="logoBox"><img src="logo.png" alt="Logo"></div>
+          <div>
+            <h1>Раскрой алюминиевого профиля</h1>
+            <div class="sub" id="jobSub">—</div>
+          </div>
+        </div>
+        <button class="danger" onclick="logout()">Выйти</button>
+      </div>
+
+      <div class="grid1 no-print">
+        <div>
+          <label>Название / что режем</label>
+          <input id="jobName" type="text" placeholder="Например: Рама 40×40, заказ №12" oninput="syncJobTitle()">
+          <div class="smallhint">Это название попадёт в печать / PDF.</div>
+        </div>
+      </div>
+
+      <div class="grid2 no-print" style="margin-top:8px;">
+        <div>
+          <label>Ширина диска (рез), мм</label>
+          <div class="inlineField">
+            <input id="cutWidth" class="inputTiny" type="number" value="5" min="0" step="0.1">
+            <div class="smallhint" style="margin:0;">Рез = (k−1)×ширина</div>
+          </div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="smallhint" style="margin:0;">
+            Введите варианты длины профиля ниже (например 6000, 6500). Система сама выберет подходящий.
+          </div>
+        </div>
+      </div>
+
+      <!-- Профили -->
+      <div class="sectionHead no-print">
+        <div>
+          <div class="sectionTitle">Длины профиля</div>
+          <div class="sectionSub">Добавляй кнопкой <b>+</b>. Enter тоже добавляет.</div>
+        </div>
+        <button class="primary" onclick="addStockRow(true)">+ Профиль</button>
+      </div>
+      <div id="stocksList" class="list no-print"></div>
+
+      <!-- Заготовки -->
+      <div class="sectionHead no-print">
+        <div>
+          <div class="sectionTitle">Заготовки</div>
+          <div class="sectionSub">Строка: длина + количество. Кнопки справа, не в рамке.</div>
+        </div>
+        <button class="primary" onclick="addPartRow(true)">+ Заготовка</button>
+      </div>
+      <div id="partsList" class="list no-print"></div>
+
+      <div class="grid2 no-print" style="margin-top:14px;">
+        <button class="primary" onclick="calculate()">Рассчитать</button>
+        <button class="ghost" onclick="window.print()">Печать / PDF</button>
+      </div>
+
+      <!-- Статистика -->
+      <div id="statsBox" class="statsBox hidden">
+        <div class="statsTop">
+          <b>Статистика</b>
+          <span id="statsHint">—</span>
+        </div>
+        <div id="statsGrid" class="statsGrid"></div>
+      </div>
+
+      <!-- Результат -->
+      <div id="result" class="result"></div>
+
     </div>
   </div>
 
-  <label>Логин</label>
-  <input id="login" type="text">
-
-  <label>Пароль</label>
-  <input id="password" type="password">
-
-  <button class="primary" onclick="doLogin()">Войти</button>
-  <div id="loginMsg"></div>
 </div>
 
-<!-- APP -->
-<div id="appBox" class="hidden">
-<div class="card">
+<script>
+/* ===== USERS ===== */
+const users = {
+  "masterclusterpro":"qwerty",
+  "mastercluster":"qwerty"
+};
 
-<div class="topbar no-print">
-  <div class="brand">
-    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-    <div>
-      <h1>Раскрой алюминиевого профиля</h1>
-      <div class="sub" id="jobSub">—</div>
+function doLogin(){
+  const l = document.getElementById("login").value.trim();
+  const p = document.getElementById("password").value;
+  const msg = document.getElementById("loginMsg");
+
+  if(users[l] && users[l] === p){
+    localStorage.setItem("authUser", l);
+    showApp();
+  }else{
+    msg.innerHTML = `<div class="msg-bad">Неверный логин или пароль</div>`;
+  }
+}
+
+function logout(){
+  localStorage.removeItem("authUser");
+  location.reload();
+}
+
+function showApp(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("appBox").classList.remove("hidden");
+  syncJobTitle();
+}
+
+/* автологин если уже входил */
+if(localStorage.getItem("authUser")) showApp();
+
+/* ===== Job title ===== */
+function syncJobTitle(){
+  const name = (document.getElementById("jobName").value || "").trim();
+  document.getElementById("jobSub").textContent = name || "—";
+  document.title = name ? ("Раскрой — " + name) : "Система раскроя профиля";
+}
+
+/* ===== Helpers ===== */
+function fmt(n){
+  const r = Math.round(n);
+  return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
+}
+
+function wireEnterAdd(containerEl, addFn){
+  containerEl.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("keydown", e=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        addFn(true);
+      }
+    });
+  });
+}
+
+/* ===== Fit text inside viz segments ===== */
+function fitVizText(vizEl){
+  requestAnimationFrame(() => {
+    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+    segs.forEach(seg => {
+      const t = seg.querySelector(".t");
+      if(!t) return;
+
+      t.style.fontSize = "";
+      t.style.display = "block";
+
+      const full = t.textContent;
+      seg.title = full;
+
+      if(t.scrollWidth <= seg.clientWidth) return;
+
+      const sizes = [10, 9, 8, 7];
+      for(const s of sizes){
+        t.style.fontSize = s + "px";
+        if(t.scrollWidth <= seg.clientWidth) return;
+      }
+
+      t.style.display = "none";
+    });
+  });
+}
+
+/* ===== Stocks (Профили) ===== */
+const stocksList = document.getElementById("stocksList");
+
+function removeStockRow(btn){
+  const rows = document.querySelectorAll(".stockRow");
+  if(rows.length <= 1) return;
+  btn.closest(".rowWrap").remove();
+}
+
+function addStockRow(focusNew=true, lenVal="", qtyVal=""){
+  const wrap = document.createElement("div");
+  wrap.className = "rowWrap stockRow";
+
+  wrap.innerHTML = `
+    <div class="rowBox">
+      <div class="rowBoxGrid">
+        <div>
+          <div class="fieldLabel">Длина профиля</div>
+          <input class="sLen" type="number" min="1" step="1" placeholder="Например 6000" value="${lenVal}">
+        </div>
+        <div>
+          <div class="fieldLabel">Кол-во (необязательно)</div>
+          <input class="sQty" type="number" min="0" step="1" placeholder="пусто = безлимит" value="${qtyVal}">
+        </div>
+      </div>
     </div>
-  </div>
-  <button class="danger" onclick="logout()">Выйти</button>
-</div>
 
-<!-- Остальной JS и логика остаются без изменений -->
+    <div class="rowBtns">
+      <button class="btnMini primary" title="Добавить профиль" onclick="addStockRow(true)">+</button>
+      <button class="btnMini danger" title="Удалить" onclick="removeStockRow(this)">−</button>
+    </div>
+  `;
+
+  stocksList.appendChild(wrap);
+  wireEnterAdd(wrap, addStockRow);
+  if(focusNew) wrap.querySelector(".sLen").focus();
+}
+
+addStockRow(false, "6000", "");
+
+/* ===== Parts (Заготовки) ===== */
+const partsList = document.getElementById("partsList");
+
+function removePartRow(btn){
+  const rows = document.querySelectorAll(".partRow");
+  if(rows.length <= 1) return;
+  btn.closest(".rowWrap").remove();
+}
+
+function addPartRow(focusNew=true, lenVal="", qtyVal="1"){
+  const wrap = document.createElement("div");
+  wrap.className = "rowWrap partRow";
+
+  wrap.innerHTML = `
+    <div class="rowBox">
+      <div class="rowBoxGrid">
+        <div>
+          <div class="fieldLabel">Длина</div>
+          <input class="pLen" type="number" min="1" step="1" placeholder="Например 1212" value="${lenVal}">
+        </div>
+        <div>
+          <div class="fieldLabel">Количество</div>
+          <input class="pQty" type="number" min="1" step="1" value="${qtyVal}">
+        </div>
+      </div>
+    </div>
+
+    <div class="rowBtns">
+      <button class="btnMini primary" title="Добавить заготовку" onclick="addPartRow(true)">+</button>
+      <button class="btnMini danger" title="Удалить" onclick="removePartRow(this)">−</button>
+    </div>
+  `;
+
+  partsList.appendChild(wrap);
+  wireEnterAdd(wrap, addPartRow);
+  if(focusNew) wrap.querySelector(".pLen").focus();
+}
+
+addPartRow(false);
+
+/* ===== Packing with multiple stock lengths ===== */
+function signatureBar(bar){
+  const piecesSig = [...bar.pieces].sort((a,b)=>b-a).join(",");
+  return `${bar.len}|${piecesSig}`;
+}
+
+function calcKerfTotal(pieceCount, cutWidth){
+  return Math.max(0, pieceCount - 1) * cutWidth;
+}
+
+function canFit(barLen, pieces, addPiece, cutWidth){
+  const nextPieces = pieces.length + 1;
+  const sum = pieces.reduce((s,x)=>s+x,0) + addPiece;
+  const kerf = calcKerfTotal(nextPieces, cutWidth);
+  return (sum + kerf) <= barLen;
+}
+
+function remaining(barLen, pieces, cutWidth){
+  const sum = pieces.reduce((s,x)=>s+x,0);
+  const kerf = calcKerfTotal(pieces.length, cutWidth);
+  return barLen - (sum + kerf);
+}
+
+function chooseNewStockLen(stocks, piece){
+  const candidates = stocks
+    .filter(s => s.len >= piece && (s.qty === null || s.qty > 0))
+    .sort((a,b)=>a.len - b.len);
+  return candidates.length ? candidates[0].len : null;
+}
+
+function decrementStock(stocks, len){
+  const s = stocks.find(x => x.len === len);
+  if(!s) return;
+  if(s.qty === null) return;
+  s.qty = Math.max(0, s.qty - 1);
+}
+
+function packMultiStock(stocksInput, cuts, cutWidth){
+  const stocks = stocksInput.map(s=>({len:s.len, qty:s.qty}));
+
+  const sortedCuts = [...cuts].sort((a,b)=>b-a);
+  const bars = []; // {len, pieces:[]}
+
+  for(const piece of sortedCuts){
+    let bestIdx = -1;
+    let bestRem = Infinity;
+
+    for(let i=0;i<bars.length;i++){
+      const b = bars[i];
+      if(canFit(b.len, b.pieces, piece, cutWidth)){
+        const testPieces = b.pieces.concat([piece]);
+        const rem = remaining(b.len, testPieces, cutWidth);
+        if(rem < bestRem){
+          bestRem = rem;
+          bestIdx = i;
+        }
+      }
+    }
+
+    if(bestIdx >= 0){
+      bars[bestIdx].pieces.push(piece);
+      continue;
+    }
+
+    const newLen = chooseNewStockLen(stocks, piece);
+    if(newLen === null){
+      return { ok:false, error:`Заготовка ${piece} не помещается ни в одну длину профиля.` };
+    }
+    decrementStock(stocks, newLen);
+    bars.push({ len:newLen, pieces:[piece] });
+  }
+
+  return { ok:true, bars };
+}
+
+/* ===== Visualization ===== */
+function buildViz(barLen, cutWidth, pieces){
+  const viz = document.createElement("div");
+  viz.className = "viz";
+
+  const sorted = [...pieces].sort((a,b)=>b-a);
+  const sumPieces = sorted.reduce((s,x)=>s+x,0);
+  const cutsCount = Math.max(0, sorted.length - 1);
+  const kerfTotal = cutsCount * cutWidth;
+  const rest = barLen - (sumPieces + kerfTotal);
+
+  sorted.forEach((p, i)=>{
+    const seg = document.createElement("div");
+    seg.className = "seg cut";
+    seg.style.width = (p/barLen*100) + "%";
+    seg.innerHTML = `<span class="t">${p}</span>`;
+    seg.title = String(p);
+    viz.appendChild(seg);
+
+    if(i !== sorted.length - 1 && cutWidth > 0){
+      const k = document.createElement("div");
+      k.className = "seg kerf";
+      const percent = (cutWidth/barLen*100);
+      k.style.width = Math.max(percent, 0.8) + "%";
+      k.title = `Рез: ${cutWidth}`;
+      viz.appendChild(k);
+    }
+  });
+
+  const rs = document.createElement("div");
+  rs.className = "seg rest";
+  rs.style.width = Math.max(0, rest/barLen*100) + "%";
+  rs.innerHTML = `<span class="t">${fmt(rest)}</span>`;
+  rs.title = `Остаток: ${fmt(rest)}`;
+  viz.appendChild(rs);
+
+  fitVizText(viz);
+  return { viz, sumPieces, kerfTotal, rest, cutsCount };
+}
+
+function setStats(stats){
+  const box = document.getElementById("statsBox");
+  const grid = document.getElementById("statsGrid");
+  const hint = document.getElementById("statsHint");
+
+  grid.innerHTML = "";
+  hint.textContent = stats.hint || "—";
+
+  const items = [
+    ["Нужно профилей (палок)", stats.bars],
+    ["Общая длина профиля", stats.totalStock],
+    ["Сумма заготовок", stats.totalCuts],
+    ["Суммарная ширина резов", stats.totalKerf],
+    ["Отход суммарно", stats.totalWaste],
+    ["Эффективность", stats.eff]
+  ];
+
+  items.forEach(([k,v])=>{
+    const d = document.createElement("div");
+    d.className = "stat";
+    d.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+    grid.appendChild(d);
+  });
+
+  box.classList.remove("hidden");
+}
+
+/* ===== Read inputs ===== */
+function readStocks(){
+  const rows = [...document.querySelectorAll(".stockRow")];
+  const stocks = [];
+  const bad = [];
+
+  rows.forEach((w, idx)=>{
+    const lenStr = w.querySelector(".sLen").value.trim();
+    const qtyStr = w.querySelector(".sQty").value.trim();
+
+    if(lenStr === "" && qtyStr === "") return;
+
+    const len = Number(lenStr);
+    if(!Number.isFinite(len) || len <= 0){
+      bad.push(idx+1);
+      return;
+    }
+
+    let qty = null;
+    if(qtyStr !== ""){
+      const q = Number(qtyStr);
+      if(!Number.isFinite(q) || q < 0){
+        bad.push(idx+1);
+        return;
+      }
+      qty = Math.floor(q);
+    }
+
+    stocks.push({ len: Math.floor(len), qty });
+  });
+
+  const merged = new Map();
+  for(const s of stocks){
+    if(!merged.has(s.len)){
+      merged.set(s.len, { len:s.len, qty:s.qty });
+    }else{
+      const ex = merged.get(s.len);
+      if(ex.qty === null || s.qty === null){
+        ex.qty = null;
+      }else{
+        ex.qty += s.qty;
+      }
+    }
+  }
+
+  return { stocks:[...merged.values()].sort((a,b)=>a.len-b.len), bad };
+}
+
+function readParts(){
+  const rows = [...document.querySelectorAll(".partRow")];
+  const cuts = [];
+  const bad = [];
+
+  rows.forEach((w, idx)=>{
+    const lenStr = w.querySelector(".pLen").value.trim();
+    const qtyStr = w.querySelector(".pQty").value.trim();
+
+    if(lenStr === "" && qtyStr === "") return;
+
+    const len = Number(lenStr);
+    const qty = Number(qtyStr);
+
+    if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
+      bad.push(idx+1);
+      return;
+    }
+
+    for(let i=0;i<Math.floor(qty);i++) cuts.push(Math.floor(len));
+  });
+
+  return { cuts, bad };
+}
+
+/* ===== Calculate ===== */
+function calculate(){
+  const resultEl = document.getElementById("result");
+  resultEl.innerHTML = "";
+
+  const cutWidth = Number(document.getElementById("cutWidth").value);
+  if(!Number.isFinite(cutWidth) || cutWidth < 0){
+    resultEl.innerHTML = `<div class="msg-bad">Ширина диска должна быть 0 или больше.</div>`;
+    return;
+  }
+
+  const stocksRes = readStocks();
+  if(stocksRes.bad.length){
+    resultEl.innerHTML = `<div class="msg-bad">Ошибка в строках профиля: ${stocksRes.bad.join(", ")}</div>`;
+    return;
+  }
+  if(stocksRes.stocks.length === 0){
+    resultEl.innerHTML = `<div class="msg-bad">Добавьте хотя бы одну длину профиля.</div>`;
+    return;
+  }
+
+  const partsRes = readParts();
+  if(partsRes.bad.length){
+    resultEl.innerHTML = `<div class="msg-bad">Ошибка в строках заготовок: ${partsRes.bad.join(", ")}</div>`;
+    return;
+  }
+  if(partsRes.cuts.length === 0){
+    resultEl.innerHTML = `<div class="msg-bad">Добавьте заготовки.</div>`;
+    return;
+  }
+
+  const maxCut = Math.max(...partsRes.cuts);
+  const canAny = stocksRes.stocks.some(s => s.len >= maxCut && (s.qty === null || s.qty > 0));
+  if(!canAny){
+    resultEl.innerHTML = `<div class="msg-bad">Самая длинная заготовка ${maxCut} не помещается ни в одну длину профиля.</div>`;
+    return;
+  }
+
+  const packed = packMultiStock(stocksRes.stocks, partsRes.cuts, cutWidth);
+  if(!packed.ok){
+    resultEl.innerHTML = `<div class="msg-bad">${packed.error}</div>`;
+    return;
+  }
+
+  const bars = packed.bars;
+
+  const totalStock = bars.reduce((s,b)=>s+b.len,0);
+  const totalCuts = partsRes.cuts.reduce((s,x)=>s+x,0);
+
+  let totalKerf = 0;
+  let totalWaste = 0;
+
+  const groups = new Map();
+  for(const b of bars){
+    const info = buildViz(b.len, cutWidth, b.pieces);
+    totalKerf += info.kerfTotal;
+    totalWaste += info.rest;
+
+    const sig = signatureBar(b);
+    if(!groups.has(sig)){
+      groups.set(sig, { count:1, barLen:b.len, piecesSample:[...b.pieces], sampleInfo:info });
+    }else{
+      groups.get(sig).count += 1;
+    }
+  }
+
+  const eff = totalStock > 0 ? (totalCuts / totalStock * 100) : 0;
+
+  setStats({
+    bars: String(bars.length),
+    totalStock: fmt(totalStock),
+    totalCuts: fmt(totalCuts),
+    totalKerf: fmt(totalKerf),
+    totalWaste: fmt(totalWaste),
+    eff: fmt(eff) + "%",
+    hint: (document.getElementById("jobName").value || "").trim() || "Без названия"
+  });
+
+  const wrap = document.createElement("div");
+  wrap.className = "bars";
+
+  const arr = [...groups.values()].sort((a,b)=>{
+    if(b.count !== a.count) return b.count - a.count;
+    return a.sampleInfo.rest - b.sampleInfo.rest;
+  });
+
+  let idx = 1;
+  for(const g of arr){
+    const card = document.createElement("div");
+    card.className = "barCard";
+
+    const title = document.createElement("div");
+    title.className = "barTitle";
+    title.innerHTML = `<b>Раскладка #${idx++}</b><span>Профиль: ${g.barLen} · Заготовок: ${g.piecesSample.length} · Резов: ${g.sampleInfo.cutsCount} · Остаток: ${fmt(g.sampleInfo.rest)}</span>`;
+
+    const line = document.createElement("div");
+    line.className = "barLine";
+
+    const mult = document.createElement("div");
+    mult.className = "mult";
+    mult.textContent = `${g.count}×\n${g.barLen}`;
+
+    const viz = buildViz(g.barLen, cutWidth, g.piecesSample).viz;
+
+    line.appendChild(mult);
+    line.appendChild(viz);
+
+    card.appendChild(title);
+    card.appendChild(line);
+    wrap.appendChild(card);
+  }
+
+  resultEl.appendChild(wrap);
+}
+</script>
+
+</body>
+</html>
