@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Система раскроя профиля</title>
+
+<style>
+body { font-family: system-ui; margin:0; background:#f4f6f8; }
+.container { max-width:1000px; margin:auto; padding:20px; }
+.card { background:white; padding:20px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.05); }
+input, textarea, select, button {
+  width:100%; padding:10px; margin-top:8px; font-size:16px;
+}
+button { font-weight:700; cursor:pointer; }
+h1 { margin-top:0; }
+.hidden { display:none; }
+.logout { float:right; background:#e53935; color:white; border:none; }
+.ok { color:green; font-weight:700; }
+.bad { color:red; font-weight:700; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN SCREEN -->
+<div id="loginBox" class="card">
+<h1>Вход в систему раскроя</h1>
+<label>Логин</label>
+<input id="login" type="text" />
+<label>Пароль</label>
+<input id="password" type="password" />
+<button onclick="login()">Войти</button>
+<div id="loginMsg"></div>
+</div>
+
+<!-- APP -->
+<div id="appBox" class="hidden">
+<div class="card">
+<button class="logout" onclick="logout()">Выйти</button>
+<h1>Раскрой алюминиевого профиля</h1>
+
+<label>Длина профиля</label>
+<input id="stockLen" type="number" value="6000"/>
+
+<label>Керф (рез)</label>
+<input id="kerf" type="number" value="5"/>
+
+<label>Заготовки (пример: 450*8, 1200, 800*2)</label>
+<textarea id="cuts"></textarea>
+
+<button onclick="calculate()">Рассчитать</button>
+
+<div id="result"></div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// ---- USERS ----
+const users = {
+  "masterclusterpro": "qwerty",
+  "mastercluster": "qwerty"
+};
+
+// ---- AUTH ----
+function login(){
+  const l = document.getElementById("login").value;
+  const p = document.getElementById("password").value;
+
+  if(users[l] && users[l] === p){
+    localStorage.setItem("authUser", l);
+    showApp();
+  } else {
+    document.getElementById("loginMsg").innerHTML =
+      "<div class='bad'>Неверный логин или пароль</div>";
+  }
+}
+
+function logout(){
+  localStorage.removeItem("authUser");
+  location.reload();
+}
+
+function showApp(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("appBox").classList.remove("hidden");
+}
+
+// Auto login if saved
+if(localStorage.getItem("authUser")){
+  showApp();
+}
+
+// ---- CUTTING LOGIC ----
+
+function parseCuts(text){
+  text = text.replace(/[×х]/gi,"x");
+  const parts = text.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);
+  const result = [];
+
+  parts.forEach(p=>{
+    if(p.includes("*") || p.includes("x")){
+      const [len, qty] = p.split(/[\*x]/);
+      for(let i=0;i<Number(qty);i++){
+        result.push(Number(len));
+      }
+    } else {
+      result.push(Number(p));
+    }
+  });
+
+  return result.filter(n=>!isNaN(n) && n>0);
+}
+
+function calculate(){
+
+  const stockLen = Number(document.getElementById("stockLen").value);
+  const kerf = Number(document.getElementById("kerf").value);
+  const cuts = parseCuts(document.getElementById("cuts").value);
+
+  if(!stockLen || cuts.length===0){
+    document.getElementById("result").innerHTML =
+      "<div class='bad'>Введите данные</div>";
+    return;
+  }
+
+  cuts.sort((a,b)=>b-a);
+
+  const bars = [];
+
+  cuts.forEach(piece=>{
+    let placed=false;
+
+    for(let bar of bars){
+      const newCount = bar.length + 1;
+      const used = bar.reduce((a,b)=>a+b,0) + piece;
+      const totalKerf = (newCount-1)*kerf;
+      if(used + totalKerf <= stockLen){
+        bar.push(piece);
+        placed=true;
+        break;
+      }
+    }
+
+    if(!placed){
+      bars.push([piece]);
+    }
+  });
+
+  let html = `<div class='ok'>Нужно профилей: ${bars.length}</div><hr>`;
+
+  bars.forEach((bar,i)=>{
+    const sum = bar.reduce((a,b)=>a+b,0);
+    const kerfs = (bar.length-1)*kerf;
+    const rest = stockLen - (sum+kerfs);
+
+    html += `
+    <div>
+      <b>Профиль #${i+1}</b><br>
+      Заготовки: ${bar.join(" + ")}<br>
+      Сумма: ${sum}<br>
+      Резов: ${bar.length-1} → керф: ${kerfs}<br>
+      Остаток: ${rest}
+      <hr>
+    </div>
+    `;
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
