@@ -12,7 +12,6 @@
   --panel:#0c1020;
   --panel2:#0b0f1c;
   --text:#e7eaf0;
-  --muted:#9aa3b2;
   --line:#2a3140;
   --accent:#b71c1c;
 }
@@ -85,7 +84,7 @@ button.danger{ background:var(--accent); border:none; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
-/* РАСКЛАДКА: слева блок, справа рамка */
+/* РАСКЛАДКА: слева блок, справа визуализация */
 .bar{
   display:grid;
   grid-template-columns:120px 1fr;
@@ -122,17 +121,29 @@ button.danger{ background:var(--accent); border:none; }
   justify-content:center;
   font-weight:900;
   font-size:13px;
-  overflow:hidden;
-  position:relative;
+
+  overflow:hidden;        /* НЕ ДАЁМ ВЫЛЕЗАТЬ */
+  min-width:0;            /* важно для flex */
   white-space:nowrap;
+  text-overflow:clip;
+
+  position:relative;
   padding:0 6px;
   color:#0b0f1c;
+}
+
+/* текст внутри сегмента */
+.seg span{
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:clip;
 }
 
 .seg.cut{ background:#3b82f6; }
 .seg.rest{ background:#9ca3af; color:#111; }
 .seg.kerf{
-  background:#111;      /* на экране просто тёмная вставка */
+  background:#111;
   min-width:8px;
   padding:0;
 }
@@ -193,7 +204,7 @@ button.danger{ background:var(--accent); border:none; }
     min-width:10px;
   }
   .seg.kerf::after{
-    border-left:1px dashed #000; /* пунктир на печати чёрный */
+    border-left:1px dashed #000;
   }
 }
 </style>
@@ -312,6 +323,33 @@ function fmt(n){
   return (Math.abs(n-r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
 }
 
+/* Умная подгонка текста, чтобы не вылезал */
+function fitSegmentText(vizEl){
+  requestAnimationFrame(() => {
+    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+    segs.forEach(seg=>{
+      const t = seg.querySelector("span");
+      if(!t) return;
+
+      // reset
+      t.style.fontSize = "";
+      t.style.display = "block";
+
+      if(t.scrollWidth <= seg.clientWidth) return;
+
+      // уменьшение
+      const sizes = [12, 11, 10, 9, 8, 7];
+      for(const s of sizes){
+        t.style.fontSize = s + "px";
+        if(t.scrollWidth <= seg.clientWidth) return;
+      }
+
+      // не влезло — скрыть (главное: НЕ вылезает)
+      t.style.display = "none";
+    });
+  });
+}
+
 /* READ INPUTS */
 function readStocks(){
   const rows = [...document.querySelectorAll("#stocks .row")];
@@ -327,7 +365,6 @@ function readStocks(){
     }
     stocks.push({len:Math.floor(len), qty});
   }
-  // merge same lengths
   const m = new Map();
   for(const s of stocks){
     if(!m.has(s.len)) m.set(s.len, {len:s.len, qty:s.qty});
@@ -353,7 +390,7 @@ function readParts(){
   return parts;
 }
 
-/* PACKING (простое: кладём в одну палку, как в твоём минимальном варианте) */
+/* CALC (простая раскладка в одну палку) */
 function calculate(){
   const kerf = Math.max(0, Number(document.getElementById("kerf").value)||0);
   const stocks = readStocks();
@@ -366,25 +403,21 @@ function calculate(){
 
   if(stocks.length===0 || parts.length===0) return;
 
-  // берём первую длину профиля
   const stock = stocks[0].len;
-
   parts.sort((a,b)=>b-a);
 
-  let sumCuts = 0;
-  let cutsCount = 0;
+  let usedSumWithKerf = 0;
   const used = [];
 
   for(const p of parts){
-    const addKerf = (cutsCount>0) ? kerf : 0;
-    if(sumCuts + addKerf + p <= stock){
-      sumCuts += addKerf + p;
+    const addKerf = (used.length>0) ? kerf : 0;
+    if(usedSumWithKerf + addKerf + p <= stock){
+      usedSumWithKerf += addKerf + p;
       used.push(p);
-      cutsCount++;
     }
   }
 
-  const rest = stock - sumCuts;
+  const rest = stock - usedSumWithKerf;
   const kerfTotal = Math.max(0, used.length-1) * kerf;
 
   statsEl.classList.remove("hidden");
@@ -397,7 +430,6 @@ function calculate(){
     <div class="stat"><b>Название</b><br>${(document.getElementById("job").value||"Без названия")}</div>
   `;
 
-  // visualization
   const viz = document.createElement("div");
   viz.className = "viz";
 
@@ -405,7 +437,7 @@ function calculate(){
     const seg = document.createElement("div");
     seg.className = "seg cut";
     seg.style.width = (p/stock*100) + "%";
-    seg.textContent = p;
+    seg.innerHTML = `<span>${p}</span>`;
     viz.appendChild(seg);
 
     if(i < used.length-1 && kerf>0){
@@ -419,10 +451,12 @@ function calculate(){
   const rs = document.createElement("div");
   rs.className = "seg rest";
   rs.style.width = Math.max(0,(rest/stock*100)) + "%";
-  rs.textContent = fmt(rest);
+  rs.innerHTML = `<span>${fmt(rest)}</span>`;
   viz.appendChild(rs);
 
-  // bar row (левый блок + рамка)
+  // подгоняем текст, чтобы не вылезал
+  fitSegmentText(viz);
+
   const bar = document.createElement("div");
   bar.className = "bar";
 
