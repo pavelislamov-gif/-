@@ -7,44 +7,41 @@
 
 <style>
 :root{
-  --bg:#f5f5f5;
-  --card:#ffffff;
-  --panel:#ffffff;
-  --panel2:#ffffff;
-  --text:#000000;
-  --muted:#444444;
-  --line:#000000;
-  --accent:#000000;
+  --bg:#0f1115;
+  --card:#151922;
+  --panel:#0c1020;
+  --panel2:#0b0f1c;
+  --text:#e7eaf0;
+  --muted:#9aa3b2;
+  --line:#2a3140;
+  --accent:#b71c1c;
+  --ok:#22c55e;
+  --bad:#ef4444;
 
-  --fs:14px;
-  --lh:18px;
-  --h:36px;
-  --gap:10px;
+  --fs:15px;
+  --lh:20px;
+  --h:40px;
+  --r:12px;
+  --gap:12px;
 }
 
 *{ box-sizing:border-box; }
-
 body{
   margin:0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
   background:var(--bg);
   color:var(--text);
   font-size:var(--fs);
   line-height:var(--lh);
 }
 
-.container{
-  max-width:1050px;
-  margin:0 auto;
-  padding:18px;
-}
-
+.container{ max-width: 1050px; margin: 0 auto; padding: 18px; }
 .card{
   background:var(--card);
   border:1px solid var(--line);
-  padding:14px;
-  border-radius:0;
-  box-shadow:none;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 14px 34px rgba(0,0,0,.35);
 }
 
 .hidden{ display:none; }
@@ -53,302 +50,258 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
+  gap:14px;
   margin-bottom:14px;
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
   min-width:0;
 }
-
-.logoBox{
-  display:flex;
-  align-items:center;
-  height:34px;
-}
-.logoBox img{ height:34px; width:auto; display:block; }
+.logoBox{ height:44px; display:flex; align-items:center; }
+.logoBox img{ height:44px; width:auto; display:block; }
 
 .brand h1{
   margin:0;
-  font-size:18px;
-  font-weight:800;
+  font-size:20px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .brand .sub{
-  margin-top:2px;
-  font-size:12px;
+  font-size:13px;
   color:var(--muted);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.hr{ height:1px; background:var(--line); margin:12px 0; }
+.hr{ height:1px; background:var(--line); margin:14px 0; }
 
-label{
-  display:block;
-  margin:8px 0 4px;
-  font-weight:800;
-  font-size:13px;
-}
-
+label{ display:block; margin:10px 0 6px; font-weight:700; font-size:13px; color:#dbe2f5; }
 .smallhint{ margin-top:6px; font-size:12px; color:var(--muted); }
 
 input, button{
   height:var(--h);
-  border:1px solid var(--line);
-  border-radius:0;
+  border-radius:var(--r);
   font-size:var(--fs);
   line-height:var(--lh);
 }
-
 input{
   width:100%;
-  padding:0 8px;
-  background:#fff;
-  color:#000;
+  padding: 0 12px;
+  border:1px solid var(--line);
+  background:#0e1220;
+  color:var(--text);
 }
-
-input::placeholder{ color:#777; }
+input::placeholder{ color:#6b7280; }
 
 button{
-  padding:0 10px;
-  background:#e7e7e7;
-  color:#000;
+  padding: 0 12px;
+  border:1px solid var(--line);
+  background:#1e2533;
+  color:var(--text);
   font-weight:800;
   cursor:pointer;
 }
+button.primary{ background:#2b3447; }
+button.ghost{ background:transparent; }
+button.danger{ background:var(--accent); border:none; }
 
-button.primary{ background:#d7d7d7; }
-button.ghost{ background:#f2f2f2; }
-button.danger{ background:#cfcfcf; }
+.grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.grid1{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
 
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:var(--gap);
-}
-.grid1{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--gap);
-}
-
-.inlineField{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
+.inlineField{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .inputTiny{ width:120px; }
 
-/* ====== Sections ====== */
+/* ====== Списки ====== */
 .sectionHead{
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
-  gap:10px;
-  margin-top:14px;
+  gap:12px;
+  margin-top:16px;
 }
-.sectionTitle{ font-weight:900; font-size:14px; }
-.sectionSub{ margin-top:3px; font-size:12px; color:var(--muted); }
+.sectionTitle{ margin:0; font-size:14px; font-weight:900; }
+.sectionSub{ margin-top:4px; font-size:12px; color:var(--muted); }
 
-.list{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+.list{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 
-/* Row wrapper: box + buttons (buttons outside box) */
+/* Обёртка строки: рамка отдельно, кнопки отдельно справа */
 .rowWrap{
   display:grid;
-  grid-template-columns:1fr auto;
-  gap:8px;
+  grid-template-columns: 1fr auto;
+  gap:10px;
   align-items:stretch;
 }
 
+/* Рамка строки */
 .rowBox{
   border:1px solid var(--line);
-  padding:8px;
-  border-radius:0;
-  background:#fff;
+  border-radius:var(--r);
+  background:var(--panel);
+  padding:12px;
 }
 
+/* Внутри рамки: 2 колонки */
 .rowBoxGrid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap:12px;
   align-items:end;
 }
 
 .fieldLabel{
-  margin:0 0 4px;
+  margin:0 0 6px;
   font-size:12px;
   font-weight:900;
   color:var(--muted);
 }
 
-/* Inputs inside boxes: no double border feel */
+/* Убираем “двойные рамки”: внутри строки инпуты мягкие */
 .rowBox input{
-  border:1px solid #000;
-  background:#fff;
+  border:1px solid transparent;
+  background:rgba(255,255,255,0.05);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+}
+.rowBox input:focus{
+  outline:none;
+  box-shadow: inset 0 0 0 1px #60a5fa;
 }
 
+/* Кнопки справа (НЕ в рамке) */
 .rowBtns{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:8px;
   justify-content:center;
   align-items:stretch;
 }
-
 .btnMini{
-  width:40px;
+  width:52px;
   height:var(--h);
   padding:0;
   font-size:18px;
   font-weight:900;
   line-height:var(--h);
+  text-align:center;
 }
+.btnMini.danger{ background:var(--accent); border:none; }
 
-/* ===== Stats ===== */
+/* ====== Статистика ====== */
 .statsBox{
-  margin-top:14px;
+  margin-top:16px;
   border:1px solid var(--line);
-  padding:10px;
-  border-radius:0;
-  background:#fff;
+  border-radius:var(--r);
+  background:var(--panel);
+  padding:12px;
 }
-.statsTop{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-}
+.statsTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
 .statsTop b{ font-size:14px; }
 .statsTop span{ font-size:12px; color:var(--muted); }
-
 .statsGrid{
-  margin-top:8px;
+  margin-top:10px;
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap:10px;
 }
-
 .stat{
   border:1px solid var(--line);
-  padding:6px;
-  border-radius:0;
+  border-radius:var(--r);
+  background:var(--panel2);
+  padding:10px;
 }
-.stat .k{ font-size:11px; color:var(--muted); }
-.stat .v{ margin-top:3px; font-size:14px; font-weight:900; }
+.stat .k{ font-size:12px; color:var(--muted); }
+.stat .v{ margin-top:4px; font-size:16px; font-weight:900; }
 
-/* ===== Result / viz ===== */
-.result{ margin-top:12px; }
-
-.bars{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
+.result{ margin-top:14px; }
+.bars{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 .barCard{
   border:1px solid var(--line);
-  padding:8px;
-  border-radius:0;
-  background:#fff;
+  border-radius:var(--r);
+  background:var(--panel);
+  padding:12px;
 }
-
 .barTitle{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:8px;
+  display:flex; justify-content:space-between; gap:10px; align-items:center;
+  margin-bottom:10px;
 }
-.barTitle b{ font-size:13px; }
+.barTitle b{ font-size:14px; }
 .barTitle span{ font-size:12px; color:var(--muted); }
 
-.barLine{
-  display:grid;
-  grid-template-columns:70px 1fr;
-  gap:8px;
-  align-items:center;
-}
-
+.barLine{ display:grid; grid-template-columns: 90px 1fr; gap:10px; align-items:center; }
 .mult{
   border:1px solid var(--line);
-  padding:6px;
-  border-radius:0;
+  border-radius:var(--r);
+  background:var(--panel2);
+  padding:8px;
   font-weight:900;
   text-align:center;
   white-space:pre-line;
 }
 
+/* ====== Визуализация (прямоугольная + текст внутри) ====== */
 .viz{
-  height:22px;
+  height:28px;
   border:1px solid var(--line);
-  border-radius:0;
+  border-radius:0;          /* без скруглений */
+  background:var(--panel2);
   overflow:hidden;
   display:flex;
-  background:#fff;
 }
-
 .seg{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
 
-  overflow:hidden;
+  overflow:hidden;          /* не даём вылезать */
   min-width:0;
 
-  font-size:10px;
+  font-size:11px;
   font-weight:900;
-  padding:0 6px;
+  padding:0 6px;            /* смещаем текст внутрь */
   white-space:nowrap;
+  color:#0b0f1c;
   border-radius:0;
-  color:#000;
 }
-
 .seg .t{
   display:block;
   max-width:100%;
-  overflow:hidden;
+  overflow:hidden;          /* режем внутри */
   text-overflow:clip;
   padding:0 2px;
 }
 
-.seg.cut{ background:#9a9a9a; }
-.seg.kerf{ background:#000; min-width:6px; padding:0; }
-.seg.rest{ background:#cfcfcf; }
+.seg.cut{ background:#60a5fa; }
+.seg.kerf{
+  background:#ff0000;
+  min-width:8px;            /* толще рез */
+  box-shadow:0 0 4px rgba(255,0,0,.55);
+  padding:0;
+}
+.seg.rest{ background:#9ca3af; color:#111; font-weight:900; }
 
-.msg-ok{ color:#0a7a2d; font-weight:900; }
-.msg-bad{ color:#b00020; font-weight:900; }
+.msg-ok{ color:var(--ok); font-weight:900; }
+.msg-bad{ color:var(--bad); font-weight:900; }
 
-/* ===== PRINT: “как документ” ===== */
+/* ====== PRINT A4 ====== */
 @media print{
-  @page{ size:A4; margin:10mm; }
-
-  body{ background:#fff; color:#000; }
+  @page { size: A4; margin: 10mm; }
+  body{ background:white; color:black; }
   .no-print{ display:none !important; }
-
   .container{ max-width:none; padding:0; }
-  .card{ border:none; padding:0; }
-
-  /* hide inputs and show print text blocks */
-  input, button { display:none !important; }
-
-  .logoBox img{ height:26px; }
-
-  .viz{ height:16px; }
-  .seg{ font-size:8px; padding:0 4px; }
-  .statsGrid{ gap:4px; }
-  .barCard{ page-break-inside:avoid; }
+  .card{ border:none; box-shadow:none; padding:0; }
+  .logoBox img{ height:28px; }
+  .statsGrid{ grid-template-columns: repeat(3, 1fr); gap:6px; }
+  .stat{ padding:6px; }
+  .stat .k{ font-size:10px; }
+  .stat .v{ font-size:12px; }
+  .viz{ height:18px; border-radius:0; }
+  .seg{ font-size:8px; padding:0 4px; color:black !important; border-radius:0; }
+  .barCard{ page-break-inside: avoid; }
 }
 </style>
 </head>
@@ -374,7 +327,7 @@ button.danger{ background:#cfcfcf; }
     <label>Пароль</label>
     <input id="password" type="password" placeholder="qwerty">
 
-    <button class="primary" style="width:100%; margin-top:10px;" onclick="doLogin()">Войти</button>
+    <button class="primary" style="width:100%; margin-top:12px;" onclick="doLogin()">Войти</button>
     <div id="loginMsg" style="margin-top:10px;"></div>
   </div>
 
@@ -393,18 +346,6 @@ button.danger{ background:#cfcfcf; }
         <button class="danger" onclick="logout()">Выйти</button>
       </div>
 
-      <!-- PRINT HEADER (shown on print) -->
-      <div id="printHeader" class="hidden">
-        <div class="brand" style="margin-bottom:6px;">
-          <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-          <div>
-            <h1>Раскрой алюминиевого профиля</h1>
-            <div class="sub" id="printJobName">—</div>
-          </div>
-        </div>
-        <div class="hr"></div>
-      </div>
-
       <div class="grid1 no-print">
         <div>
           <label>Название / что режем</label>
@@ -413,7 +354,7 @@ button.danger{ background:#cfcfcf; }
         </div>
       </div>
 
-      <div class="grid2 no-print" style="margin-top:6px;">
+      <div class="grid2 no-print" style="margin-top:8px;">
         <div>
           <label>Ширина диска (рез), мм</label>
           <div class="inlineField">
@@ -433,7 +374,7 @@ button.danger{ background:#cfcfcf; }
       <div class="sectionHead no-print">
         <div>
           <div class="sectionTitle">Длины профиля</div>
-          <div class="sectionSub">Добавляй кнопкой <b>+</b>. Enter тоже добавляет.</div>
+          <div class="sectionSub">Добавляй кнопкой <b>+</b> (вверху или справа у строки). Enter тоже добавляет.</div>
         </div>
         <button class="primary" onclick="addStockRow(true)">+ Профиль</button>
       </div>
@@ -443,13 +384,13 @@ button.danger{ background:#cfcfcf; }
       <div class="sectionHead no-print">
         <div>
           <div class="sectionTitle">Заготовки</div>
-          <div class="sectionSub">Длина + количество. Кнопки справа, не в рамке.</div>
+          <div class="sectionSub">Строка: длина + количество. Кнопки справа, не в рамке.</div>
         </div>
         <button class="primary" onclick="addPartRow(true)">+ Заготовка</button>
       </div>
       <div id="partsList" class="list no-print"></div>
 
-      <div class="grid2 no-print" style="margin-top:12px;">
+      <div class="grid2 no-print" style="margin-top:14px;">
         <button class="primary" onclick="calculate()">Рассчитать</button>
         <button class="ghost" onclick="window.print()">Печать / PDF</button>
       </div>
@@ -498,17 +439,8 @@ if(localStorage.getItem("authUser")) showApp();
 function syncJobTitle(){
   const name = (document.getElementById("jobName").value || "").trim();
   document.getElementById("jobSub").textContent = name || "—";
-  document.getElementById("printJobName").textContent = name || "—";
   document.title = name ? ("Раскрой — " + name) : "Система раскроя профиля";
 }
-
-/* show print header only in print via JS hook */
-window.addEventListener("beforeprint", () => {
-  document.getElementById("printHeader").classList.remove("hidden");
-});
-window.addEventListener("afterprint", () => {
-  document.getElementById("printHeader").classList.add("hidden");
-});
 
 /* ===== Helpers ===== */
 function fmt(n){
@@ -530,23 +462,29 @@ function wireEnterAdd(containerEl, addFn){
 function fitVizText(vizEl){
   requestAnimationFrame(() => {
     const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+
     segs.forEach(seg => {
       const t = seg.querySelector(".t");
       if(!t) return;
 
+      // reset
       t.style.fontSize = "";
       t.style.display = "block";
 
       const full = t.textContent;
       seg.title = full;
 
+      // if fits -> ok
       if(t.scrollWidth <= seg.clientWidth) return;
 
-      const sizes = [9, 8, 7];
+      // try smaller
+      const sizes = [10, 9, 8];
       for(const s of sizes){
         t.style.fontSize = s + "px";
         if(t.scrollWidth <= seg.clientWidth) return;
       }
+
+      // still doesn't fit -> hide
       t.style.display = "none";
     });
   });
