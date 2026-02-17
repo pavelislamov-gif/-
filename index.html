@@ -20,8 +20,8 @@
 
   --fs:15px;
   --lh:20px;
-  --h:40px;      /* единая высота полей/кнопок */
-  --r:12px;      /* единый радиус */
+  --h:40px;
+  --r:12px;
   --gap:12px;
 }
 
@@ -45,7 +45,6 @@ body{
 }
 
 .hidden{ display:none; }
-.no-print{}
 
 .topbar{
   display:flex;
@@ -117,7 +116,7 @@ button.danger{ background:var(--accent); border:none; }
 .inlineField{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .inputTiny{ width:120px; }
 
-/* ====== Списки: Профили / Заготовки ====== */
+/* ====== Списки ====== */
 .sectionHead{
   display:flex;
   align-items:flex-end;
@@ -191,7 +190,7 @@ button.danger{ background:var(--accent); border:none; }
 }
 .btnMini.danger{ background:var(--accent); border:none; }
 
-/* ====== Результат / Статистика ====== */
+/* ====== Статистика ====== */
 .statsBox{
   margin-top:16px;
   border:1px solid var(--line);
@@ -240,13 +239,14 @@ button.danger{ background:var(--accent); border:none; }
   padding:8px;
   font-weight:900;
   text-align:center;
+  white-space:pre-line;
 }
 
-/* Визуализация */
+/* ====== Визуализация (прямоугольная + текст внутри) ====== */
 .viz{
   height:28px;
   border:1px solid var(--line);
-  border-radius:10px;
+  border-radius:0;          /* без скруглений */
   background:var(--panel2);
   overflow:hidden;
   display:flex;
@@ -256,17 +256,31 @@ button.danger{ background:var(--accent); border:none; }
   display:flex;
   align-items:center;
   justify-content:center;
+
+  overflow:hidden;          /* не даём вылезать */
+  min-width:0;
+
   font-size:11px;
   font-weight:900;
-  padding:0 4px;
+  padding:0 6px;            /* смещаем текст внутрь */
   white-space:nowrap;
   color:#0b0f1c;
+  border-radius:0;
 }
+.seg .t{
+  display:block;
+  max-width:100%;
+  overflow:hidden;          /* режем внутри */
+  text-overflow:clip;
+  padding:0 2px;
+}
+
 .seg.cut{ background:#60a5fa; }
 .seg.kerf{
   background:#ff0000;
-  min-width:8px; /* толще рез */
+  min-width:8px;            /* толще рез */
   box-shadow:0 0 4px rgba(255,0,0,.55);
+  padding:0;
 }
 .seg.rest{ background:#9ca3af; color:#111; font-weight:900; }
 
@@ -285,8 +299,8 @@ button.danger{ background:var(--accent); border:none; }
   .stat{ padding:6px; }
   .stat .k{ font-size:10px; }
   .stat .v{ font-size:12px; }
-  .viz{ height:18px; }
-  .seg{ font-size:8px; padding:0 2px; color:black !important; }
+  .viz{ height:18px; border-radius:0; }
+  .seg{ font-size:8px; padding:0 4px; color:black !important; border-radius:0; }
   .barCard{ page-break-inside: avoid; }
 }
 </style>
@@ -364,7 +378,6 @@ button.danger{ background:var(--accent); border:none; }
         </div>
         <button class="primary" onclick="addStockRow(true)">+ Профиль</button>
       </div>
-
       <div id="stocksList" class="list no-print"></div>
 
       <!-- Заготовки -->
@@ -375,7 +388,6 @@ button.danger{ background:var(--accent); border:none; }
         </div>
         <button class="primary" onclick="addPartRow(true)">+ Заготовка</button>
       </div>
-
       <div id="partsList" class="list no-print"></div>
 
       <div class="grid2 no-print" style="margin-top:14px;">
@@ -402,10 +414,7 @@ button.danger{ background:var(--accent); border:none; }
 
 <script>
 /* ===== USERS ===== */
-const users = {
-  "masterclusterpro":"qwerty",
-  "mastercluster":"qwerty"
-};
+const users = { "masterclusterpro":"qwerty", "mastercluster":"qwerty" };
 
 function doLogin(){
   const l = document.getElementById("login").value.trim();
@@ -449,7 +458,39 @@ function wireEnterAdd(containerEl, addFn){
   });
 }
 
-/* ===== Stocks (Профили) ===== */
+/* ===== Fit text inside viz segments ===== */
+function fitVizText(vizEl){
+  requestAnimationFrame(() => {
+    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+
+    segs.forEach(seg => {
+      const t = seg.querySelector(".t");
+      if(!t) return;
+
+      // reset
+      t.style.fontSize = "";
+      t.style.display = "block";
+
+      const full = t.textContent;
+      seg.title = full;
+
+      // if fits -> ok
+      if(t.scrollWidth <= seg.clientWidth) return;
+
+      // try smaller
+      const sizes = [10, 9, 8];
+      for(const s of sizes){
+        t.style.fontSize = s + "px";
+        if(t.scrollWidth <= seg.clientWidth) return;
+      }
+
+      // still doesn't fit -> hide
+      t.style.display = "none";
+    });
+  });
+}
+
+/* ===== Stocks ===== */
 const stocksList = document.getElementById("stocksList");
 
 function removeStockRow(btn){
@@ -457,11 +498,9 @@ function removeStockRow(btn){
   if(rows.length <= 1) return;
   btn.closest(".rowWrap").remove();
 }
-
 function addStockRow(focusNew=true, lenVal="", qtyVal=""){
   const wrap = document.createElement("div");
   wrap.className = "rowWrap stockRow";
-
   wrap.innerHTML = `
     <div class="rowBox">
       <div class="rowBoxGrid">
@@ -475,22 +514,18 @@ function addStockRow(focusNew=true, lenVal="", qtyVal=""){
         </div>
       </div>
     </div>
-
     <div class="rowBtns">
       <button class="btnMini primary" title="Добавить профиль" onclick="addStockRow(true)">+</button>
       <button class="btnMini danger" title="Удалить" onclick="removeStockRow(this)">−</button>
     </div>
   `;
-
   stocksList.appendChild(wrap);
   wireEnterAdd(wrap, addStockRow);
   if(focusNew) wrap.querySelector(".sLen").focus();
 }
-
-/* стартовая строка профиля */
 addStockRow(false, "6000", "");
 
-/* ===== Parts (Заготовки) ===== */
+/* ===== Parts ===== */
 const partsList = document.getElementById("partsList");
 
 function removePartRow(btn){
@@ -498,11 +533,9 @@ function removePartRow(btn){
   if(rows.length <= 1) return;
   btn.closest(".rowWrap").remove();
 }
-
 function addPartRow(focusNew=true, lenVal="", qtyVal="1"){
   const wrap = document.createElement("div");
   wrap.className = "rowWrap partRow";
-
   wrap.innerHTML = `
     <div class="rowBox">
       <div class="rowBoxGrid">
@@ -516,83 +549,57 @@ function addPartRow(focusNew=true, lenVal="", qtyVal="1"){
         </div>
       </div>
     </div>
-
     <div class="rowBtns">
       <button class="btnMini primary" title="Добавить заготовку" onclick="addPartRow(true)">+</button>
       <button class="btnMini danger" title="Удалить" onclick="removePartRow(this)">−</button>
     </div>
   `;
-
   partsList.appendChild(wrap);
   wireEnterAdd(wrap, addPartRow);
   if(focusNew) wrap.querySelector(".pLen").focus();
 }
-
-/* стартовая строка заготовки */
 addPartRow(false);
 
-/* ===== Packing with multiple stock lengths =====
-   - stocks: [{len, qty|null}] qty==null => unlimited
-   - Heuristic: place into best existing bar (min remaining),
-     else open new bar choosing smallest stock that can fit the piece (and available).
-*/
-function signatureBar(bar){
-  // signature includes bar length + multiset of pieces
-  const piecesSig = [...bar.pieces].sort((a,b)=>b-a).join(",");
-  return `${bar.len}|${piecesSig}`;
-}
-
+/* ===== Packing with multiple stock lengths ===== */
 function calcKerfTotal(pieceCount, cutWidth){
   return Math.max(0, pieceCount - 1) * cutWidth;
 }
-
 function canFit(barLen, pieces, addPiece, cutWidth){
   const nextPieces = pieces.length + 1;
   const sum = pieces.reduce((s,x)=>s+x,0) + addPiece;
   const kerf = calcKerfTotal(nextPieces, cutWidth);
   return (sum + kerf) <= barLen;
 }
-
 function remaining(barLen, pieces, cutWidth){
   const sum = pieces.reduce((s,x)=>s+x,0);
   const kerf = calcKerfTotal(pieces.length, cutWidth);
   return barLen - (sum + kerf);
 }
-
 function chooseNewStockLen(stocks, piece){
-  // choose minimal stock len >= piece that is available
   const candidates = stocks
     .filter(s => s.len >= piece && (s.qty === null || s.qty > 0))
     .sort((a,b)=>a.len - b.len);
   return candidates.length ? candidates[0].len : null;
 }
-
 function decrementStock(stocks, len){
-  // if finite qty, decrement
   const s = stocks.find(x => x.len === len);
   if(!s) return;
   if(s.qty === null) return;
   s.qty = Math.max(0, s.qty - 1);
 }
-
 function packMultiStock(stocksInput, cuts, cutWidth){
-  // make copy
   const stocks = stocksInput.map(s=>({len:s.len, qty:s.qty}));
-
   const sortedCuts = [...cuts].sort((a,b)=>b-a);
-  const bars = []; // {len, pieces:[]}
+  const bars = [];
 
   for(const piece of sortedCuts){
-    // try existing bars: best-fit (min remaining after placement)
     let bestIdx = -1;
     let bestRem = Infinity;
 
     for(let i=0;i<bars.length;i++){
       const b = bars[i];
       if(canFit(b.len, b.pieces, piece, cutWidth)){
-        // simulate remaining if add
-        const testPieces = b.pieces.concat([piece]);
-        const rem = remaining(b.len, testPieces, cutWidth);
+        const rem = remaining(b.len, b.pieces.concat([piece]), cutWidth);
         if(rem < bestRem){
           bestRem = rem;
           bestIdx = i;
@@ -605,10 +612,8 @@ function packMultiStock(stocksInput, cuts, cutWidth){
       continue;
     }
 
-    // open new bar
     const newLen = chooseNewStockLen(stocks, piece);
     if(newLen === null){
-      // cannot fit this piece in any available stock
       return { ok:false, error:`Заготовка ${piece} не помещается ни в одну длину профиля.` };
     }
     decrementStock(stocks, newLen);
@@ -633,7 +638,8 @@ function buildViz(barLen, cutWidth, pieces){
     const seg = document.createElement("div");
     seg.className = "seg cut";
     seg.style.width = (p/barLen*100) + "%";
-    seg.textContent = p;
+    seg.innerHTML = `<span class="t">${p}</span>`;
+    seg.title = String(p);
     viz.appendChild(seg);
 
     if(i !== sorted.length - 1 && cutWidth > 0){
@@ -641,6 +647,7 @@ function buildViz(barLen, cutWidth, pieces){
       k.className = "seg kerf";
       const percent = (cutWidth/barLen*100);
       k.style.width = Math.max(percent, 0.8) + "%";
+      k.title = `Рез: ${cutWidth}`;
       viz.appendChild(k);
     }
   });
@@ -648,10 +655,17 @@ function buildViz(barLen, cutWidth, pieces){
   const rs = document.createElement("div");
   rs.className = "seg rest";
   rs.style.width = Math.max(0, rest/barLen*100) + "%";
-  rs.textContent = fmt(rest);
+  rs.innerHTML = `<span class="t">${fmt(rest)}</span>`;
+  rs.title = `Остаток: ${fmt(rest)}`;
   viz.appendChild(rs);
 
+  fitVizText(viz);
   return { viz, sumPieces, kerfTotal, rest, cutsCount };
+}
+
+function signatureBar(bar){
+  const piecesSig = [...bar.pieces].sort((a,b)=>b-a).join(",");
+  return `${bar.len}|${piecesSig}`;
 }
 
 function setStats(stats){
@@ -681,7 +695,7 @@ function setStats(stats){
   box.classList.remove("hidden");
 }
 
-/* ===== Calculate ===== */
+/* ===== Read inputs ===== */
 function readStocks(){
   const rows = [...document.querySelectorAll(".stockRow")];
   const stocks = [];
@@ -690,44 +704,30 @@ function readStocks(){
   rows.forEach((w, idx)=>{
     const lenStr = w.querySelector(".sLen").value.trim();
     const qtyStr = w.querySelector(".sQty").value.trim();
-
     if(lenStr === "" && qtyStr === "") return;
 
     const len = Number(lenStr);
-    if(!Number.isFinite(len) || len <= 0){
-      bad.push(idx+1);
-      return;
-    }
+    if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
 
     let qty = null;
     if(qtyStr !== ""){
       const q = Number(qtyStr);
-      if(!Number.isFinite(q) || q < 0){
-        bad.push(idx+1);
-        return;
-      }
+      if(!Number.isFinite(q) || q < 0){ bad.push(idx+1); return; }
       qty = Math.floor(q);
     }
-
     stocks.push({ len: Math.floor(len), qty });
   });
 
-  // merge duplicates (same length)
   const merged = new Map();
   for(const s of stocks){
     if(!merged.has(s.len)){
       merged.set(s.len, { len:s.len, qty:s.qty });
     }else{
       const ex = merged.get(s.len);
-      // if any is unlimited => unlimited
-      if(ex.qty === null || s.qty === null){
-        ex.qty = null;
-      }else{
-        ex.qty += s.qty;
-      }
+      if(ex.qty === null || s.qty === null) ex.qty = null;
+      else ex.qty += s.qty;
     }
   }
-
   return { stocks:[...merged.values()].sort((a,b)=>a.len-b.len), bad };
 }
 
@@ -739,7 +739,6 @@ function readParts(){
   rows.forEach((w, idx)=>{
     const lenStr = w.querySelector(".pLen").value.trim();
     const qtyStr = w.querySelector(".pQty").value.trim();
-
     if(lenStr === "" && qtyStr === "") return;
 
     const len = Number(lenStr);
@@ -749,13 +748,13 @@ function readParts(){
       bad.push(idx+1);
       return;
     }
-
     for(let i=0;i<Math.floor(qty);i++) cuts.push(Math.floor(len));
   });
 
   return { cuts, bad };
 }
 
+/* ===== Calculate ===== */
 function calculate(){
   const resultEl = document.getElementById("result");
   resultEl.innerHTML = "";
@@ -786,7 +785,6 @@ function calculate(){
     return;
   }
 
-  // quick check: max cut must fit in some stock len
   const maxCut = Math.max(...partsRes.cuts);
   const canAny = stocksRes.stocks.some(s => s.len >= maxCut && (s.qty === null || s.qty > 0));
   if(!canAny){
@@ -802,15 +800,13 @@ function calculate(){
 
   const bars = packed.bars;
 
-  // totals
   const totalStock = bars.reduce((s,b)=>s+b.len,0);
   const totalCuts = partsRes.cuts.reduce((s,x)=>s+x,0);
 
   let totalKerf = 0;
   let totalWaste = 0;
 
-  // group identical layouts
-  const groups = new Map(); // sig -> {count, barLen, piecesSample, sampleInfo}
+  const groups = new Map();
   for(const b of bars){
     const info = buildViz(b.len, cutWidth, b.pieces);
     totalKerf += info.kerfTotal;
@@ -836,13 +832,11 @@ function calculate(){
     hint: (document.getElementById("jobName").value || "").trim() || "Без названия"
   });
 
-  // render groups
   const wrap = document.createElement("div");
   wrap.className = "bars";
 
   const arr = [...groups.values()].sort((a,b)=>{
     if(b.count !== a.count) return b.count - a.count;
-    // smaller waste first
     return a.sampleInfo.rest - b.sampleInfo.rest;
   });
 
@@ -869,7 +863,6 @@ function calculate(){
 
     card.appendChild(title);
     card.appendChild(line);
-
     wrap.appendChild(card);
   }
 
