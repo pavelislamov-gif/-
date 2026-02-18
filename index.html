@@ -34,24 +34,16 @@ body{
 .header{
   display:flex;
   align-items:center;
-  gap:15px;
-  margin-bottom:20px;
+  gap:14px;
+  margin-bottom:16px;
 }
-
-.logoBox{
-  height:50px;
-  display:flex;
-  align-items:center;
-}
-.logoBox img{
-  height:50px;
-  width:auto;
-  display:block;
-}
+.logoBox{ height:48px; display:flex; align-items:center; }
+.logoBox img{ height:48px; width:auto; display:block; }
 
 h1{ margin:0; font-size:20px; }
+h3{ margin:0 0 8px; font-size:16px; }
 
-label{ display:block; margin-top:12px; font-weight:700; font-size:13px; }
+label{ display:block; margin-top:12px; font-weight:800; font-size:13px; }
 
 input,button{
   height:36px;
@@ -59,8 +51,9 @@ input,button{
   background:#111827;
   color:white;
   padding:0 10px;
+  font-size:14px;
 }
-button{ cursor:pointer; font-weight:800; }
+button{ cursor:pointer; font-weight:900; }
 button.primary{ background:#1f2937; }
 button.danger{ background:var(--accent); border:none; }
 
@@ -83,7 +76,7 @@ button.danger{ background:var(--accent); border:none; }
   border:1px solid var(--accent);
   color:var(--bad);
   background:rgba(183,28,28,.12);
-  font-weight:800;
+  font-weight:900;
 }
 
 .stats{
@@ -95,12 +88,12 @@ button.danger{ background:var(--accent); border:none; }
   grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
-
 .stat{
   border:1px solid var(--line);
   padding:10px;
   background:var(--panel2);
 }
+.stat b{ display:block; margin-bottom:4px; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
@@ -119,6 +112,7 @@ button.danger{ background:var(--accent); border:none; }
   text-align:center;
   font-weight:900;
   background:var(--panel2);
+  line-height:1.2;
 }
 
 .viz{
@@ -140,22 +134,24 @@ button.danger{ background:var(--accent); border:none; }
   white-space:nowrap;
   padding:0 6px;
   position:relative;
+  color:#0b0f1c;
 }
-
 .seg span{
   display:block;
   max-width:100%;
   overflow:hidden;
 }
 
-.seg.cut{ background:#3b82f6; color:#000; }
-.seg.rest{ background:#9ca3af; color:#000; }
+.seg.cut{ background:#3b82f6; }
+.seg.rest{ background:#9ca3af; color:#111; } /* хвост серый */
 
 .seg.kerf{
   background:#111;
   min-width:8px;
+  padding:0;
 }
 
+/* один пунктир по центру реза */
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -164,19 +160,16 @@ button.danger{ background:var(--accent); border:none; }
   left:50%;
   transform:translateX(-50%);
   border-left:1px dashed #fff;
+  opacity:.95;
 }
 
 /* ===== PRINT ===== */
 @media print{
   @page{ size:A4; margin:10mm; }
-
   body{ background:white; color:black; }
-
   .no-print{ display:none !important; }
-
   .card{ border:none; padding:0; }
-
-  .logoBox img{ height:35px; }
+  .logoBox img{ height:34px; }
 
   .stats{ border:1px solid #000; background:#fff; }
   .stat{ border:1px solid #000; background:#fff; color:#000; }
@@ -201,181 +194,464 @@ button.danger{ background:var(--accent); border:none; }
 <!-- LOGIN -->
 <div id="loginBox" class="card">
   <div class="header">
-    <div class="logoBox">
-      <img src="logo.png" alt="Logo">
-    </div>
+    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
     <h1>Вход в систему</h1>
   </div>
 
   <label>Логин</label>
-  <input id="login" placeholder="masterclusterpro">
+  <input id="loginInput" placeholder="masterclusterpro">
 
   <label>Пароль</label>
-  <input id="password" type="password" placeholder="qwerty">
+  <input id="passwordInput" type="password" placeholder="qwerty">
 
-  <div class="section">
-    <button class="primary" onclick="doLogin()">Войти</button>
+  <div class="section no-print" style="display:flex;gap:10px;align-items:center;">
+    <button class="primary" id="loginBtn">Войти</button>
   </div>
 
-  <div id="msg" class="err hidden"></div>
+  <div id="loginMsg" class="err hidden"></div>
 </div>
 
 <!-- APP -->
 <div id="appBox" class="hidden">
-<div class="card">
+  <div class="card">
 
-  <div class="header">
-    <div class="logoBox">
-      <img src="logo.png" alt="Logo">
+    <div class="header">
+      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
+      <h1>Раскрой профиля</h1>
     </div>
-    <h1>Раскрой профиля</h1>
+
+    <div class="no-print">
+      <label>Название</label>
+      <input id="jobInput" placeholder="Например: заказ №12 / изделие">
+
+      <label>Ширина диска (мм)</label>
+      <input id="kerfInput" type="number" value="5" min="0" step="0.1">
+    </div>
+
+    <div class="section no-print">
+      <h3>Профили</h3>
+      <div id="stocksList" class="list"></div>
+      <button class="primary" id="addStockBtn">+ Профиль</button>
+    </div>
+
+    <div class="section no-print">
+      <h3>Заготовки</h3>
+      <div id="partsList" class="list"></div>
+      <button class="primary" id="addPartBtn">+ Заготовка</button>
+    </div>
+
+    <div class="section no-print" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="primary" id="calcBtn">Рассчитать</button>
+      <button class="primary" id="printBtn">Печать / PDF</button>
+      <button class="danger" id="logoutBtn">Выйти</button>
+    </div>
+
+    <div id="appErr" class="err hidden"></div>
+    <div id="stats" class="stats hidden"></div>
+    <div id="result" class="bars"></div>
+
   </div>
-
-  <div class="no-print">
-    <label>Название</label>
-    <input id="job">
-
-    <label>Ширина диска (мм)</label>
-    <input id="kerf" type="number" value="5">
-  </div>
-
-  <div class="section no-print">
-    <h3>Профили</h3>
-    <div id="stocks" class="list"></div>
-    <button class="primary" onclick="addStock()">+ Профиль</button>
-  </div>
-
-  <div class="section no-print">
-    <h3>Заготовки</h3>
-    <div id="parts" class="list"></div>
-    <button class="primary" onclick="addPart()">+ Заготовка</button>
-  </div>
-
-  <div class="section no-print" style="display:flex; gap:10px;">
-    <button class="primary" onclick="calculate()">Рассчитать</button>
-    <button class="primary" onclick="window.print()">Печать / PDF</button>
-    <button class="danger" onclick="logout()">Выйти</button>
-  </div>
-
-  <div id="appErr" class="err hidden"></div>
-  <div id="stats" class="stats hidden"></div>
-  <div id="result" class="bars"></div>
-
-</div>
 </div>
 
 </div>
 
 <script>
-const users={
+/* ===== USERS ===== */
+const USERS = {
   "masterclusterpro":"qwerty",
   "mastercluster":"qwerty"
 };
 
+/* ===== DOM ===== */
+const el = {
+  loginBox: document.getElementById("loginBox"),
+  appBox: document.getElementById("appBox"),
+  loginInput: document.getElementById("loginInput"),
+  passwordInput: document.getElementById("passwordInput"),
+  loginBtn: document.getElementById("loginBtn"),
+  loginMsg: document.getElementById("loginMsg"),
+
+  jobInput: document.getElementById("jobInput"),
+  kerfInput: document.getElementById("kerfInput"),
+
+  stocksList: document.getElementById("stocksList"),
+  partsList: document.getElementById("partsList"),
+
+  addStockBtn: document.getElementById("addStockBtn"),
+  addPartBtn: document.getElementById("addPartBtn"),
+
+  calcBtn: document.getElementById("calcBtn"),
+  printBtn: document.getElementById("printBtn"),
+  logoutBtn: document.getElementById("logoutBtn"),
+
+  appErr: document.getElementById("appErr"),
+  stats: document.getElementById("stats"),
+  result: document.getElementById("result"),
+};
+
+/* ===== AUTH ===== */
+function showLogin(){
+  el.appBox.classList.add("hidden");
+  el.loginBox.classList.remove("hidden");
+}
+function showApp(){
+  el.loginBox.classList.add("hidden");
+  el.appBox.classList.remove("hidden");
+  bindAutoRecalc();
+  scheduleRecalc();
+}
 function doLogin(){
-  if(users[login.value.trim()]===password.value){
-    localStorage.setItem("auth","1");
-    loginBox.classList.add("hidden");
-    appBox.classList.remove("hidden");
+  const l = el.loginInput.value.trim();
+  const p = el.passwordInput.value;
+  el.loginMsg.classList.add("hidden");
+  el.loginMsg.textContent = "";
+
+  if(USERS[l] && USERS[l] === p){
+    localStorage.setItem("authUser", l);
+    showApp();
   }else{
-    msg.textContent="Неверный логин или пароль";
-    msg.classList.remove("hidden");
+    el.loginMsg.textContent = "Неверный логин или пароль";
+    el.loginMsg.classList.remove("hidden");
   }
 }
-function logout(){ localStorage.removeItem("auth"); location.reload(); }
-if(localStorage.getItem("auth")){
-  loginBox.classList.add("hidden");
-  appBox.classList.remove("hidden");
+function logout(){
+  localStorage.removeItem("authUser");
+  location.reload();
 }
 
-function addStock(val="3050"){
-  stocks.insertAdjacentHTML("beforeend",
-    `<div class="row">
-      <input class="sLen" value="${val}">
-      <div></div>
-      <button onclick="this.parentElement.remove();calculate()">−</button>
-    </div>`);
+/* ===== HELPERS ===== */
+function fmt(n){
+  const r = Math.round(n);
+  return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
 }
+function sum(arr){ return arr.reduce((s,x)=>s+x,0); }
+function kerfTotalForCount(count, kerf){ return Math.max(0, count - 1) * kerf; }
+function usedLength(pieces, kerf){ return sum(pieces) + kerfTotalForCount(pieces.length, kerf); }
+function remainingLen(stockLen, pieces, kerf){ return stockLen - usedLength(pieces, kerf); }
+function canAdd(stockLen, pieces, piece, kerf){ return usedLength(pieces.concat([piece]), kerf) <= stockLen; }
 
-function addPart(val="",qty="1"){
-  parts.insertAdjacentHTML("beforeend",
-    `<div class="row">
-      <input class="pLen" value="${val}">
-      <input class="pQty" value="${qty}">
-      <button onclick="this.parentElement.remove();calculate()">−</button>
-    </div>`);
-}
+/* ===== Fit text inside segments (не вылезает) ===== */
+function fitSegmentText(vizEl){
+  requestAnimationFrame(() => {
+    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
+    segs.forEach(seg=>{
+      const t = seg.querySelector("span");
+      if(!t) return;
 
-addStock();
-addPart();
+      t.style.fontSize = "";
+      t.style.display = "block";
 
-function calculate(){
-  appErr.classList.add("hidden");
-  stats.classList.add("hidden");
-  result.innerHTML="";
+      if(t.scrollWidth <= seg.clientWidth) return;
 
-  const stock=parseInt(document.querySelector(".sLen").value);
-  const kerf=parseFloat(kerf.value)||0;
-  if(!stock){ appErr.textContent="Введите длину профиля"; appErr.classList.remove("hidden"); return; }
-
-  let partsList=[];
-  document.querySelectorAll(".pLen").forEach((el,i)=>{
-    const len=parseInt(el.value);
-    const qty=parseInt(document.querySelectorAll(".pQty")[i].value)||1;
-    if(len) for(let j=0;j<qty;j++) partsList.push(len);
+      const sizes = [12, 11, 10, 9, 8, 7];
+      for(const s of sizes){
+        t.style.fontSize = s + "px";
+        if(t.scrollWidth <= seg.clientWidth) return;
+      }
+      t.style.display = "none";
+    });
   });
-  if(partsList.length===0){ appErr.textContent="Добавьте заготовки"; appErr.classList.remove("hidden"); return; }
+}
 
-  partsList.sort((a,b)=>b-a);
+/* ===== UI rows ===== */
+function removeRow(btn){
+  btn.closest(".row").remove();
+  scheduleRecalc();
+}
 
-  const bars=[];
-  for(const piece of partsList){
-    let placed=false;
-    for(const bar of bars){
-      const addKerf=bar.parts.length?kerf:0;
-      if(bar.sum+addKerf+piece<=stock){
-        bar.parts.push(piece);
-        bar.sum+=addKerf+piece;
-        placed=true;
-        break;
+function wireRow(rowEl){
+  rowEl.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("input", scheduleRecalc);
+    inp.addEventListener("change", scheduleRecalc);
+  });
+}
+
+function addStockRow(lenVal="3050", qtyVal=""){
+  const r = document.createElement("div");
+  r.className = "row";
+  r.innerHTML = `
+    <input class="sLen" type="number" min="1" step="1" placeholder="Длина профиля" value="${lenVal}">
+    <input class="sQty" type="number" min="0" step="1" placeholder="Кол-во (пусто = ∞)" value="${qtyVal}">
+    <button class="danger" type="button">−</button>
+  `;
+  r.querySelector("button").addEventListener("click", () => removeRow(r.querySelector("button")));
+  el.stocksList.appendChild(r);
+  wireRow(r);
+  scheduleRecalc();
+}
+
+function addPartRow(lenVal="", qtyVal="1"){
+  const r = document.createElement("div");
+  r.className = "row";
+  r.innerHTML = `
+    <input class="pLen" type="number" min="1" step="1" placeholder="Длина заготовки" value="${lenVal}">
+    <input class="pQty" type="number" min="1" step="1" value="${qtyVal}">
+    <button class="danger" type="button">−</button>
+  `;
+  r.querySelector("button").addEventListener("click", () => removeRow(r.querySelector("button")));
+  el.partsList.appendChild(r);
+  wireRow(r);
+  scheduleRecalc();
+}
+
+/* ===== Read inputs ===== */
+function readStocks(){
+  const rows = [...el.stocksList.querySelectorAll(".row")];
+  const stocks = [];
+  const bad = [];
+
+  rows.forEach((r, idx)=>{
+    const v = r.querySelector(".sLen").value.trim();
+    const q = r.querySelector(".sQty").value.trim();
+    if(v === "" && q === "") return;
+
+    const len = Number(v);
+    if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
+
+    let qty = null;
+    if(q !== ""){
+      const qq = Number(q);
+      if(!Number.isFinite(qq) || qq < 0){ bad.push(idx+1); return; }
+      qty = Math.floor(qq);
+    }
+    stocks.push({ len: Math.floor(len), qty });
+  });
+
+  if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
+  if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
+
+  // merge same lengths
+  const m = new Map();
+  for(const s of stocks){
+    if(!m.has(s.len)) m.set(s.len, {len:s.len, qty:s.qty});
+    else{
+      const ex = m.get(s.len);
+      if(ex.qty === null || s.qty === null) ex.qty = null;
+      else ex.qty += s.qty;
+    }
+  }
+  return { ok:true, stocks:[...m.values()].sort((a,b)=>a.len-b.len) };
+}
+
+function readParts(){
+  const rows = [...el.partsList.querySelectorAll(".row")];
+  const parts = [];
+  const bad = [];
+
+  rows.forEach((r, idx)=>{
+    const lv = r.querySelector(".pLen").value.trim();
+    const qv = r.querySelector(".pQty").value.trim();
+    if(lv === "" && qv === "") return;
+
+    const len = Number(lv);
+    const qty = Number(qv);
+
+    if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
+      bad.push(idx+1);
+      return;
+    }
+    for(let i=0;i<Math.floor(qty);i++) parts.push(Math.floor(len));
+  });
+
+  if(bad.length) return { ok:false, error:`Ошибка в строках заготовок: ${bad.join(", ")}` };
+  if(parts.length === 0) return { ok:false, error:"Добавьте заготовки." };
+
+  return { ok:true, parts };
+}
+
+/* ===== UI output ===== */
+function clearOutput(){
+  el.stats.classList.add("hidden");
+  el.stats.innerHTML = "";
+  el.result.innerHTML = "";
+}
+function showError(text){
+  el.appErr.textContent = text;
+  el.appErr.classList.remove("hidden");
+}
+function hideError(){
+  el.appErr.textContent = "";
+  el.appErr.classList.add("hidden");
+}
+
+/* ===== Packing: best-fit into multiple bars ===== */
+function packBestFit(stockLen, parts, kerf){
+  const sorted = [...parts].sort((a,b)=>b-a);
+  const bars = [];
+
+  for(const piece of sorted){
+    if(piece > stockLen){
+      return { ok:false, error:`Заготовка ${piece} больше длины профиля ${stockLen}.` };
+    }
+
+    let bestIdx = -1;
+    let bestRem = Infinity;
+
+    for(let i=0;i<bars.length;i++){
+      const b = bars[i];
+      if(canAdd(stockLen, b, piece, kerf)){
+        const rem = remainingLen(stockLen, b.concat([piece]), kerf);
+        if(rem < bestRem){
+          bestRem = rem;
+          bestIdx = i;
+        }
       }
     }
-    if(!placed) bars.push({parts:[piece],sum:piece});
+
+    if(bestIdx >= 0) bars[bestIdx].push(piece);
+    else bars.push([piece]);
   }
 
-  stats.classList.remove("hidden");
-  stats.innerHTML=`<div class="stat"><b>Палок</b><br>${bars.length}</div>
-                   <div class="stat"><b>Профиль</b><br>${stock}</div>
-                   <div class="stat"><b>Деталей</b><br>${partsList.length}</div>`;
+  return { ok:true, bars };
+}
 
-  bars.forEach(bar=>{
-    const div=document.createElement("div");
-    div.className="bar";
-    const mult=document.createElement("div");
-    mult.className="mult";
-    mult.innerHTML=`1×<br>${stock}`;
-    const viz=document.createElement("div");
-    viz.className="viz";
-    let sum=0;
+function signature(stockLen, pieces){
+  return stockLen + "|" + [...pieces].sort((a,b)=>b-a).join(",");
+}
 
-    bar.parts.forEach((p,i)=>{
-      viz.innerHTML+=`<div class="seg cut" style="width:${p/stock*100}%"><span>${p}</span></div>`;
-      if(i<bar.parts.length-1)
-        viz.innerHTML+=`<div class="seg kerf" style="width:${Math.max(kerf/stock*100,0.8)}%"></div>`;
-      sum+=p+(i?kerf:0);
+/* ===== Calculate ===== */
+function calculate(){
+  hideError();
+  clearOutput();
+
+  const kerf = Number(el.kerfInput.value);
+  if(!Number.isFinite(kerf) || kerf < 0){
+    showError("Ошибка: ширина диска должна быть 0 или больше.");
+    return;
+  }
+
+  const s = readStocks();
+  if(!s.ok){ showError(s.error); return; }
+
+  const p = readParts();
+  if(!p.ok){ showError(p.error); return; }
+
+  // пока используем ПЕРВУЮ длину профиля как основную
+  const stockLen = s.stocks[0].len;
+
+  const packed = packBestFit(stockLen, p.parts, kerf);
+  if(!packed.ok){ showError(packed.error); return; }
+
+  const bars = packed.bars;
+
+  const totalCuts = sum(p.parts);
+  const totalKerf = bars.reduce((acc,pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
+  const totalStock = bars.length * stockLen;
+  const totalWaste = totalStock - totalCuts - totalKerf;
+  const eff = totalStock > 0 ? (totalCuts / totalStock * 100) : 0;
+
+  el.stats.classList.remove("hidden");
+  el.stats.innerHTML = `
+    <div class="stat"><b>Профиль</b>${stockLen}</div>
+    <div class="stat"><b>Палок</b>${bars.length}</div>
+    <div class="stat"><b>Деталей</b>${p.parts.length}</div>
+    <div class="stat"><b>Сумма деталей</b>${fmt(totalCuts)}</div>
+    <div class="stat"><b>Суммарный рез</b>${fmt(totalKerf)}</div>
+    <div class="stat"><b>Отход общий</b>${fmt(totalWaste)} (${fmt(eff)}%)</div>
+  `;
+
+  // group identical layouts
+  const groups = new Map();
+  for(const pcs of bars){
+    const sig = signature(stockLen, pcs);
+    if(!groups.has(sig)) groups.set(sig, { count:1, pieces:[...pcs] });
+    else groups.get(sig).count++;
+  }
+
+  const groupArr = [...groups.values()].sort((a,b)=>b.count-a.count);
+
+  for(const g of groupArr){
+    const pieces = [...g.pieces].sort((a,b)=>b-a);
+
+    const barEl = document.createElement("div");
+    barEl.className = "bar";
+
+    const multEl = document.createElement("div");
+    multEl.className = "mult";
+    multEl.innerHTML = `${g.count}×<br>${stockLen}`;
+
+    const viz = document.createElement("div");
+    viz.className = "viz";
+
+    // pieces + kerf between
+    pieces.forEach((piece,i)=>{
+      const seg = document.createElement("div");
+      seg.className = "seg cut";
+      seg.style.width = (piece/stockLen*100) + "%";
+      seg.innerHTML = `<span>${piece}</span>`;
+      viz.appendChild(seg);
+
+      if(i < pieces.length-1){
+        const k = document.createElement("div");
+        k.className = "seg kerf";
+        k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
+        viz.appendChild(k);
+      }
     });
 
-    const rest=stock-sum;
-    if(rest>0){
-      viz.innerHTML+=`<div class="seg kerf" style="width:0.8%"></div>`;
-      viz.innerHTML+=`<div class="seg rest" style="width:${rest/stock*100}%"><span>${rest}</span></div>`;
+    const rest = remainingLen(stockLen, pieces, kerf);
+
+    // boundary before tail + tail
+    if(rest > 0){
+      const borderK = document.createElement("div");
+      borderK.className = "seg kerf";
+      borderK.style.width = "0.8%";
+      viz.appendChild(borderK);
+
+      const rs = document.createElement("div");
+      rs.className = "seg rest";
+      rs.style.width = Math.max(0, (rest/stockLen*100)) + "%";
+      rs.innerHTML = `<span>${fmt(rest)}</span>`;
+      viz.appendChild(rs);
     }
 
-    div.appendChild(mult);
-    div.appendChild(viz);
-    result.appendChild(div);
-  });
+    fitSegmentText(viz);
+
+    barEl.appendChild(multEl);
+    barEl.appendChild(viz);
+    el.result.appendChild(barEl);
+  }
 }
+
+/* ===== Auto recalc ===== */
+let recalcTimer = null;
+function scheduleRecalc(){
+  if(recalcTimer) clearTimeout(recalcTimer);
+  recalcTimer = setTimeout(() => {
+    if(!el.appBox.classList.contains("hidden")) calculate();
+  }, 250);
+}
+function bindAutoRecalc(){
+  [el.jobInput, el.kerfInput].forEach(x=>{
+    x.addEventListener("input", scheduleRecalc);
+    x.addEventListener("change", scheduleRecalc);
+  });
+
+  el.stocksList.querySelectorAll(".row").forEach(wireRow);
+  el.partsList.querySelectorAll(".row").forEach(wireRow);
+}
+
+/* ===== Events ===== */
+el.loginBtn.addEventListener("click", doLogin);
+el.logoutBtn.addEventListener("click", logout);
+el.addStockBtn.addEventListener("click", () => addStockRow("", ""));
+el.addPartBtn.addEventListener("click", () => addPartRow("", "1"));
+el.calcBtn.addEventListener("click", calculate);
+el.printBtn.addEventListener("click", () => window.print());
+
+// Enter to login or recalc
+document.addEventListener("keydown", (e)=>{
+  if(e.key !== "Enter") return;
+  if(!el.loginBox.classList.contains("hidden")) doLogin();
+  else scheduleRecalc();
+});
+
+/* ===== Init ===== */
+addStockRow("3050", "");
+addPartRow("", "1");
+
+if(localStorage.getItem("authUser")) showApp();
+else showLogin();
 </script>
 </body>
 </html>
