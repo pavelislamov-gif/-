@@ -97,9 +97,10 @@ button.danger{ background:var(--accent); border:none; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
+/* 3 колонки: слева мультипликатор, по центру визуализация, справа остаток */
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr;
+  grid-template-columns:120px 1fr 120px;
   gap:12px;
   border:1px solid var(--line);
   padding:10px;
@@ -116,9 +117,21 @@ button.danger{ background:var(--accent); border:none; }
   line-height:1.2;
 }
 
+/* Бокс остатка справа */
+.tailBox{
+  border:1px solid var(--line);
+  padding:10px;
+  background:var(--panel2);
+  text-align:center;
+  font-weight:900;
+  line-height:1.15;
+}
+.tailBox .k{ font-size:12px; color:#9aa3b2; font-weight:800; }
+.tailBox .v{ font-size:16px; margin-top:4px; color:#e7eaf0; }
+
 /* Визуализация */
 .viz{
-  position:relative;                 /* для метки остатка */
+  position:relative;
   display:flex;
   height:30px;
   border:1px solid var(--line);
@@ -167,7 +180,7 @@ button.danger{ background:var(--accent); border:none; }
   opacity:.95;
 }
 
-/* Метка остатка ВНУТРИ визуализации в конце палки */
+/* Метка остатка в конце палки внутри визуализации */
 .tailLabel{
   position:absolute;
   right:4px;
@@ -179,7 +192,7 @@ button.danger{ background:var(--accent); border:none; }
   line-height:1;
   padding:4px 8px;
   border:1px solid var(--line);
-  background:rgba(156,163,175,.92);  /* серый */
+  background:rgba(156,163,175,.92);
   color:#111;
   white-space:nowrap;
   pointer-events:none;
@@ -196,8 +209,17 @@ button.danger{ background:var(--accent); border:none; }
   .stats{ border:1px solid #000; background:#fff; }
   .stat{ border:1px solid #000; background:#fff; color:#000; }
 
-  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
+  .bar{
+    border:1px solid #000;
+    background:#fff;
+    page-break-inside:avoid;
+    grid-template-columns:120px 1fr 120px;
+  }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
+
+  .tailBox{ border:1px solid #000; background:#fff; color:#000; }
+  .tailBox .k{ color:#000; font-size:11px; }
+  .tailBox .v{ color:#000; font-size:14px; }
 
   .viz{ border:1px solid #000; background:#fff; height:28px; }
 
@@ -299,7 +321,6 @@ const el = {
   loginBtn: document.getElementById("loginBtn"),
   loginMsg: document.getElementById("loginMsg"),
 
-  jobInput: document.getElementById("jobInput"),
   kerfInput: document.getElementById("kerfInput"),
 
   stocksList: document.getElementById("stocksList"),
@@ -399,28 +420,13 @@ function readStocks(){
     const len = Number(v);
     if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
 
-    let qty = null;
-    if(q !== ""){
-      const qq = Number(q);
-      if(!Number.isFinite(qq) || qq < 0){ bad.push(idx+1); return; }
-      qty = Math.floor(qq);
-    }
-    stocks.push({ len: Math.floor(len), qty });
+    stocks.push({ len: Math.floor(len) });
   });
 
   if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
   if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
 
-  const m = new Map();
-  for(const s of stocks){
-    if(!m.has(s.len)) m.set(s.len, {len:s.len, qty:s.qty});
-    else{
-      const ex = m.get(s.len);
-      if(ex.qty === null || s.qty === null) ex.qty = null;
-      else ex.qty += s.qty;
-    }
-  }
-  return { ok:true, stocks:[...m.values()].sort((a,b)=>a.len-b.len) };
+  return { ok:true, stocks:[...new Set(stocks.map(s=>s.len))].sort((a,b)=>a-b) };
 }
 
 function readParts(){
@@ -499,10 +505,9 @@ function signature(stockLen, pieces){
   return stockLen + "|" + [...pieces].sort((a,b)=>b-a).join(",");
 }
 
-/* ===== Calculate (ONLY ON BUTTON) ===== */
+/* ===== Calculate ===== */
 function calculate(){
   hideError();
-  el.appErr.classList.add("hidden");
   clearOutput();
 
   const kerf = Number(el.kerfInput.value);
@@ -517,7 +522,7 @@ function calculate(){
   const p = readParts();
   if(!p.ok){ showError(p.error); return; }
 
-  const stockLen = s.stocks[0].len;
+  const stockLen = s.stocks[0];
 
   const packed = packBestFit(stockLen, p.parts, kerf);
   if(!packed.ok){ showError(packed.error); return; }
@@ -578,7 +583,7 @@ function calculate(){
       }
     });
 
-    // Пунктирная линия -> серый остаток (как ты просил)
+    // пунктирная линия -> хвост
     if(rest > 0){
       const borderK = document.createElement("div");
       borderK.className = "seg kerf";
@@ -591,15 +596,21 @@ function calculate(){
       rs.innerHTML = `<span>${fmt(rest)}</span>`;
       viz.appendChild(rs);
 
-      // МЕТКА остатка В КОНЦЕ палки внутри визуализации (всегда видна)
+      // метка остатка в конце палки (внутри визуализации)
       const tailLabel = document.createElement("div");
       tailLabel.className = "tailLabel";
       tailLabel.textContent = fmt(rest);
       viz.appendChild(tailLabel);
     }
 
+    // остаток справа (как ты попросил)
+    const tailBox = document.createElement("div");
+    tailBox.className = "tailBox";
+    tailBox.innerHTML = `<div class="k">Остаток</div><div class="v">${fmt(rest)}</div>`;
+
     barEl.appendChild(multEl);
     barEl.appendChild(viz);
+    barEl.appendChild(tailBox);
     el.result.appendChild(barEl);
   }
 }
