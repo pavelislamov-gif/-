@@ -100,7 +100,7 @@ button.danger{ background:var(--accent); border:none; }
 /* 3 колонки: слева мультипликатор, по центру визуализация, справа остаток */
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr 120px;
+  grid-template-columns:120px 1fr 140px;
   gap:12px;
   border:1px solid var(--line);
   padding:10px;
@@ -168,7 +168,7 @@ button.danger{ background:var(--accent); border:none; }
   padding:0;
 }
 
-/* один пунктир по центру реза/границы */
+/* один пунктир по центру реза */
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -213,7 +213,6 @@ button.danger{ background:var(--accent); border:none; }
     border:1px solid #000;
     background:#fff;
     page-break-inside:avoid;
-    grid-template-columns:120px 1fr 120px;
   }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
 
@@ -372,15 +371,18 @@ function fmt(n){
   return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
 }
 function sum(arr){ return arr.reduce((s,x)=>s+x,0); }
-function kerfTotalForCount(count, kerf){ return Math.max(0, count - 1) * kerf; }
+
+/* ВАЖНО: как на картинке — рез после КАЖДОЙ детали */
+function kerfTotalForCount(pieceCount, kerf){
+  return Math.max(0, pieceCount) * kerf;     // было (pieceCount-1)*kerf
+}
+
 function usedLength(pieces, kerf){ return sum(pieces) + kerfTotalForCount(pieces.length, kerf); }
 function remainingLen(stockLen, pieces, kerf){ return stockLen - usedLength(pieces, kerf); }
 function canAdd(stockLen, pieces, piece, kerf){ return usedLength(pieces.concat([piece]), kerf) <= stockLen; }
 
 /* ===== UI rows ===== */
-function removeRow(btn){
-  btn.closest(".row").remove();
-}
+function removeRow(btn){ btn.closest(".row").remove(); }
 
 function addStockRow(lenVal="3050", qtyVal=""){
   const r = document.createElement("div");
@@ -419,7 +421,6 @@ function readStocks(){
 
     const len = Number(v);
     if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
-
     stocks.push({ len: Math.floor(len) });
   });
 
@@ -530,10 +531,16 @@ function calculate(){
   const bars = packed.bars;
 
   const totalCuts = sum(p.parts);
+
+  // суммарная ширина всех резов (как на картинке: рез после каждой детали)
   const totalKerf = bars.reduce((acc,pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
+
   const totalStock = bars.length * stockLen;
   const totalWaste = totalStock - totalCuts - totalKerf;
   const eff = totalStock > 0 ? (totalCuts / totalStock * 100) : 0;
+
+  // количество разрезов (шт) = кол-во деталей (если рез после каждой)
+  const totalCutCount = bars.reduce((acc,pcs)=>acc + pcs.length, 0);
 
   el.stats.classList.remove("hidden");
   el.stats.innerHTML = `
@@ -541,7 +548,8 @@ function calculate(){
     <div class="stat"><b>Палок</b>${bars.length}</div>
     <div class="stat"><b>Деталей</b>${p.parts.length}</div>
     <div class="stat"><b>Сумма деталей</b>${fmt(totalCuts)}</div>
-    <div class="stat"><b>Суммарный рез</b>${fmt(totalKerf)}</div>
+    <div class="stat"><b>Резов (шт)</b>${fmt(totalCutCount)}</div>
+    <div class="stat"><b>Суммарный рез (мм)</b>${fmt(totalKerf)}</div>
     <div class="stat"><b>Отход общий</b>${fmt(totalWaste)} (${fmt(eff)}%)</div>
   `;
 
@@ -575,35 +583,34 @@ function calculate(){
       seg.innerHTML = `<span>${piece}</span>`;
       viz.appendChild(seg);
 
-      if(i < pieces.length-1){
-        const k = document.createElement("div");
-        k.className = "seg kerf";
-        k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
-        viz.appendChild(k);
-      }
+      // ВАЖНО: пунктир после КАЖДОЙ детали (включая последнюю)
+      const k = document.createElement("div");
+      k.className = "seg kerf";
+      k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
+      viz.appendChild(k);
     });
 
-    // пунктирная линия -> хвост
+    // хвост (остаток) серый, без доп. пунктирной вставки (она уже есть после последней детали)
     if(rest > 0){
-      const borderK = document.createElement("div");
-      borderK.className = "seg kerf";
-      borderK.style.width = "0.8%";
-      viz.appendChild(borderK);
-
       const rs = document.createElement("div");
       rs.className = "seg rest";
       rs.style.width = Math.max(0, (rest/stockLen*100)) + "%";
       rs.innerHTML = `<span>${fmt(rest)}</span>`;
       viz.appendChild(rs);
 
-      // метка остатка в конце палки (внутри визуализации)
       const tailLabel = document.createElement("div");
       tailLabel.className = "tailLabel";
       tailLabel.textContent = fmt(rest);
       viz.appendChild(tailLabel);
+    }else{
+      // если остаток 0 — всё равно покажем метку "0" справа в tailBox
+      const tailLabel = document.createElement("div");
+      tailLabel.className = "tailLabel";
+      tailLabel.textContent = "0";
+      viz.appendChild(tailLabel);
     }
 
-    // остаток справа (как ты попросил)
+    // остаток справа
     const tailBox = document.createElement("div");
     tailBox.className = "tailBox";
     tailBox.innerHTML = `<div class="k">Остаток</div><div class="v">${fmt(rest)}</div>`;
