@@ -97,10 +97,9 @@ button.danger{ background:var(--accent); border:none; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
-/* ВАЖНО: добавили 3-ю колонку справа под “Хвост” */
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr 120px;
+  grid-template-columns:120px 1fr;
   gap:12px;
   border:1px solid var(--line);
   padding:10px;
@@ -117,18 +116,9 @@ button.danger{ background:var(--accent); border:none; }
   line-height:1.2;
 }
 
-.tailBox{
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel2);
-  text-align:center;
-  font-weight:900;
-  line-height:1.15;
-}
-.tailBox .k{ font-size:12px; color:#9aa3b2; font-weight:800; }
-.tailBox .v{ font-size:16px; margin-top:4px; color:#e7eaf0; }
-
+/* Визуализация */
 .viz{
+  position:relative;                 /* для метки остатка */
   display:flex;
   height:30px;
   border:1px solid var(--line);
@@ -137,6 +127,7 @@ button.danger{ background:var(--accent); border:none; }
 }
 
 .seg{
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -163,7 +154,8 @@ button.danger{ background:var(--accent); border:none; }
   min-width:8px;
   padding:0;
 }
-/* один пунктир по центру реза */
+
+/* один пунктир по центру реза/границы */
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -173,6 +165,24 @@ button.danger{ background:var(--accent); border:none; }
   transform:translateX(-50%);
   border-left:1px dashed #fff;
   opacity:.95;
+}
+
+/* Метка остатка ВНУТРИ визуализации в конце палки */
+.tailLabel{
+  position:absolute;
+  right:4px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  font-weight:900;
+  font-size:12px;
+  line-height:1;
+  padding:4px 8px;
+  border:1px solid var(--line);
+  background:rgba(156,163,175,.92);  /* серый */
+  color:#111;
+  white-space:nowrap;
+  pointer-events:none;
 }
 
 /* ===== PRINT ===== */
@@ -186,17 +196,8 @@ button.danger{ background:var(--accent); border:none; }
   .stats{ border:1px solid #000; background:#fff; }
   .stat{ border:1px solid #000; background:#fff; color:#000; }
 
-  .bar{
-    border:1px solid #000;
-    background:#fff;
-    page-break-inside:avoid;
-    grid-template-columns:120px 1fr 120px;
-  }
+  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
-
-  .tailBox{ border:1px solid #000; background:#fff; color:#000; }
-  .tailBox .k{ color:#000; font-size:11px; }
-  .tailBox .v{ color:#000; font-size:14px; }
 
   .viz{ border:1px solid #000; background:#fff; height:28px; }
 
@@ -205,6 +206,12 @@ button.danger{ background:var(--accent); border:none; }
   .seg.rest{ background:#bfbfbf !important; }
   .seg.kerf{ background:#fff !important; min-width:10px; }
   .seg.kerf::after{ border-left:1px dashed #000; }
+
+  .tailLabel{
+    border:1px solid #000;
+    background:#bfbfbf;
+    color:#000;
+  }
 }
 </style>
 </head>
@@ -348,30 +355,6 @@ function kerfTotalForCount(count, kerf){ return Math.max(0, count - 1) * kerf; }
 function usedLength(pieces, kerf){ return sum(pieces) + kerfTotalForCount(pieces.length, kerf); }
 function remainingLen(stockLen, pieces, kerf){ return stockLen - usedLength(pieces, kerf); }
 function canAdd(stockLen, pieces, piece, kerf){ return usedLength(pieces.concat([piece]), kerf) <= stockLen; }
-
-/* ===== Fit text inside segments (не вылезает) ===== */
-function fitSegmentText(vizEl){
-  requestAnimationFrame(() => {
-    const segs = vizEl.querySelectorAll(".seg.cut, .seg.rest");
-    segs.forEach(seg=>{
-      const t = seg.querySelector("span");
-      if(!t) return;
-
-      t.style.fontSize = "";
-      t.style.display = "block";
-
-      if(t.scrollWidth <= seg.clientWidth) return;
-
-      const sizes = [12, 11, 10, 9, 8, 7];
-      for(const s of sizes){
-        t.style.fontSize = s + "px";
-        if(t.scrollWidth <= seg.clientWidth) return;
-      }
-      // если не влезло — скрываем (НО хвост всё равно будет справа в TailBox)
-      t.style.display = "none";
-    });
-  });
-}
 
 /* ===== UI rows ===== */
 function removeRow(btn){
@@ -568,7 +551,6 @@ function calculate(){
 
   for(const g of groupArr){
     const pieces = [...g.pieces].sort((a,b)=>b-a);
-
     const rest = remainingLen(stockLen, pieces, kerf);
 
     const barEl = document.createElement("div");
@@ -596,6 +578,7 @@ function calculate(){
       }
     });
 
+    // Пунктирная линия -> серый остаток (как ты просил)
     if(rest > 0){
       const borderK = document.createElement("div");
       borderK.className = "seg kerf";
@@ -607,19 +590,16 @@ function calculate(){
       rs.style.width = Math.max(0, (rest/stockLen*100)) + "%";
       rs.innerHTML = `<span>${fmt(rest)}</span>`;
       viz.appendChild(rs);
+
+      // МЕТКА остатка В КОНЦЕ палки внутри визуализации (всегда видна)
+      const tailLabel = document.createElement("div");
+      tailLabel.className = "tailLabel";
+      tailLabel.textContent = fmt(rest);
+      viz.appendChild(tailLabel);
     }
-
-    fitSegmentText(viz);
-
-    // ВАЖНО: хвост всегда виден справа, даже если сегмент узкий
-    const tailEl = document.createElement("div");
-    tailEl.className = "tailBox";
-    tailEl.innerHTML = `<div class="k">Хвост</div><div class="v">${fmt(rest)}</div>`;
 
     barEl.appendChild(multEl);
     barEl.appendChild(viz);
-    barEl.appendChild(tailEl);
-
     el.result.appendChild(barEl);
   }
 }
