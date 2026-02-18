@@ -150,7 +150,6 @@ button.danger{ background:var(--accent); border:none; }
   min-width:8px;
   padding:0;
 }
-
 /* один пунктир по центру реза */
 .seg.kerf::after{
   content:"";
@@ -297,8 +296,6 @@ function showLogin(){
 function showApp(){
   el.loginBox.classList.add("hidden");
   el.appBox.classList.remove("hidden");
-  bindAutoRecalc();
-  scheduleRecalc();
 }
 function doLogin(){
   const l = el.loginInput.value.trim();
@@ -356,14 +353,6 @@ function fitSegmentText(vizEl){
 /* ===== UI rows ===== */
 function removeRow(btn){
   btn.closest(".row").remove();
-  scheduleRecalc();
-}
-
-function wireRow(rowEl){
-  rowEl.querySelectorAll("input").forEach(inp=>{
-    inp.addEventListener("input", scheduleRecalc);
-    inp.addEventListener("change", scheduleRecalc);
-  });
 }
 
 function addStockRow(lenVal="3050", qtyVal=""){
@@ -374,10 +363,8 @@ function addStockRow(lenVal="3050", qtyVal=""){
     <input class="sQty" type="number" min="0" step="1" placeholder="Кол-во (пусто = ∞)" value="${qtyVal}">
     <button class="danger" type="button">−</button>
   `;
-  r.querySelector("button").addEventListener("click", () => removeRow(r.querySelector("button")));
+  r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
   el.stocksList.appendChild(r);
-  wireRow(r);
-  scheduleRecalc();
 }
 
 function addPartRow(lenVal="", qtyVal="1"){
@@ -388,10 +375,8 @@ function addPartRow(lenVal="", qtyVal="1"){
     <input class="pQty" type="number" min="1" step="1" value="${qtyVal}">
     <button class="danger" type="button">−</button>
   `;
-  r.querySelector("button").addEventListener("click", () => removeRow(r.querySelector("button")));
+  r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
   el.partsList.appendChild(r);
-  wireRow(r);
-  scheduleRecalc();
 }
 
 /* ===== Read inputs ===== */
@@ -509,9 +494,10 @@ function signature(stockLen, pieces){
   return stockLen + "|" + [...pieces].sort((a,b)=>b-a).join(",");
 }
 
-/* ===== Calculate ===== */
+/* ===== Calculate (ONLY ON BUTTON) ===== */
 function calculate(){
   hideError();
+  el.appErr.classList.add("hidden");
   clearOutput();
 
   const kerf = Number(el.kerfInput.value);
@@ -613,24 +599,6 @@ function calculate(){
   }
 }
 
-/* ===== Auto recalc ===== */
-let recalcTimer = null;
-function scheduleRecalc(){
-  if(recalcTimer) clearTimeout(recalcTimer);
-  recalcTimer = setTimeout(() => {
-    if(!el.appBox.classList.contains("hidden")) calculate();
-  }, 250);
-}
-function bindAutoRecalc(){
-  [el.jobInput, el.kerfInput].forEach(x=>{
-    x.addEventListener("input", scheduleRecalc);
-    x.addEventListener("change", scheduleRecalc);
-  });
-
-  el.stocksList.querySelectorAll(".row").forEach(wireRow);
-  el.partsList.querySelectorAll(".row").forEach(wireRow);
-}
-
 /* ===== Events ===== */
 el.loginBtn.addEventListener("click", doLogin);
 el.logoutBtn.addEventListener("click", logout);
@@ -639,11 +607,10 @@ el.addPartBtn.addEventListener("click", () => addPartRow("", "1"));
 el.calcBtn.addEventListener("click", calculate);
 el.printBtn.addEventListener("click", () => window.print());
 
-// Enter to login or recalc
+// Enter to login only (в приложении Enter не пересчитывает)
 document.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(!el.loginBox.classList.contains("hidden")) doLogin();
-  else scheduleRecalc();
 });
 
 /* ===== Init ===== */
