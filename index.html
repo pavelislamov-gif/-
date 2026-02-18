@@ -16,6 +16,7 @@
   --accent:#b71c1c;
   --bad:#ff6666;
 }
+
 *{ box-sizing:border-box; border-radius:0 !important; }
 
 body{
@@ -23,14 +24,34 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  font-size:15px;
 }
 
 .container{ max-width:1200px; margin:auto; padding:20px; }
 .card{ background:var(--card); border:1px solid var(--line); padding:20px; }
-
 .hidden{ display:none; }
 
-h1{ margin:0 0 15px; }
+.header{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.logoBox{
+  height:50px;
+  display:flex;
+  align-items:center;
+}
+.logoBox img{
+  height:50px;
+  width:auto;
+  display:block;
+}
+
+h1{ margin:0; font-size:20px; }
+
+label{ display:block; margin-top:12px; font-weight:700; font-size:13px; }
 
 input,button{
   height:36px;
@@ -39,17 +60,18 @@ input,button{
   color:white;
   padding:0 10px;
 }
-button{ cursor:pointer; font-weight:700; }
+button{ cursor:pointer; font-weight:800; }
 button.primary{ background:#1f2937; }
 button.danger{ background:var(--accent); border:none; }
 
-.section{ margin-top:20px; }
+.section{ margin-top:18px; }
 .list{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
 
 .row{
   display:grid;
   grid-template-columns:1fr 1fr auto;
   gap:10px;
+  align-items:end;
   border:1px solid var(--line);
   padding:10px;
   background:var(--panel);
@@ -119,6 +141,7 @@ button.danger{ background:var(--accent); border:none; }
   padding:0 6px;
   position:relative;
 }
+
 .seg span{
   display:block;
   max-width:100%;
@@ -132,6 +155,7 @@ button.danger{ background:var(--accent); border:none; }
   background:#111;
   min-width:8px;
 }
+
 .seg.kerf::after{
   content:"";
   position:absolute;
@@ -141,6 +165,33 @@ button.danger{ background:var(--accent); border:none; }
   transform:translateX(-50%);
   border-left:1px dashed #fff;
 }
+
+/* ===== PRINT ===== */
+@media print{
+  @page{ size:A4; margin:10mm; }
+
+  body{ background:white; color:black; }
+
+  .no-print{ display:none !important; }
+
+  .card{ border:none; padding:0; }
+
+  .logoBox img{ height:35px; }
+
+  .stats{ border:1px solid #000; background:#fff; }
+  .stat{ border:1px solid #000; background:#fff; color:#000; }
+
+  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
+  .mult{ border:1px solid #000; background:#fff; color:#000; }
+
+  .viz{ border:1px solid #000; background:#fff; height:28px; }
+
+  .seg{ color:#000 !important; font-size:12px; }
+  .seg.cut{ background:#d9d9d9 !important; }
+  .seg.rest{ background:#bfbfbf !important; }
+  .seg.kerf{ background:#fff !important; min-width:10px; }
+  .seg.kerf::after{ border-left:1px dashed #000; }
+}
 </style>
 </head>
 
@@ -149,10 +200,23 @@ button.danger{ background:var(--accent); border:none; }
 
 <!-- LOGIN -->
 <div id="loginBox" class="card">
-  <h1>Вход</h1>
-  <input id="login" placeholder="Логин"><br><br>
-  <input id="password" type="password" placeholder="Пароль"><br><br>
-  <button class="primary" onclick="doLogin()">Войти</button>
+  <div class="header">
+    <div class="logoBox">
+      <img src="logo.png" alt="Logo">
+    </div>
+    <h1>Вход в систему</h1>
+  </div>
+
+  <label>Логин</label>
+  <input id="login" placeholder="masterclusterpro">
+
+  <label>Пароль</label>
+  <input id="password" type="password" placeholder="qwerty">
+
+  <div class="section">
+    <button class="primary" onclick="doLogin()">Войти</button>
+  </div>
+
   <div id="msg" class="err hidden"></div>
 </div>
 
@@ -160,37 +224,46 @@ button.danger{ background:var(--accent); border:none; }
 <div id="appBox" class="hidden">
 <div class="card">
 
-<h1>Раскрой профиля</h1>
+  <div class="header">
+    <div class="logoBox">
+      <img src="logo.png" alt="Logo">
+    </div>
+    <h1>Раскрой профиля</h1>
+  </div>
 
-<label>Название</label>
-<input id="job">
+  <div class="no-print">
+    <label>Название</label>
+    <input id="job">
 
-<label>Ширина диска (мм)</label>
-<input id="kerf" type="number" value="5">
+    <label>Ширина диска (мм)</label>
+    <input id="kerf" type="number" value="5">
+  </div>
 
-<div class="section">
-<h3>Профили</h3>
-<div id="stocks" class="list"></div>
-<button class="primary" onclick="addStock()">+ Профиль</button>
+  <div class="section no-print">
+    <h3>Профили</h3>
+    <div id="stocks" class="list"></div>
+    <button class="primary" onclick="addStock()">+ Профиль</button>
+  </div>
+
+  <div class="section no-print">
+    <h3>Заготовки</h3>
+    <div id="parts" class="list"></div>
+    <button class="primary" onclick="addPart()">+ Заготовка</button>
+  </div>
+
+  <div class="section no-print" style="display:flex; gap:10px;">
+    <button class="primary" onclick="calculate()">Рассчитать</button>
+    <button class="primary" onclick="window.print()">Печать / PDF</button>
+    <button class="danger" onclick="logout()">Выйти</button>
+  </div>
+
+  <div id="appErr" class="err hidden"></div>
+  <div id="stats" class="stats hidden"></div>
+  <div id="result" class="bars"></div>
+
+</div>
 </div>
 
-<div class="section">
-<h3>Заготовки</h3>
-<div id="parts" class="list"></div>
-<button class="primary" onclick="addPart()">+ Заготовка</button>
-</div>
-
-<div class="section">
-<button class="primary" onclick="calculate()">Рассчитать</button>
-<button class="danger" onclick="logout()">Выйти</button>
-</div>
-
-<div id="appErr" class="err hidden"></div>
-<div id="stats" class="stats hidden"></div>
-<div id="result" class="bars"></div>
-
-</div>
-</div>
 </div>
 
 <script>
@@ -200,10 +273,8 @@ const users={
 };
 
 function doLogin(){
-  const l=login.value.trim();
-  const p=password.value;
-  if(users[l] && users[l]===p){
-    localStorage.setItem("auth",l);
+  if(users[login.value.trim()]===password.value){
+    localStorage.setItem("auth","1");
     loginBox.classList.add("hidden");
     appBox.classList.remove("hidden");
   }else{
@@ -217,60 +288,51 @@ if(localStorage.getItem("auth")){
   appBox.classList.remove("hidden");
 }
 
-function addStock(val="6000"){
-  const r=document.createElement("div");
-  r.className="row";
-  r.innerHTML=`<input class="sLen" value="${val}">
-               <div></div>
-               <button onclick="this.parentElement.remove();calculate()">−</button>`;
-  stocks.appendChild(r);
+function addStock(val="3050"){
+  stocks.insertAdjacentHTML("beforeend",
+    `<div class="row">
+      <input class="sLen" value="${val}">
+      <div></div>
+      <button onclick="this.parentElement.remove();calculate()">−</button>
+    </div>`);
 }
+
 function addPart(val="",qty="1"){
-  const r=document.createElement("div");
-  r.className="row";
-  r.innerHTML=`<input class="pLen" value="${val}">
-               <input class="pQty" value="${qty}">
-               <button onclick="this.parentElement.remove();calculate()">−</button>`;
-  parts.appendChild(r);
+  parts.insertAdjacentHTML("beforeend",
+    `<div class="row">
+      <input class="pLen" value="${val}">
+      <input class="pQty" value="${qty}">
+      <button onclick="this.parentElement.remove();calculate()">−</button>
+    </div>`);
 }
+
 addStock();
 addPart();
-
-function fmt(n){ return Math.round(n*100)/100; }
 
 function calculate(){
   appErr.classList.add("hidden");
   stats.classList.add("hidden");
   result.innerHTML="";
 
-  const kerf=parseFloat(document.getElementById("kerf").value)||0;
-
   const stock=parseInt(document.querySelector(".sLen").value);
+  const kerf=parseFloat(kerf.value)||0;
   if(!stock){ appErr.textContent="Введите длину профиля"; appErr.classList.remove("hidden"); return; }
 
   let partsList=[];
   document.querySelectorAll(".pLen").forEach((el,i)=>{
     const len=parseInt(el.value);
     const qty=parseInt(document.querySelectorAll(".pQty")[i].value)||1;
-    if(len){
-      for(let j=0;j<qty;j++) partsList.push(len);
-    }
+    if(len) for(let j=0;j<qty;j++) partsList.push(len);
   });
-  if(partsList.length===0){
-    appErr.textContent="Добавьте заготовки";
-    appErr.classList.remove("hidden");
-    return;
-  }
+  if(partsList.length===0){ appErr.textContent="Добавьте заготовки"; appErr.classList.remove("hidden"); return; }
 
   partsList.sort((a,b)=>b-a);
 
   const bars=[];
-
   for(const piece of partsList){
     let placed=false;
-
     for(const bar of bars){
-      const addKerf=bar.parts.length>0?kerf:0;
+      const addKerf=bar.parts.length?kerf:0;
       if(bar.sum+addKerf+piece<=stock){
         bar.parts.push(piece);
         bar.sum+=addKerf+piece;
@@ -278,73 +340,40 @@ function calculate(){
         break;
       }
     }
-
-    if(!placed){
-      bars.push({parts:[piece],sum:piece});
-    }
+    if(!placed) bars.push({parts:[piece],sum:piece});
   }
 
-  // группировка
-  const groups={};
-  bars.forEach(bar=>{
-    const key=bar.parts.slice().sort((a,b)=>b-a).join(",");
-    if(!groups[key]) groups[key]={count:0,layout:bar.parts};
-    groups[key].count++;
-  });
-
   stats.classList.remove("hidden");
-  stats.innerHTML=`
-    <div class="stat"><b>Палок</b><br>${bars.length}</div>
-    <div class="stat"><b>Профиль</b><br>${stock}</div>
-    <div class="stat"><b>Деталей</b><br>${partsList.length}</div>
-  `;
+  stats.innerHTML=`<div class="stat"><b>Палок</b><br>${bars.length}</div>
+                   <div class="stat"><b>Профиль</b><br>${stock}</div>
+                   <div class="stat"><b>Деталей</b><br>${partsList.length}</div>`;
 
-  Object.values(groups).forEach(g=>{
-    const barDiv=document.createElement("div");
-    barDiv.className="bar";
-
+  bars.forEach(bar=>{
+    const div=document.createElement("div");
+    div.className="bar";
     const mult=document.createElement("div");
     mult.className="mult";
-    mult.innerHTML=`${g.count}×<br>${stock}`;
-
+    mult.innerHTML=`1×<br>${stock}`;
     const viz=document.createElement("div");
     viz.className="viz";
+    let sum=0;
 
-    let usedSum=0;
-    g.layout.forEach((p,i)=>{
-      const seg=document.createElement("div");
-      seg.className="seg cut";
-      seg.style.width=(p/stock*100)+"%";
-      seg.innerHTML=`<span>${p}</span>`;
-      viz.appendChild(seg);
-
-      if(i<g.layout.length-1){
-        const k=document.createElement("div");
-        k.className="seg kerf";
-        k.style.width=Math.max((kerf/stock*100),0.8)+"%";
-        viz.appendChild(k);
-      }
-      usedSum+=p;
-      if(i>0) usedSum+=kerf;
+    bar.parts.forEach((p,i)=>{
+      viz.innerHTML+=`<div class="seg cut" style="width:${p/stock*100}%"><span>${p}</span></div>`;
+      if(i<bar.parts.length-1)
+        viz.innerHTML+=`<div class="seg kerf" style="width:${Math.max(kerf/stock*100,0.8)}%"></div>`;
+      sum+=p+(i?kerf:0);
     });
 
-    const rest=stock-usedSum;
+    const rest=stock-sum;
     if(rest>0){
-      const border=document.createElement("div");
-      border.className="seg kerf";
-      border.style.width="0.8%";
-      viz.appendChild(border);
-
-      const rs=document.createElement("div");
-      rs.className="seg rest";
-      rs.style.width=(rest/stock*100)+"%";
-      rs.innerHTML=`<span>${fmt(rest)}</span>`;
-      viz.appendChild(rs);
+      viz.innerHTML+=`<div class="seg kerf" style="width:0.8%"></div>`;
+      viz.innerHTML+=`<div class="seg rest" style="width:${rest/stock*100}%"><span>${rest}</span></div>`;
     }
 
-    barDiv.appendChild(mult);
-    barDiv.appendChild(viz);
-    result.appendChild(barDiv);
+    div.appendChild(mult);
+    div.appendChild(viz);
+    result.appendChild(div);
   });
 }
 </script>
