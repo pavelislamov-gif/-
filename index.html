@@ -97,13 +97,15 @@ button.danger{ background:var(--accent); border:none; }
 
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
+/* ВАЖНО: добавили 3-ю колонку справа под “Хвост” */
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr;
-  gap:15px;
+  grid-template-columns:120px 1fr 120px;
+  gap:12px;
   border:1px solid var(--line);
   padding:10px;
   background:var(--panel);
+  align-items:center;
 }
 
 .mult{
@@ -114,6 +116,17 @@ button.danger{ background:var(--accent); border:none; }
   background:var(--panel2);
   line-height:1.2;
 }
+
+.tailBox{
+  border:1px solid var(--line);
+  padding:10px;
+  background:var(--panel2);
+  text-align:center;
+  font-weight:900;
+  line-height:1.15;
+}
+.tailBox .k{ font-size:12px; color:#9aa3b2; font-weight:800; }
+.tailBox .v{ font-size:16px; margin-top:4px; color:#e7eaf0; }
 
 .viz{
   display:flex;
@@ -173,8 +186,17 @@ button.danger{ background:var(--accent); border:none; }
   .stats{ border:1px solid #000; background:#fff; }
   .stat{ border:1px solid #000; background:#fff; color:#000; }
 
-  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
+  .bar{
+    border:1px solid #000;
+    background:#fff;
+    page-break-inside:avoid;
+    grid-template-columns:120px 1fr 120px;
+  }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
+
+  .tailBox{ border:1px solid #000; background:#fff; color:#000; }
+  .tailBox .k{ color:#000; font-size:11px; }
+  .tailBox .v{ color:#000; font-size:14px; }
 
   .viz{ border:1px solid #000; background:#fff; height:28px; }
 
@@ -345,6 +367,7 @@ function fitSegmentText(vizEl){
         t.style.fontSize = s + "px";
         if(t.scrollWidth <= seg.clientWidth) return;
       }
+      // если не влезло — скрываем (НО хвост всё равно будет справа в TailBox)
       t.style.display = "none";
     });
   });
@@ -405,7 +428,6 @@ function readStocks(){
   if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
   if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
 
-  // merge same lengths
   const m = new Map();
   for(const s of stocks){
     if(!m.has(s.len)) m.set(s.len, {len:s.len, qty:s.qty});
@@ -512,7 +534,6 @@ function calculate(){
   const p = readParts();
   if(!p.ok){ showError(p.error); return; }
 
-  // пока используем ПЕРВУЮ длину профиля как основную
   const stockLen = s.stocks[0].len;
 
   const packed = packBestFit(stockLen, p.parts, kerf);
@@ -536,7 +557,6 @@ function calculate(){
     <div class="stat"><b>Отход общий</b>${fmt(totalWaste)} (${fmt(eff)}%)</div>
   `;
 
-  // group identical layouts
   const groups = new Map();
   for(const pcs of bars){
     const sig = signature(stockLen, pcs);
@@ -549,6 +569,8 @@ function calculate(){
   for(const g of groupArr){
     const pieces = [...g.pieces].sort((a,b)=>b-a);
 
+    const rest = remainingLen(stockLen, pieces, kerf);
+
     const barEl = document.createElement("div");
     barEl.className = "bar";
 
@@ -559,7 +581,6 @@ function calculate(){
     const viz = document.createElement("div");
     viz.className = "viz";
 
-    // pieces + kerf between
     pieces.forEach((piece,i)=>{
       const seg = document.createElement("div");
       seg.className = "seg cut";
@@ -575,9 +596,6 @@ function calculate(){
       }
     });
 
-    const rest = remainingLen(stockLen, pieces, kerf);
-
-    // boundary before tail + tail
     if(rest > 0){
       const borderK = document.createElement("div");
       borderK.className = "seg kerf";
@@ -593,8 +611,15 @@ function calculate(){
 
     fitSegmentText(viz);
 
+    // ВАЖНО: хвост всегда виден справа, даже если сегмент узкий
+    const tailEl = document.createElement("div");
+    tailEl.className = "tailBox";
+    tailEl.innerHTML = `<div class="k">Хвост</div><div class="v">${fmt(rest)}</div>`;
+
     barEl.appendChild(multEl);
     barEl.appendChild(viz);
+    barEl.appendChild(tailEl);
+
     el.result.appendChild(barEl);
   }
 }
@@ -607,7 +632,6 @@ el.addPartBtn.addEventListener("click", () => addPartRow("", "1"));
 el.calcBtn.addEventListener("click", calculate);
 el.printBtn.addEventListener("click", () => window.print());
 
-// Enter to login only (в приложении Enter не пересчитывает)
 document.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   if(!el.loginBox.classList.contains("hidden")) doLogin();
