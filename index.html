@@ -18,7 +18,7 @@
   --bad:#ff6666;
 
   --fs:14px;
-  --h:30px;          /* компактная высота */
+  --h:30px;
   --pad:8px;
 }
 
@@ -66,7 +66,7 @@ input,button{
   background:#111827;
   color:white;
   padding:0 var(--pad);
-  font-size:13px;          /* компактнее */
+  font-size:13px;
 }
 button{ cursor:pointer; font-weight:900; }
 button.primary{ background:#1f2937; }
@@ -75,19 +75,27 @@ button.danger{ background:var(--accent); border:none; }
 .section{ margin-top:14px; }
 .list{ margin-top:8px; display:flex; flex-direction:column; gap:8px; }
 
-/* строки: длина | кол-во | кнопка */
+/* компактные строки: автоширина инпутов, без фиксированных колонок */
 .row{
-  display:grid;
-  grid-template-columns: 1fr 64px 34px; /* компактнее */
+  display:flex;
   gap:8px;
   align-items:center;
   border:1px solid var(--line);
   padding:8px;
   background:var(--panel);
+  flex-wrap:wrap;
 }
 
-.inputQty{
-  width:64px;
+.inpAuto{
+  width:72px;             /* стартовая */
+  min-width:56px;
+  max-width:320px;        /* ограничение чтобы не разъезжалось */
+  text-align:left;
+}
+.inpAutoQty{
+  width:44px;             /* стартовая */
+  min-width:40px;
+  max-width:90px;
   text-align:center;
   padding:0 6px;
 }
@@ -107,6 +115,21 @@ button.danger{ background:var(--accent); border:none; }
   color:var(--bad);
   background:rgba(183,28,28,.12);
   font-weight:900;
+}
+
+/* верхние компактные поля */
+.inline{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:end;
+}
+.inline .block{ display:flex; flex-direction:column; gap:6px; }
+.inline .block label{ margin-top:0; }
+.inpSmall{
+  width:80px;
+  min-width:60px;
+  max-width:140px;
 }
 
 /* статистика */
@@ -302,12 +325,17 @@ button.danger{ background:var(--accent); border:none; }
     <div class="no-print">
       <label>Название / что режем</label>
       <input id="jobInput" placeholder="Например: Рама 40×40, заказ №12">
+    </div>
 
-      <label>Ширина диска (мм)</label>
-      <input id="kerfInput" type="number" value="5" min="0" step="0.1">
-
-      <label>Порог делового хвоста (мм)</label>
-      <input id="goodTailMin" type="number" value="200" min="0" step="1">
+    <div class="inline no-print" style="margin-top:12px;">
+      <div class="block">
+        <label>Ширина диска (мм)</label>
+        <input id="kerfInput" class="inpSmall" type="number" value="5" min="0" step="0.1">
+      </div>
+      <div class="block">
+        <label>Порог делового хвоста (мм)</label>
+        <input id="goodTailMin" class="inpSmall" type="number" value="200" min="0" step="1">
+      </div>
     </div>
 
     <div class="section no-print">
@@ -373,7 +401,7 @@ const el = {
 
 /* ===== AUTH ===== */
 function showLogin(){ el.appBox.classList.add("hidden"); el.loginBox.classList.remove("hidden"); }
-function showApp(){ el.loginBox.classList.add("hidden"); el.appBox.classList.remove("hidden"); syncJobTitle(); }
+function showApp(){ el.loginBox.classList.add("hidden"); el.appBox.classList.remove("hidden"); syncJobTitle(); autoSizeAll(); }
 function doLogin(){
   const l = el.loginInput.value.trim();
   const p = el.passwordInput.value;
@@ -410,11 +438,41 @@ function usedLength(pieces, kerf){ return sum(pieces) + kerfTotalForCount(pieces
 function remainingLen(stockLen, pieces, kerf){ return stockLen - usedLength(pieces, kerf); }
 function canAdd(stockLen, pieces, piece, kerf){ return usedLength(pieces.concat([piece]), kerf) <= stockLen; }
 
+/* ===== Auto width for inputs ===== */
+const measurer = document.createElement("span");
+measurer.style.position = "absolute";
+measurer.style.visibility = "hidden";
+measurer.style.whiteSpace = "pre";
+measurer.style.left = "-9999px";
+measurer.style.top = "-9999px";
+document.body.appendChild(measurer);
+
+function autoSizeInput(inp, extra = 22){
+  const cs = window.getComputedStyle(inp);
+  measurer.style.font = cs.font;
+  measurer.style.letterSpacing = cs.letterSpacing;
+  const text = inp.value?.toString() || inp.placeholder || "";
+  measurer.textContent = text || "";
+  const w = Math.ceil(measurer.getBoundingClientRect().width) + extra;
+  const minW = parseInt(inp.dataset.minw || "40", 10);
+  const maxW = parseInt(inp.dataset.maxw || "320", 10);
+  inp.style.width = Math.max(minW, Math.min(maxW, w)) + "px";
+}
+
+function attachAutoSize(inp){
+  inp.addEventListener("input", ()=>autoSizeInput(inp));
+  inp.addEventListener("change", ()=>autoSizeInput(inp));
+  autoSizeInput(inp);
+}
+
+function autoSizeAll(){
+  document.querySelectorAll("input[data-autow]").forEach(inp=>autoSizeInput(inp));
+}
+
 /* ===== UI rows ===== */
 function removeRow(btn){
   const parent = btn.closest(".list");
   btn.closest(".row").remove();
-  // Не даём удалить последнюю строку: добавим пустую если совсем пусто
   if(parent && parent.children.length === 0){
     if(parent === el.stocksList) addStockRow("", "");
     if(parent === el.partsList) addPartRow("", "1");
@@ -425,24 +483,30 @@ function addStockRow(lenVal="3050", qtyVal=""){
   const r = document.createElement("div");
   r.className = "row";
   r.innerHTML = `
-    <input class="sLen" type="number" min="1" step="1" placeholder="Длина профиля" value="${lenVal}">
-    <input class="sQty inputQty" type="number" min="0" step="1" placeholder="∞" value="${qtyVal}">
+    <input class="sLen inpAuto" data-autow="1" data-minw="56" data-maxw="260" type="number" min="1" step="1" placeholder="Длина" value="${lenVal}">
+    <input class="sQty inpAutoQty" data-autow="1" data-minw="40" data-maxw="90" type="number" min="0" step="1" placeholder="∞" value="${qtyVal}">
     <button class="danger btnDel" type="button">−</button>
   `;
   r.querySelector("button").addEventListener("click", e=>removeRow(e.target));
   el.stocksList.appendChild(r);
+
+  attachAutoSize(r.querySelector(".sLen"));
+  attachAutoSize(r.querySelector(".sQty"));
 }
 
 function addPartRow(lenVal="", qtyVal="1"){
   const r = document.createElement("div");
   r.className = "row";
   r.innerHTML = `
-    <input class="pLen" type="number" min="1" step="1" placeholder="Длина заготовки" value="${lenVal}">
-    <input class="pQty inputQty" type="number" min="1" step="1" value="${qtyVal}">
+    <input class="pLen inpAuto" data-autow="1" data-minw="56" data-maxw="260" type="number" min="1" step="1" placeholder="Длина" value="${lenVal}">
+    <input class="pQty inpAutoQty" data-autow="1" data-minw="40" data-maxw="90" type="number" min="1" step="1" value="${qtyVal}">
     <button class="danger btnDel" type="button">−</button>
   `;
   r.querySelector("button").addEventListener("click", e=>removeRow(e.target));
   el.partsList.appendChild(r);
+
+  attachAutoSize(r.querySelector(".pLen"));
+  attachAutoSize(r.querySelector(".pQty"));
 }
 
 /* ===== Read inputs ===== */
@@ -618,8 +682,8 @@ function calculate(){
   `;
 
   /* группировка: сохраняем ПОРЯДОК ПЕРВОГО ПОЯВЛЕНИЯ */
-  const groups = new Map();       // sig -> group
-  const order = [];              // массив sig в порядке появления
+  const groups = new Map();
+  const order = [];
   for(const b of barsAll){
     const sig = signature(b.len, b.pieces);
     if(!groups.has(sig)){
@@ -705,6 +769,17 @@ document.addEventListener("keydown", e=>{
   if(e.key !== "Enter") return;
   if(!el.loginBox.classList.contains("hidden")) doLogin();
 });
+
+/* attach autosize to small inputs */
+el.kerfInput.setAttribute("data-autow","1");
+el.kerfInput.setAttribute("data-minw","60");
+el.kerfInput.setAttribute("data-maxw","140");
+attachAutoSize(el.kerfInput);
+
+el.goodTailMin.setAttribute("data-autow","1");
+el.goodTailMin.setAttribute("data-minw","60");
+el.goodTailMin.setAttribute("data-maxw","140");
+attachAutoSize(el.goodTailMin);
 
 /* ===== Init ===== */
 addStockRow("3050", "");
