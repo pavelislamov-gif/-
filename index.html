@@ -81,10 +81,7 @@ border:1px solid var(--line);
 padding:10px;
 background:var(--panel);
 }
-.inputQty{
-width:80px;
-text-align:center;
-}
+.inputQty{ width:80px; text-align:center; }
 
 /* ===== сообщения ===== */
 .err{
@@ -200,7 +197,6 @@ border-left:1px dashed #fff;
 opacity:.95;
 }
 
-/* метка хвоста в конце палки внутри визуализации */
 .tailLabel{
 position:absolute;
 right:4px;
@@ -301,13 +297,13 @@ body{ background:white; color:black; }
 </div>
 
 <div class="section no-print">
-<h3>Профили</h3>
+<h3>Профили (порядок как ввёл)</h3>
 <div id="stocksList" class="list"></div>
 <button class="primary" id="addStockBtn">+ Профиль</button>
 </div>
 
 <div class="section no-print">
-<h3>Заготовки</h3>
+<h3>Заготовки (обрабатываются по очереди строк)</h3>
 <div id="partsList" class="list"></div>
 <button class="primary" id="addPartBtn">+ Заготовка</button>
 </div>
@@ -414,7 +410,7 @@ return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString()
 }
 function sum(arr){ return arr.reduce((s,x)=>s+x,0); }
 
-/* рез после каждой детали */
+/* рез после каждой детали (как в твоём примере) */
 function kerfTotalForCount(pieceCount, kerf){
 return Math.max(0, pieceCount) * kerf;
 }
@@ -456,31 +452,34 @@ el.partsList.appendChild(r);
 }
 
 /* ===== Read inputs ===== */
-function readStocks(){
+function readStocksOrdered(){
 const rows = [...el.stocksList.querySelectorAll(".row")];
-const stocks = [];
 const bad = [];
+const ordered = [];
+const seen = new Set();
 
 rows.forEach((r, idx)=>{
 const lenStr = r.querySelector(".sLen").value.trim();
 if(lenStr === "") return;
-
 const len = Number(lenStr);
 if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
-stocks.push(Math.floor(len));
+const L = Math.floor(len);
+if(!seen.has(L)){
+seen.add(L);
+ordered.push(L); // порядок ввода сверху вниз
+}
 });
 
 if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
-if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
-
-const uniq = [...new Set(stocks)].sort((a,b)=>a-b);
-return { ok:true, stocks: uniq };
+if(ordered.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
+return { ok:true, stocks: ordered };
 }
 
-function readParts(){
+/* ВАЖНО: читаем заготовки ПО СТРОКАМ (для плавного перехода) */
+function readPartsByRows(){
 const rows = [...el.partsList.querySelectorAll(".row")];
-const parts = [];
 const bad = [];
+const items = []; // [{len, qty}] в порядке ввода
 
 rows.forEach((r, idx)=>{
 const lv = r.querySelector(".pLen").value.trim();
@@ -494,13 +493,12 @@ if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
 bad.push(idx+1);
 return;
 }
-for(let i=0;i<Math.floor(qty);i++) parts.push(Math.floor(len));
+items.push({ len: Math.floor(len), qty: Math.floor(qty) });
 });
 
 if(bad.length) return { ok:false, error:`Ошибка в строках заготовок: ${bad.join(", ")}` };
-if(parts.length === 0) return { ok:false, error:"Добавьте заготовки." };
-
-return { ok:true, parts };
+if(items.length === 0) return { ok:false, error:"Добавьте заготовки." };
+return { ok:true, items };
 }
 
 /* ===== UI output ===== */
@@ -518,23 +516,30 @@ el.appErr.textContent = "";
 el.appErr.classList.add("hidden");
 }
 
-/* ===== Packing: best-fit ===== */
-function packBestFit(stockLen, parts, kerf){
-const sorted = [...parts].sort((a,b)=>b-a);
-const bars = [];
-
-for(const piece of sorted){
-if(piece > stockLen){
-return { ok:false, error:`Заготовка ${piece} больше длины профиля ${stockLen}.` };
+/* ===== Выбор длины профиля для НОВОЙ палки: по порядку ввода ===== */
+function chooseStockLenOrdered(stockLensOrdered, piece){
+for(const L of stockLensOrdered){
+if(piece <= L) return L;
+}
+return null;
 }
 
+/* ===== Плавный переход (последовательная укладка по строкам) =====
+Идём по строкам заготовок (1005×..., потом 1020×...).
+Но при переходе 1020 разрешено докладывать в хвосты уже начатых палок.
+*/
+function packSequentialWithCarry(stockLensOrdered, partItems, kerf){
+const bars = []; // [{len, pieces:[]}] (len = длина профиля)
+
+// положить одну деталь в лучшие из уже открытых палок (любой длины)
+function placeIntoExistingBars(piece){
 let bestIdx = -1;
 let bestRem = Infinity;
 
 for(let i=0;i<bars.length;i++){
 const b = bars[i];
-if(canAdd(stockLen, b, piece, kerf)){
-const rem = remainingLen(stockLen, b.concat([piece]), kerf);
+if(canAdd(b.len, b.pieces, piece, kerf)){
+const rem = remainingLen(b.len, b.pieces.concat([piece]), kerf);
 if(rem < bestRem){
 bestRem = rem;
 bestIdx = i;
@@ -542,8 +547,27 @@ bestIdx = i;
 }
 }
 
-if(bestIdx >= 0) bars[bestIdx].push(piece);
-else bars.push([piece]);
+if(bestIdx >= 0){
+bars[bestIdx].pieces.push(piece);
+return true;
+}
+return false;
+}
+
+for(const item of partItems){
+for(let n=0;n<item.qty;n++){
+const piece = item.len;
+
+// 1) пытаемся положить в уже начатые палки (это и даёт "плавный переход")
+if(placeIntoExistingBars(piece)) continue;
+
+// 2) если никуда не влезло — открываем новую палку по порядку профилей
+const L = chooseStockLenOrdered(stockLensOrdered, piece);
+if(L === null){
+return { ok:false, error:`Заготовка ${piece} не помещается ни в одну длину профиля.` };
+}
+bars.push({ len:L, pieces:[piece] });
+}
 }
 
 return { ok:true, bars };
@@ -572,83 +596,100 @@ showError("Ошибка: порог делового хвоста должен �
 return;
 }
 
-const s = readStocks();
+const s = readStocksOrdered();
 if(!s.ok){ showError(s.error); return; }
 
-const p = readParts();
-if(!p.ok){ showError(p.error); return; }
+const pr = readPartsByRows();
+if(!pr.ok){ showError(pr.error); return; }
 
-const stockLen = s.stocks[0];
-
-const packed = packBestFit(stockLen, p.parts, kerf);
-if(!packed.ok){ showError(packed.error); return; }
-
-const bars = packed.bars;
-
-const totalCutsLen = sum(p.parts);
-const totalBars = bars.length;
-const totalStockLen = totalBars * stockLen;
-
-const totalCutCount = bars.reduce((acc, pcs)=>acc + pcs.length, 0);
-const totalKerf = bars.reduce((acc, pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
-
-// общий хвост по всем палкам
-const totalTailAll = bars.reduce((acc, pcs)=>acc + Math.max(0, remainingLen(stockLen, pcs, kerf)), 0);
-
-// делим хвосты на отход/деловой по порогу
-let tailWaste = 0; // < goodMin
-let tailGood = 0; // >= goodMin
-for(const pcs of bars){
-const r = Math.max(0, remainingLen(stockLen, pcs, kerf));
-if(r < goodMin) tailWaste += r;
-else tailGood += r;
+const packed = packSequentialWithCarry(s.stocks, pr.items, kerf);
+if(!packed.ok){
+showError(packed.error);
+return;
 }
 
-// общий отход “в мм”: резы + хвосты<порога
-const totalWasteStrict = totalKerf + tailWaste;
+const barsAll = packed.bars;
 
+const totalPiecesCount = pr.items.reduce((acc,x)=>acc + x.qty, 0);
+const totalCutsLen = pr.items.reduce((acc,x)=>acc + x.len * x.qty, 0);
+
+const totalBars = barsAll.length;
+const totalStockLen = barsAll.reduce((acc,b)=>acc + b.len, 0);
+
+const totalCutCount = barsAll.reduce((acc, b)=>acc + b.pieces.length, 0);
+const totalKerf = barsAll.reduce((acc, b)=>acc + kerfTotalForCount(b.pieces.length, kerf), 0);
+
+// хвосты (мм) + счетчики (шт)
+let totalTailAll = 0;
+let tailWaste = 0;
+let tailGood = 0;
+let tailWasteCount = 0;
+let tailGoodCount = 0;
+
+for(const b of barsAll){
+const r = Math.max(0, remainingLen(b.len, b.pieces, kerf));
+totalTailAll += r;
+if(r < goodMin){
+tailWaste += r;
+tailWasteCount += 1;
+}else{
+tailGood += r;
+tailGoodCount += 1;
+}
+}
+
+const totalWasteStrict = totalKerf + tailWaste;
 const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
 
 el.stats.classList.remove("hidden");
 el.stats.innerHTML = `
 <div class="stat"><b>Название</b><div class="v">${(el.jobInput.value||"").trim() || "—"}</div></div>
-<div class="stat"><b>Профиль (мм)</b><div class="v">${fmt(stockLen)}</div></div>
-<div class="stat"><b>Палок</b><div class="v">${fmt(totalBars)}</div></div>
+<div class="stat"><b>Профилей (шт)</b><div class="v">${fmt(totalBars)}</div></div>
+<div class="stat"><b>Деталей (шт)</b><div class="v">${fmt(totalPiecesCount)}</div></div>
 
-<div class="stat"><b>Деталей (шт)</b><div class="v">${fmt(p.parts.length)}</div></div>
 <div class="stat"><b>Сумма деталей (мм)</b><div class="v">${fmt(totalCutsLen)}</div></div>
 <div class="stat"><b>Резов (шт)</b><div class="v">${fmt(totalCutCount)}</div></div>
-
 <div class="stat"><b>Суммарный рез (мм)</b><div class="v">${fmt(totalKerf)}</div></div>
-<div class="stat"><b>Хвосты всего (мм)</b><div class="v">${fmt(totalTailAll)}</div></div>
-<div class="stat"><b>Порог делового (мм)</b><div class="v">${fmt(goodMin)}</div></div>
 
+<div class="stat"><b>Хвосты всего (мм)</b><div class="v">${fmt(totalTailAll)}</div></div>
 <div class="stat"><b>Деловой хвост (мм)</b><div class="v">${fmt(tailGood)}</div></div>
+<div class="stat"><b>Деловых хвостов (шт)</b><div class="v">${fmt(tailGoodCount)}</div></div>
+
 <div class="stat"><b>Хвосты в отход (мм)</b><div class="v">${fmt(tailWaste)}</div></div>
+<div class="stat"><b>Хвостов в отход (шт)</b><div class="v">${fmt(tailWasteCount)}</div></div>
 <div class="stat"><b>Отход (рез + хвост&lt;порога)</b><div class="v">${fmt(totalWasteStrict)}</div></div>
 
 <div class="stat"><b>Общая длина профиля (мм)</b><div class="v">${fmt(totalStockLen)}</div></div>
 <div class="stat"><b>Польза (%)</b><div class="v">${fmt(eff)}%</div></div>
-<div class="stat"><b>Деловой остаток (%)</b><div class="v">${fmt(totalStockLen ? (tailGood/totalStockLen*100) : 0)}%</div></div>
+<div class="stat"><b>Порог делового (мм)</b><div class="v">${fmt(goodMin)}</div></div>
 `;
 
-/* ===== Группируем одинаковые раскладки ===== */
+/* ===== Группируем одинаковые раскладки (по длине профиля) ===== */
 const groups = new Map();
-for(const pcs of bars){
-const sig = signature(stockLen, pcs);
+for(const b of barsAll){
+const sig = signature(b.len, b.pieces);
 if(!groups.has(sig)){
-groups.set(sig, { count:1, pieces:[...pcs] });
+groups.set(sig, { count:1, len:b.len, pieces:[...b.pieces] });
 }else{
 groups.get(sig).count++;
 }
 }
 
-const groupArr = [...groups.values()].sort((a,b)=>b.count-a.count);
+// порядок вывода по профилям как ввели, внутри по убыванию count
+const orderIndex = new Map();
+s.stocks.forEach((L, idx)=>orderIndex.set(L, idx));
+
+const groupArr = [...groups.values()].sort((a,b)=>{
+const oa = orderIndex.get(a.len) ?? 999;
+const ob = orderIndex.get(b.len) ?? 999;
+if(oa !== ob) return oa - ob;
+return b.count - a.count;
+});
 
 for(const g of groupArr){
 const pieces = [...g.pieces].sort((a,b)=>b-a);
 
-const restPer = Math.max(0, remainingLen(stockLen, pieces, kerf));
+const restPer = Math.max(0, remainingLen(g.len, pieces, kerf));
 const restTotal = restPer * g.count;
 
 const isGood = restPer >= goodMin;
@@ -661,7 +702,7 @@ barEl.className = "bar";
 
 const multEl = document.createElement("div");
 multEl.className = "mult";
-multEl.innerHTML = `${g.count}×<br>${stockLen}`;
+multEl.innerHTML = `${g.count}×<br>${g.len}`;
 
 const viz = document.createElement("div");
 viz.className = "viz";
@@ -669,20 +710,20 @@ viz.className = "viz";
 pieces.forEach((piece)=>{
 const seg = document.createElement("div");
 seg.className = "seg cut";
-seg.style.width = (piece/stockLen*100) + "%";
+seg.style.width = (piece/g.len*100) + "%";
 seg.textContent = piece;
 viz.appendChild(seg);
 
 const k = document.createElement("div");
 k.className = "seg kerf";
-k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
+k.style.width = Math.max((kerf/g.len*100), 0.8) + "%";
 viz.appendChild(k);
 });
 
 if(restPer > 0){
 const rs = document.createElement("div");
 rs.className = "seg rest";
-rs.style.width = Math.max(0, (restPer/stockLen*100)) + "%";
+rs.style.width = Math.max(0, (restPer/g.len*100)) + "%";
 rs.textContent = fmt(restPer);
 viz.appendChild(rs);
 }
@@ -695,7 +736,7 @@ viz.appendChild(tailLabel);
 const tailBox = document.createElement("div");
 tailBox.className = "tailBox";
 tailBox.innerHTML =
-`<div class="k">Остаток/палка</div><div class="v">${fmt(restPer)}</div>` +
+`<div class="k">Остаток/Профиль</div><div class="v">${fmt(restPer)}</div>` +
 `<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>` +
 `<div class="badge" style="background:${badgeBg};border:${badgeBorder};">${badgeText}</div>`;
 
