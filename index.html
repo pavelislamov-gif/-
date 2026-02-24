@@ -120,7 +120,7 @@ button.danger{ background:var(--accent); border:none; }
 
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr 140px;
+  grid-template-columns:120px 1fr 170px;
   gap:12px;
   border:1px solid var(--line);
   padding:10px;
@@ -147,6 +147,7 @@ button.danger{ background:var(--accent); border:none; }
 }
 .tailBox .k{ font-size:12px; color:var(--muted); font-weight:900; }
 .tailBox .v{ font-size:16px; margin-top:4px; color:var(--text); }
+.tailBox .v2{ font-size:13px; margin-top:6px; color:var(--text); font-weight:900; }
 
 /* ===== визуализация ===== */
 .viz{
@@ -217,7 +218,6 @@ button.danger{ background:var(--accent); border:none; }
   .no-print{ display:none !important; }
   .card{ border:none; padding:0; }
   .logoBox img{ height:34px; }
-
   .subTitle{ color:#000; }
 
   .stats{ border:1px solid #000; background:#fff; }
@@ -228,7 +228,7 @@ button.danger{ background:var(--accent); border:none; }
   .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
   .tailBox{ border:1px solid #000; background:#fff; }
-  .tailBox .k,.tailBox .v{ color:#000; }
+  .tailBox .k,.tailBox .v,.tailBox .v2{ color:#000; }
 
   .viz{ border:1px solid #000; background:#fff; height:28px; }
 
@@ -390,8 +390,8 @@ function syncJobTitle(){
 }
 (function restoreJobTitle(){
   const saved = localStorage.getItem("jobTitle") || "";
-  if(el.jobInput) el.jobInput.value = saved;
-  if(el.jobTitleView) el.jobTitleView.textContent = saved.trim() || "—";
+  el.jobInput.value = saved;
+  el.jobTitleView.textContent = saved.trim() || "—";
 })();
 el.jobInput.addEventListener("input", syncJobTitle);
 
@@ -560,7 +560,7 @@ function calculate(){
   const p = readParts();
   if(!p.ok){ showError(p.error); return; }
 
-  const stockLen = s.stocks[0]; // сейчас берём первую длину профиля
+  const stockLen = s.stocks[0];
 
   const packed = packBestFit(stockLen, p.parts, kerf);
   if(!packed.ok){ showError(packed.error); return; }
@@ -607,7 +607,12 @@ function calculate(){
 
   for(const g of groupArr){
     const pieces = [...g.pieces].sort((a,b)=>b-a);
-    const rest = remainingLen(stockLen, pieces, kerf);
+
+    // хвост на 1 палку
+    const restPer = remainingLen(stockLen, pieces, kerf);
+
+    // ВАЖНО: хвост всего по этой одинаковой раскладке = хвост/палка * количество
+    const restTotal = restPer * g.count;
 
     const barEl = document.createElement("div");
     barEl.className = "bar";
@@ -632,22 +637,26 @@ function calculate(){
       viz.appendChild(k);
     });
 
-    if(rest > 0){
+    if(restPer > 0){
       const rs = document.createElement("div");
       rs.className = "seg rest";
-      rs.style.width = Math.max(0, (rest/stockLen*100)) + "%";
-      rs.textContent = fmt(rest);
+      rs.style.width = Math.max(0, (restPer/stockLen*100)) + "%";
+      rs.textContent = fmt(restPer);
       viz.appendChild(rs);
     }
 
+    // метка хвоста в конце палки (на 1 палку)
     const tailLabel = document.createElement("div");
     tailLabel.className = "tailLabel";
-    tailLabel.textContent = fmt(rest);
+    tailLabel.textContent = fmt(restPer);
     viz.appendChild(tailLabel);
 
+    // справа показываем "остаток/палка" и "остаток всего"
     const tailBox = document.createElement("div");
     tailBox.className = "tailBox";
-    tailBox.innerHTML = `<div class="k">Остаток</div><div class="v">${fmt(rest)}</div>`;
+    tailBox.innerHTML =
+      `<div class="k">Остаток/палка</div><div class="v">${fmt(restPer)}</div>` +
+      `<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>`;
 
     barEl.appendChild(multEl);
     barEl.appendChild(viz);
