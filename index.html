@@ -7,25 +7,25 @@
 
 <style>
 :root{
-  --bg:#0f1115;
-  --card:#151922;
-  --panel:#0c1020;
-  --panel2:#0b0f1c;
-  --text:#e7eaf0;
-  --muted:#9aa3b2;
-  --line:#2a3140;
-  --accent:#b71c1c;
-  --bad:#ff6666;
+--bg:#0f1115;
+--card:#151922;
+--panel:#0c1020;
+--panel2:#0b0f1c;
+--text:#e7eaf0;
+--muted:#9aa3b2;
+--line:#2a3140;
+--accent:#b71c1c;
+--bad:#ff6666;
 }
 
 *{ box-sizing:border-box; border-radius:0 !important; }
 
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  font-size:15px;
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+font-size:15px;
 }
 
 .container{ max-width:1200px; margin:auto; padding:20px; }
@@ -33,10 +33,10 @@ body{
 .hidden{ display:none; }
 
 .header{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:16px;
+display:flex;
+align-items:center;
+gap:14px;
+margin-bottom:16px;
 }
 .logoBox{ height:48px; display:flex; align-items:center; }
 .logoBox img{ height:48px; width:auto; display:block; }
@@ -44,25 +44,25 @@ body{
 .headText{ min-width:0; }
 h1{ margin:0; font-size:20px; }
 .subTitle{
-  margin-top:4px;
-  font-size:13px;
-  color:var(--muted);
-  font-weight:800;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+margin-top:4px;
+font-size:13px;
+color:var(--muted);
+font-weight:800;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 h3{ margin:0 0 8px; font-size:16px; }
 
 label{ display:block; margin-top:12px; font-weight:900; font-size:13px; }
 
 input,button{
-  height:36px;
-  border:1px solid var(--line);
-  background:#111827;
-  color:white;
-  padding:0 10px;
-  font-size:14px;
+height:36px;
+border:1px solid var(--line);
+background:#111827;
+color:white;
+padding:0 10px;
+font-size:14px;
 }
 button{ cursor:pointer; font-weight:900; }
 button.primary{ background:#1f2937; }
@@ -73,43 +73,43 @@ button.danger{ background:var(--accent); border:none; }
 
 /* ===== строки: длина | кол-во (узкое) | кнопка ===== */
 .row{
-  display:grid;
-  grid-template-columns:1fr 80px auto;
-  gap:10px;
-  align-items:end;
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel);
+display:grid;
+grid-template-columns:1fr 80px auto;
+gap:10px;
+align-items:end;
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel);
 }
 .inputQty{
-  width:80px;
-  text-align:center;
+width:80px;
+text-align:center;
 }
 
 /* ===== сообщения ===== */
 .err{
-  margin-top:12px;
-  padding:10px;
-  border:1px solid var(--accent);
-  color:var(--bad);
-  background:rgba(183,28,28,.12);
-  font-weight:900;
+margin-top:12px;
+padding:10px;
+border:1px solid var(--accent);
+color:var(--bad);
+background:rgba(183,28,28,.12);
+font-weight:900;
 }
 
 /* ===== статистика ===== */
 .stats{
-  margin-top:20px;
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel);
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+margin-top:20px;
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel);
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
 }
 .stat{
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel2);
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel2);
 }
 .stat b{ display:block; margin-bottom:4px; font-size:12px; color:var(--muted); }
 .stat .v{ font-size:16px; font-weight:900; }
@@ -118,135 +118,135 @@ button.danger{ background:var(--accent); border:none; }
 .bars{ margin-top:20px; display:flex; flex-direction:column; gap:15px; }
 
 .bar{
-  display:grid;
-  grid-template-columns:120px 1fr 190px;
-  gap:12px;
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel);
-  align-items:center;
+display:grid;
+grid-template-columns:120px 1fr 190px;
+gap:12px;
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel);
+align-items:center;
 }
 
 .mult{
-  border:1px solid var(--line);
-  padding:10px;
-  text-align:center;
-  font-weight:900;
-  background:var(--panel2);
-  line-height:1.15;
+border:1px solid var(--line);
+padding:10px;
+text-align:center;
+font-weight:900;
+background:var(--panel2);
+line-height:1.15;
 }
 
 .tailBox{
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel2);
-  text-align:center;
-  font-weight:900;
-  line-height:1.15;
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel2);
+text-align:center;
+font-weight:900;
+line-height:1.15;
 }
 .tailBox .k{ font-size:12px; color:var(--muted); font-weight:900; }
 .tailBox .v{ font-size:16px; margin-top:4px; color:var(--text); }
 .tailBox .v2{ font-size:13px; margin-top:6px; color:var(--text); font-weight:900; }
 .badge{
-  display:inline-block;
-  margin-top:8px;
-  padding:4px 8px;
-  border:1px solid var(--line);
-  font-size:12px;
-  font-weight:900;
+display:inline-block;
+margin-top:8px;
+padding:4px 8px;
+border:1px solid var(--line);
+font-size:12px;
+font-weight:900;
 }
 
 /* ===== визуализация ===== */
 .viz{
-  position:relative;
-  display:flex;
-  height:30px;
-  border:1px solid var(--line);
-  background:var(--panel2);
-  overflow:hidden;
+position:relative;
+display:flex;
+height:30px;
+border:1px solid var(--line);
+background:var(--panel2);
+overflow:hidden;
 }
 
 .seg{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:13px;
-  overflow:hidden;
-  min-width:0;
-  white-space:nowrap;
-  padding:0 6px;
-  position:relative;
-  color:#0b0f1c;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:900;
+font-size:13px;
+overflow:hidden;
+min-width:0;
+white-space:nowrap;
+padding:0 6px;
+position:relative;
+color:#0b0f1c;
 }
 
 .seg.cut{ background:#3b82f6; }
 .seg.rest{ background:#9ca3af; color:#111; }
 
 .seg.kerf{
-  background:#111;
-  min-width:8px;
-  padding:0;
+background:#111;
+min-width:8px;
+padding:0;
 }
 .seg.kerf::after{
-  content:"";
-  position:absolute;
-  top:2px;
-  bottom:2px;
-  left:50%;
-  transform:translateX(-50%);
-  border-left:1px dashed #fff;
-  opacity:.95;
+content:"";
+position:absolute;
+top:2px;
+bottom:2px;
+left:50%;
+transform:translateX(-50%);
+border-left:1px dashed #fff;
+opacity:.95;
 }
 
 /* метка хвоста в конце палки внутри визуализации */
 .tailLabel{
-  position:absolute;
-  right:4px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:5;
-  font-weight:900;
-  font-size:12px;
-  line-height:1;
-  padding:4px 8px;
-  border:1px solid var(--line);
-  background:rgba(156,163,175,.92);
-  color:#111;
-  white-space:nowrap;
-  pointer-events:none;
+position:absolute;
+right:4px;
+top:50%;
+transform:translateY(-50%);
+z-index:5;
+font-weight:900;
+font-size:12px;
+line-height:1;
+padding:4px 8px;
+border:1px solid var(--line);
+background:rgba(156,163,175,.92);
+color:#111;
+white-space:nowrap;
+pointer-events:none;
 }
 
 /* ===== PRINT ===== */
 @media print{
-  @page{ size:A4; margin:10mm; }
-  body{ background:white; color:black; }
-  .no-print{ display:none !important; }
-  .card{ border:none; padding:0; }
-  .logoBox img{ height:34px; }
-  .subTitle{ color:#000; }
+@page{ size:A4; margin:10mm; }
+body{ background:white; color:black; }
+.no-print{ display:none !important; }
+.card{ border:none; padding:0; }
+.logoBox img{ height:34px; }
+.subTitle{ color:#000; }
 
-  .stats{ border:1px solid #000; background:#fff; }
-  .stat{ border:1px solid #000; background:#fff; color:#000; }
-  .stat b{ color:#000; }
-  .stat .v{ color:#000; }
+.stats{ border:1px solid #000; background:#fff; }
+.stat{ border:1px solid #000; background:#fff; color:#000; }
+.stat b{ color:#000; }
+.stat .v{ color:#000; }
 
-  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
-  .mult{ border:1px solid #000; background:#fff; color:#000; }
-  .tailBox{ border:1px solid #000; background:#fff; }
-  .tailBox .k,.tailBox .v,.tailBox .v2{ color:#000; }
-  .badge{ border:1px solid #000; }
+.bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
+.mult{ border:1px solid #000; background:#fff; color:#000; }
+.tailBox{ border:1px solid #000; background:#fff; }
+.tailBox .k,.tailBox .v,.tailBox .v2{ color:#000; }
+.badge{ border:1px solid #000; }
 
-  .viz{ border:1px solid #000; background:#fff; height:28px; }
+.viz{ border:1px solid #000; background:#fff; height:28px; }
 
-  .seg{ color:#000 !important; font-size:12px; }
-  .seg.cut{ background:#d9d9d9 !important; }
-  .seg.rest{ background:#bfbfbf !important; }
-  .seg.kerf{ background:#fff !important; min-width:10px; }
-  .seg.kerf::after{ border-left:1px dashed #000; }
+.seg{ color:#000 !important; font-size:12px; }
+.seg.cut{ background:#d9d9d9 !important; }
+.seg.rest{ background:#bfbfbf !important; }
+.seg.kerf{ background:#fff !important; min-width:10px; }
+.seg.kerf::after{ border-left:1px dashed #000; }
 
-  .tailLabel{ border:1px solid #000; background:#bfbfbf; color:#000; }
+.tailLabel{ border:1px solid #000; background:#bfbfbf; color:#000; }
 }
 </style>
 </head>
@@ -256,73 +256,73 @@ button.danger{ background:var(--accent); border:none; }
 
 <!-- LOGIN -->
 <div id="loginBox" class="card">
-  <div class="header">
-    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-    <div class="headText">
-      <h1>Вход в систему</h1>
-      <div class="subTitle">Раскрой профиля</div>
-    </div>
-  </div>
+<div class="header">
+<div class="logoBox"><img src="logo.png" alt="Logo"></div>
+<div class="headText">
+<h1>Вход в систему</h1>
+<div class="subTitle">Раскрой профиля</div>
+</div>
+</div>
 
-  <label>Логин</label>
-  <input id="loginInput" placeholder="masterclusterpro">
+<label>Логин</label>
+<input id="loginInput" placeholder="masterclusterpro">
 
-  <label>Пароль</label>
-  <input id="passwordInput" type="password" placeholder="qwerty">
+<label>Пароль</label>
+<input id="passwordInput" type="password" placeholder="qwerty">
 
-  <div class="section no-print" style="display:flex;gap:10px;align-items:center;">
-    <button class="primary" id="loginBtn">Войти</button>
-  </div>
+<div class="section no-print" style="display:flex;gap:10px;align-items:center;">
+<button class="primary" id="loginBtn">Войти</button>
+</div>
 
-  <div id="loginMsg" class="err hidden"></div>
+<div id="loginMsg" class="err hidden"></div>
 </div>
 
 <!-- APP -->
 <div id="appBox" class="hidden">
-  <div class="card">
+<div class="card">
 
-    <div class="header">
-      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-      <div class="headText" style="min-width:0;">
-        <h1>Раскрой профиля</h1>
-        <div class="subTitle" id="jobTitleView">—</div>
-      </div>
-    </div>
+<div class="header">
+<div class="logoBox"><img src="logo.png" alt="Logo"></div>
+<div class="headText" style="min-width:0;">
+<h1>Раскрой профиля</h1>
+<div class="subTitle" id="jobTitleView">—</div>
+</div>
+</div>
 
-    <div class="no-print">
-      <label>Название / что режем</label>
-      <input id="jobInput" placeholder="Например: Рама 40×40, заказ №12">
+<div class="no-print">
+<label>Название / что режем</label>
+<input id="jobInput" placeholder="Например: Рама 40×40, заказ №12">
 
-      <label>Ширина диска (мм)</label>
-      <input id="kerfInput" type="number" value="5" min="0" step="0.1">
+<label>Ширина диска (мм)</label>
+<input id="kerfInput" type="number" value="5" min="0" step="0.1">
 
-      <label>Порог делового хвоста (мм)</label>
-      <input id="goodTailMin" type="number" value="200" min="0" step="1">
-    </div>
+<label>Порог делового хвоста (мм)</label>
+<input id="goodTailMin" type="number" value="200" min="0" step="1">
+</div>
 
-    <div class="section no-print">
-      <h3>Профили</h3>
-      <div id="stocksList" class="list"></div>
-      <button class="primary" id="addStockBtn">+ Профиль</button>
-    </div>
+<div class="section no-print">
+<h3>Профили</h3>
+<div id="stocksList" class="list"></div>
+<button class="primary" id="addStockBtn">+ Профиль</button>
+</div>
 
-    <div class="section no-print">
-      <h3>Заготовки</h3>
-      <div id="partsList" class="list"></div>
-      <button class="primary" id="addPartBtn">+ Заготовка</button>
-    </div>
+<div class="section no-print">
+<h3>Заготовки</h3>
+<div id="partsList" class="list"></div>
+<button class="primary" id="addPartBtn">+ Заготовка</button>
+</div>
 
-    <div class="section no-print" style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="primary" id="calcBtn">Рассчитать</button>
-      <button class="primary" id="printBtn">Печать / PDF</button>
-      <button class="danger" id="logoutBtn">Выйти</button>
-    </div>
+<div class="section no-print" style="display:flex; gap:10px; flex-wrap:wrap;">
+<button class="primary" id="calcBtn">Рассчитать</button>
+<button class="primary" id="printBtn">Печать / PDF</button>
+<button class="danger" id="logoutBtn">Выйти</button>
+</div>
 
-    <div id="appErr" class="err hidden"></div>
-    <div id="stats" class="stats hidden"></div>
-    <div id="result" class="bars"></div>
+<div id="appErr" class="err hidden"></div>
+<div id="stats" class="stats hidden"></div>
+<div id="result" class="bars"></div>
 
-  </div>
+</div>
 </div>
 
 </div>
@@ -330,381 +330,381 @@ button.danger{ background:var(--accent); border:none; }
 <script>
 /* ===== USERS ===== */
 const USERS = {
-  "masterclusterpro":"qwerty",
-  "mastercluster":"qwerty"
+"masterclusterpro":"qwerty",
+"mastercluster":"qwerty"
 };
 
 /* ===== DOM ===== */
 const el = {
-  loginBox: document.getElementById("loginBox"),
-  appBox: document.getElementById("appBox"),
-  loginInput: document.getElementById("loginInput"),
-  passwordInput: document.getElementById("passwordInput"),
-  loginBtn: document.getElementById("loginBtn"),
-  loginMsg: document.getElementById("loginMsg"),
+loginBox: document.getElementById("loginBox"),
+appBox: document.getElementById("appBox"),
+loginInput: document.getElementById("loginInput"),
+passwordInput: document.getElementById("passwordInput"),
+loginBtn: document.getElementById("loginBtn"),
+loginMsg: document.getElementById("loginMsg"),
 
-  jobInput: document.getElementById("jobInput"),
-  jobTitleView: document.getElementById("jobTitleView"),
+jobInput: document.getElementById("jobInput"),
+jobTitleView: document.getElementById("jobTitleView"),
 
-  kerfInput: document.getElementById("kerfInput"),
-  goodTailMin: document.getElementById("goodTailMin"),
+kerfInput: document.getElementById("kerfInput"),
+goodTailMin: document.getElementById("goodTailMin"),
 
-  stocksList: document.getElementById("stocksList"),
-  partsList: document.getElementById("partsList"),
+stocksList: document.getElementById("stocksList"),
+partsList: document.getElementById("partsList"),
 
-  addStockBtn: document.getElementById("addStockBtn"),
-  addPartBtn: document.getElementById("addPartBtn"),
+addStockBtn: document.getElementById("addStockBtn"),
+addPartBtn: document.getElementById("addPartBtn"),
 
-  calcBtn: document.getElementById("calcBtn"),
-  printBtn: document.getElementById("printBtn"),
-  logoutBtn: document.getElementById("logoutBtn"),
+calcBtn: document.getElementById("calcBtn"),
+printBtn: document.getElementById("printBtn"),
+logoutBtn: document.getElementById("logoutBtn"),
 
-  appErr: document.getElementById("appErr"),
-  stats: document.getElementById("stats"),
-  result: document.getElementById("result"),
+appErr: document.getElementById("appErr"),
+stats: document.getElementById("stats"),
+result: document.getElementById("result"),
 };
 
 /* ===== AUTH ===== */
 function showLogin(){
-  el.appBox.classList.add("hidden");
-  el.loginBox.classList.remove("hidden");
+el.appBox.classList.add("hidden");
+el.loginBox.classList.remove("hidden");
 }
 function showApp(){
-  el.loginBox.classList.add("hidden");
-  el.appBox.classList.remove("hidden");
-  syncJobTitle();
+el.loginBox.classList.add("hidden");
+el.appBox.classList.remove("hidden");
+syncJobTitle();
 }
 function doLogin(){
-  const l = el.loginInput.value.trim();
-  const p = el.passwordInput.value;
-  el.loginMsg.classList.add("hidden");
-  el.loginMsg.textContent = "";
+const l = el.loginInput.value.trim();
+const p = el.passwordInput.value;
+el.loginMsg.classList.add("hidden");
+el.loginMsg.textContent = "";
 
-  if(USERS[l] && USERS[l] === p){
-    localStorage.setItem("authUser", l);
-    showApp();
-  }else{
-    el.loginMsg.textContent = "Неверный логин или пароль";
-    el.loginMsg.classList.remove("hidden");
-  }
+if(USERS[l] && USERS[l] === p){
+localStorage.setItem("authUser", l);
+showApp();
+}else{
+el.loginMsg.textContent = "Неверный логин или пароль";
+el.loginMsg.classList.remove("hidden");
+}
 }
 function logout(){
-  localStorage.removeItem("authUser");
-  location.reload();
+localStorage.removeItem("authUser");
+location.reload();
 }
 
 /* ===== Название / что режем ===== */
 function syncJobTitle(){
-  const t = (el.jobInput.value || "").trim();
-  el.jobTitleView.textContent = t || "—";
-  document.title = t ? ("Раскрой — " + t) : "Система раскроя профиля";
-  localStorage.setItem("jobTitle", t);
+const t = (el.jobInput.value || "").trim();
+el.jobTitleView.textContent = t || "—";
+document.title = t ? ("Раскрой — " + t) : "Система раскроя профиля";
+localStorage.setItem("jobTitle", t);
 }
 (function restoreJobTitle(){
-  const saved = localStorage.getItem("jobTitle") || "";
-  el.jobInput.value = saved;
-  el.jobTitleView.textContent = saved.trim() || "—";
+const saved = localStorage.getItem("jobTitle") || "";
+el.jobInput.value = saved;
+el.jobTitleView.textContent = saved.trim() || "—";
 })();
 el.jobInput.addEventListener("input", syncJobTitle);
 
 /* ===== HELPERS ===== */
 function fmt(n){
-  const r = Math.round(n);
-  return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
+const r = Math.round(n);
+return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
 }
 function sum(arr){ return arr.reduce((s,x)=>s+x,0); }
 
 /* рез после каждой детали */
 function kerfTotalForCount(pieceCount, kerf){
-  return Math.max(0, pieceCount) * kerf;
+return Math.max(0, pieceCount) * kerf;
 }
 function usedLength(pieces, kerf){
-  return sum(pieces) + kerfTotalForCount(pieces.length, kerf);
+return sum(pieces) + kerfTotalForCount(pieces.length, kerf);
 }
 function remainingLen(stockLen, pieces, kerf){
-  return stockLen - usedLength(pieces, kerf);
+return stockLen - usedLength(pieces, kerf);
 }
 function canAdd(stockLen, pieces, piece, kerf){
-  return usedLength(pieces.concat([piece]), kerf) <= stockLen;
+return usedLength(pieces.concat([piece]), kerf) <= stockLen;
 }
 
 /* ===== UI rows ===== */
 function removeRow(btn){ btn.closest(".row").remove(); }
 
 function addStockRow(lenVal="3050", qtyVal=""){
-  const r = document.createElement("div");
-  r.className = "row";
-  r.innerHTML = `
-    <input class="sLen" type="number" min="1" step="1" placeholder="Длина профиля" value="${lenVal}">
-    <input class="sQty inputQty" type="number" min="0" step="1" placeholder="∞" value="${qtyVal}">
-    <button class="danger" type="button">−</button>
-  `;
-  r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
-  el.stocksList.appendChild(r);
+const r = document.createElement("div");
+r.className = "row";
+r.innerHTML = `
+<input class="sLen" type="number" min="1" step="1" placeholder="Длина профиля" value="${lenVal}">
+<input class="sQty inputQty" type="number" min="0" step="1" placeholder="∞" value="${qtyVal}">
+<button class="danger" type="button">−</button>
+`;
+r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
+el.stocksList.appendChild(r);
 }
 
 function addPartRow(lenVal="", qtyVal="1"){
-  const r = document.createElement("div");
-  r.className = "row";
-  r.innerHTML = `
-    <input class="pLen" type="number" min="1" step="1" placeholder="Длина заготовки" value="${lenVal}">
-    <input class="pQty inputQty" type="number" min="1" step="1" value="${qtyVal}">
-    <button class="danger" type="button">−</button>
-  `;
-  r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
-  el.partsList.appendChild(r);
+const r = document.createElement("div");
+r.className = "row";
+r.innerHTML = `
+<input class="pLen" type="number" min="1" step="1" placeholder="Длина заготовки" value="${lenVal}">
+<input class="pQty inputQty" type="number" min="1" step="1" value="${qtyVal}">
+<button class="danger" type="button">−</button>
+`;
+r.querySelector("button").addEventListener("click", (e)=>removeRow(e.target));
+el.partsList.appendChild(r);
 }
 
 /* ===== Read inputs ===== */
 function readStocks(){
-  const rows = [...el.stocksList.querySelectorAll(".row")];
-  const stocks = [];
-  const bad = [];
+const rows = [...el.stocksList.querySelectorAll(".row")];
+const stocks = [];
+const bad = [];
 
-  rows.forEach((r, idx)=>{
-    const lenStr = r.querySelector(".sLen").value.trim();
-    if(lenStr === "") return;
+rows.forEach((r, idx)=>{
+const lenStr = r.querySelector(".sLen").value.trim();
+if(lenStr === "") return;
 
-    const len = Number(lenStr);
-    if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
-    stocks.push(Math.floor(len));
-  });
+const len = Number(lenStr);
+if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
+stocks.push(Math.floor(len));
+});
 
-  if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
-  if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
+if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
+if(stocks.length === 0) return { ok:false, error:"Добавьте хотя бы одну длину профиля." };
 
-  const uniq = [...new Set(stocks)].sort((a,b)=>a-b);
-  return { ok:true, stocks: uniq };
+const uniq = [...new Set(stocks)].sort((a,b)=>a-b);
+return { ok:true, stocks: uniq };
 }
 
 function readParts(){
-  const rows = [...el.partsList.querySelectorAll(".row")];
-  const parts = [];
-  const bad = [];
+const rows = [...el.partsList.querySelectorAll(".row")];
+const parts = [];
+const bad = [];
 
-  rows.forEach((r, idx)=>{
-    const lv = r.querySelector(".pLen").value.trim();
-    const qv = r.querySelector(".pQty").value.trim();
-    if(lv === "" && qv === "") return;
+rows.forEach((r, idx)=>{
+const lv = r.querySelector(".pLen").value.trim();
+const qv = r.querySelector(".pQty").value.trim();
+if(lv === "" && qv === "") return;
 
-    const len = Number(lv);
-    const qty = Number(qv);
+const len = Number(lv);
+const qty = Number(qv);
 
-    if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
-      bad.push(idx+1);
-      return;
-    }
-    for(let i=0;i<Math.floor(qty);i++) parts.push(Math.floor(len));
-  });
+if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
+bad.push(idx+1);
+return;
+}
+for(let i=0;i<Math.floor(qty);i++) parts.push(Math.floor(len));
+});
 
-  if(bad.length) return { ok:false, error:`Ошибка в строках заготовок: ${bad.join(", ")}` };
-  if(parts.length === 0) return { ok:false, error:"Добавьте заготовки." };
+if(bad.length) return { ok:false, error:`Ошибка в строках заготовок: ${bad.join(", ")}` };
+if(parts.length === 0) return { ok:false, error:"Добавьте заготовки." };
 
-  return { ok:true, parts };
+return { ok:true, parts };
 }
 
 /* ===== UI output ===== */
 function clearOutput(){
-  el.stats.classList.add("hidden");
-  el.stats.innerHTML = "";
-  el.result.innerHTML = "";
+el.stats.classList.add("hidden");
+el.stats.innerHTML = "";
+el.result.innerHTML = "";
 }
 function showError(text){
-  el.appErr.textContent = text;
-  el.appErr.classList.remove("hidden");
+el.appErr.textContent = text;
+el.appErr.classList.remove("hidden");
 }
 function hideError(){
-  el.appErr.textContent = "";
-  el.appErr.classList.add("hidden");
+el.appErr.textContent = "";
+el.appErr.classList.add("hidden");
 }
 
 /* ===== Packing: best-fit ===== */
 function packBestFit(stockLen, parts, kerf){
-  const sorted = [...parts].sort((a,b)=>b-a);
-  const bars = [];
+const sorted = [...parts].sort((a,b)=>b-a);
+const bars = [];
 
-  for(const piece of sorted){
-    if(piece > stockLen){
-      return { ok:false, error:`Заготовка ${piece} больше длины профиля ${stockLen}.` };
-    }
+for(const piece of sorted){
+if(piece > stockLen){
+return { ok:false, error:`Заготовка ${piece} больше длины профиля ${stockLen}.` };
+}
 
-    let bestIdx = -1;
-    let bestRem = Infinity;
+let bestIdx = -1;
+let bestRem = Infinity;
 
-    for(let i=0;i<bars.length;i++){
-      const b = bars[i];
-      if(canAdd(stockLen, b, piece, kerf)){
-        const rem = remainingLen(stockLen, b.concat([piece]), kerf);
-        if(rem < bestRem){
-          bestRem = rem;
-          bestIdx = i;
-        }
-      }
-    }
+for(let i=0;i<bars.length;i++){
+const b = bars[i];
+if(canAdd(stockLen, b, piece, kerf)){
+const rem = remainingLen(stockLen, b.concat([piece]), kerf);
+if(rem < bestRem){
+bestRem = rem;
+bestIdx = i;
+}
+}
+}
 
-    if(bestIdx >= 0) bars[bestIdx].push(piece);
-    else bars.push([piece]);
-  }
+if(bestIdx >= 0) bars[bestIdx].push(piece);
+else bars.push([piece]);
+}
 
-  return { ok:true, bars };
+return { ok:true, bars };
 }
 
 /* подпись раскладки для группировки */
 function signature(stockLen, pieces){
-  return stockLen + "|" + [...pieces].sort((a,b)=>b-a).join(",");
+return stockLen + "|" + [...pieces].sort((a,b)=>b-a).join(",");
 }
 
 /* ===== Calculate ===== */
 function calculate(){
-  hideError();
-  clearOutput();
-  syncJobTitle();
+hideError();
+clearOutput();
+syncJobTitle();
 
-  const kerf = Number(el.kerfInput.value);
-  if(!Number.isFinite(kerf) || kerf < 0){
-    showError("Ошибка: ширина диска должна быть 0 или больше.");
-    return;
-  }
+const kerf = Number(el.kerfInput.value);
+if(!Number.isFinite(kerf) || kerf < 0){
+showError("Ошибка: ширина диска должна быть 0 или больше.");
+return;
+}
 
-  const goodMin = Number(el.goodTailMin.value);
-  if(!Number.isFinite(goodMin) || goodMin < 0){
-    showError("Ошибка: порог делового хвоста должен быть 0 или больше.");
-    return;
-  }
+const goodMin = Number(el.goodTailMin.value);
+if(!Number.isFinite(goodMin) || goodMin < 0){
+showError("Ошибка: порог делового хвоста должен быть 0 или больше.");
+return;
+}
 
-  const s = readStocks();
-  if(!s.ok){ showError(s.error); return; }
+const s = readStocks();
+if(!s.ok){ showError(s.error); return; }
 
-  const p = readParts();
-  if(!p.ok){ showError(p.error); return; }
+const p = readParts();
+if(!p.ok){ showError(p.error); return; }
 
-  const stockLen = s.stocks[0];
+const stockLen = s.stocks[0];
 
-  const packed = packBestFit(stockLen, p.parts, kerf);
-  if(!packed.ok){ showError(packed.error); return; }
+const packed = packBestFit(stockLen, p.parts, kerf);
+if(!packed.ok){ showError(packed.error); return; }
 
-  const bars = packed.bars;
+const bars = packed.bars;
 
-  const totalCutsLen = sum(p.parts);
-  const totalBars = bars.length;
-  const totalStockLen = totalBars * stockLen;
+const totalCutsLen = sum(p.parts);
+const totalBars = bars.length;
+const totalStockLen = totalBars * stockLen;
 
-  const totalCutCount = bars.reduce((acc, pcs)=>acc + pcs.length, 0);
-  const totalKerf = bars.reduce((acc, pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
+const totalCutCount = bars.reduce((acc, pcs)=>acc + pcs.length, 0);
+const totalKerf = bars.reduce((acc, pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
 
-  // общий хвост по всем палкам
-  const totalTailAll = bars.reduce((acc, pcs)=>acc + Math.max(0, remainingLen(stockLen, pcs, kerf)), 0);
+// общий хвост по всем палкам
+const totalTailAll = bars.reduce((acc, pcs)=>acc + Math.max(0, remainingLen(stockLen, pcs, kerf)), 0);
 
-  // делим хвосты на отход/деловой по порогу
-  let tailWaste = 0;     // < goodMin
-  let tailGood = 0;      // >= goodMin
-  for(const pcs of bars){
-    const r = Math.max(0, remainingLen(stockLen, pcs, kerf));
-    if(r < goodMin) tailWaste += r;
-    else tailGood += r;
-  }
+// делим хвосты на отход/деловой по порогу
+let tailWaste = 0; // < goodMin
+let tailGood = 0; // >= goodMin
+for(const pcs of bars){
+const r = Math.max(0, remainingLen(stockLen, pcs, kerf));
+if(r < goodMin) tailWaste += r;
+else tailGood += r;
+}
 
-  // общий отход “в мм”: резы + хвосты<порога
-  const totalWasteStrict = totalKerf + tailWaste;
+// общий отход “в мм”: резы + хвосты<порога
+const totalWasteStrict = totalKerf + tailWaste;
 
-  const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
+const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
 
-  el.stats.classList.remove("hidden");
-  el.stats.innerHTML = `
-    <div class="stat"><b>Название</b><div class="v">${(el.jobInput.value||"").trim() || "—"}</div></div>
-    <div class="stat"><b>Профиль (мм)</b><div class="v">${fmt(stockLen)}</div></div>
-    <div class="stat"><b>Палок</b><div class="v">${fmt(totalBars)}</div></div>
+el.stats.classList.remove("hidden");
+el.stats.innerHTML = `
+<div class="stat"><b>Название</b><div class="v">${(el.jobInput.value||"").trim() || "—"}</div></div>
+<div class="stat"><b>Профиль (мм)</b><div class="v">${fmt(stockLen)}</div></div>
+<div class="stat"><b>Палок</b><div class="v">${fmt(totalBars)}</div></div>
 
-    <div class="stat"><b>Деталей (шт)</b><div class="v">${fmt(p.parts.length)}</div></div>
-    <div class="stat"><b>Сумма деталей (мм)</b><div class="v">${fmt(totalCutsLen)}</div></div>
-    <div class="stat"><b>Резов (шт)</b><div class="v">${fmt(totalCutCount)}</div></div>
+<div class="stat"><b>Деталей (шт)</b><div class="v">${fmt(p.parts.length)}</div></div>
+<div class="stat"><b>Сумма деталей (мм)</b><div class="v">${fmt(totalCutsLen)}</div></div>
+<div class="stat"><b>Резов (шт)</b><div class="v">${fmt(totalCutCount)}</div></div>
 
-    <div class="stat"><b>Суммарный рез (мм)</b><div class="v">${fmt(totalKerf)}</div></div>
-    <div class="stat"><b>Хвосты всего (мм)</b><div class="v">${fmt(totalTailAll)}</div></div>
-    <div class="stat"><b>Порог делового (мм)</b><div class="v">${fmt(goodMin)}</div></div>
+<div class="stat"><b>Суммарный рез (мм)</b><div class="v">${fmt(totalKerf)}</div></div>
+<div class="stat"><b>Хвосты всего (мм)</b><div class="v">${fmt(totalTailAll)}</div></div>
+<div class="stat"><b>Порог делового (мм)</b><div class="v">${fmt(goodMin)}</div></div>
 
-    <div class="stat"><b>Деловой хвост (мм)</b><div class="v">${fmt(tailGood)}</div></div>
-    <div class="stat"><b>Хвосты в отход (мм)</b><div class="v">${fmt(tailWaste)}</div></div>
-    <div class="stat"><b>Отход (рез + хвост&lt;порога)</b><div class="v">${fmt(totalWasteStrict)}</div></div>
+<div class="stat"><b>Деловой хвост (мм)</b><div class="v">${fmt(tailGood)}</div></div>
+<div class="stat"><b>Хвосты в отход (мм)</b><div class="v">${fmt(tailWaste)}</div></div>
+<div class="stat"><b>Отход (рез + хвост&lt;порога)</b><div class="v">${fmt(totalWasteStrict)}</div></div>
 
-    <div class="stat"><b>Общая длина профиля (мм)</b><div class="v">${fmt(totalStockLen)}</div></div>
-    <div class="stat"><b>Польза (%)</b><div class="v">${fmt(eff)}%</div></div>
-    <div class="stat"><b>Деловой остаток (%)</b><div class="v">${fmt(totalStockLen ? (tailGood/totalStockLen*100) : 0)}%</div></div>
-  `;
+<div class="stat"><b>Общая длина профиля (мм)</b><div class="v">${fmt(totalStockLen)}</div></div>
+<div class="stat"><b>Польза (%)</b><div class="v">${fmt(eff)}%</div></div>
+<div class="stat"><b>Деловой остаток (%)</b><div class="v">${fmt(totalStockLen ? (tailGood/totalStockLen*100) : 0)}%</div></div>
+`;
 
-  /* ===== Группируем одинаковые раскладки ===== */
-  const groups = new Map();
-  for(const pcs of bars){
-    const sig = signature(stockLen, pcs);
-    if(!groups.has(sig)){
-      groups.set(sig, { count:1, pieces:[...pcs] });
-    }else{
-      groups.get(sig).count++;
-    }
-  }
+/* ===== Группируем одинаковые раскладки ===== */
+const groups = new Map();
+for(const pcs of bars){
+const sig = signature(stockLen, pcs);
+if(!groups.has(sig)){
+groups.set(sig, { count:1, pieces:[...pcs] });
+}else{
+groups.get(sig).count++;
+}
+}
 
-  const groupArr = [...groups.values()].sort((a,b)=>b.count-a.count);
+const groupArr = [...groups.values()].sort((a,b)=>b.count-a.count);
 
-  for(const g of groupArr){
-    const pieces = [...g.pieces].sort((a,b)=>b-a);
+for(const g of groupArr){
+const pieces = [...g.pieces].sort((a,b)=>b-a);
 
-    const restPer = Math.max(0, remainingLen(stockLen, pieces, kerf));
-    const restTotal = restPer * g.count;
+const restPer = Math.max(0, remainingLen(stockLen, pieces, kerf));
+const restTotal = restPer * g.count;
 
-    const isGood = restPer >= goodMin;
-    const badgeText = isGood ? "Деловой" : "В отход";
-    const badgeBg = isGood ? "rgba(34,197,94,.12)" : "rgba(239,68,68,.12)";
-    const badgeBorder = isGood ? "1px solid rgba(34,197,94,.6)" : "1px solid rgba(239,68,68,.6)";
+const isGood = restPer >= goodMin;
+const badgeText = isGood ? "Деловой" : "В отход";
+const badgeBg = isGood ? "rgba(34,197,94,.12)" : "rgba(239,68,68,.12)";
+const badgeBorder = isGood ? "1px solid rgba(34,197,94,.6)" : "1px solid rgba(239,68,68,.6)";
 
-    const barEl = document.createElement("div");
-    barEl.className = "bar";
+const barEl = document.createElement("div");
+barEl.className = "bar";
 
-    const multEl = document.createElement("div");
-    multEl.className = "mult";
-    multEl.innerHTML = `${g.count}×<br>${stockLen}`;
+const multEl = document.createElement("div");
+multEl.className = "mult";
+multEl.innerHTML = `${g.count}×<br>${stockLen}`;
 
-    const viz = document.createElement("div");
-    viz.className = "viz";
+const viz = document.createElement("div");
+viz.className = "viz";
 
-    pieces.forEach((piece)=>{
-      const seg = document.createElement("div");
-      seg.className = "seg cut";
-      seg.style.width = (piece/stockLen*100) + "%";
-      seg.textContent = piece;
-      viz.appendChild(seg);
+pieces.forEach((piece)=>{
+const seg = document.createElement("div");
+seg.className = "seg cut";
+seg.style.width = (piece/stockLen*100) + "%";
+seg.textContent = piece;
+viz.appendChild(seg);
 
-      const k = document.createElement("div");
-      k.className = "seg kerf";
-      k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
-      viz.appendChild(k);
-    });
+const k = document.createElement("div");
+k.className = "seg kerf";
+k.style.width = Math.max((kerf/stockLen*100), 0.8) + "%";
+viz.appendChild(k);
+});
 
-    if(restPer > 0){
-      const rs = document.createElement("div");
-      rs.className = "seg rest";
-      rs.style.width = Math.max(0, (restPer/stockLen*100)) + "%";
-      rs.textContent = fmt(restPer);
-      viz.appendChild(rs);
-    }
+if(restPer > 0){
+const rs = document.createElement("div");
+rs.className = "seg rest";
+rs.style.width = Math.max(0, (restPer/stockLen*100)) + "%";
+rs.textContent = fmt(restPer);
+viz.appendChild(rs);
+}
 
-    const tailLabel = document.createElement("div");
-    tailLabel.className = "tailLabel";
-    tailLabel.textContent = fmt(restPer);
-    viz.appendChild(tailLabel);
+const tailLabel = document.createElement("div");
+tailLabel.className = "tailLabel";
+tailLabel.textContent = fmt(restPer);
+viz.appendChild(tailLabel);
 
-    const tailBox = document.createElement("div");
-    tailBox.className = "tailBox";
-    tailBox.innerHTML =
-      `<div class="k">Остаток/палка</div><div class="v">${fmt(restPer)}</div>` +
-      `<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>` +
-      `<div class="badge" style="background:${badgeBg};border:${badgeBorder};">${badgeText}</div>`;
+const tailBox = document.createElement("div");
+tailBox.className = "tailBox";
+tailBox.innerHTML =
+`<div class="k">Остаток/палка</div><div class="v">${fmt(restPer)}</div>` +
+`<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>` +
+`<div class="badge" style="background:${badgeBg};border:${badgeBorder};">${badgeText}</div>`;
 
-    barEl.appendChild(multEl);
-    barEl.appendChild(viz);
-    barEl.appendChild(tailBox);
+barEl.appendChild(multEl);
+barEl.appendChild(viz);
+barEl.appendChild(tailBox);
 
-    el.result.appendChild(barEl);
-  }
+el.result.appendChild(barEl);
+}
 }
 
 /* ===== Events ===== */
@@ -716,8 +716,8 @@ el.calcBtn.addEventListener("click", calculate);
 el.printBtn.addEventListener("click", () => window.print());
 
 document.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter") return;
-  if(!el.loginBox.classList.contains("hidden")) doLogin();
+if(e.key !== "Enter") return;
+if(!el.loginBox.classList.contains("hidden")) doLogin();
 });
 
 /* ===== Init ===== */
