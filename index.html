@@ -52,7 +52,6 @@ h1{ margin:0; font-size:20px; }
   overflow:hidden;
   text-overflow:ellipsis;
 }
-
 h3{ margin:0 0 8px; font-size:16px; }
 
 label{ display:block; margin-top:12px; font-weight:900; font-size:13px; }
@@ -120,7 +119,7 @@ button.danger{ background:var(--accent); border:none; }
 
 .bar{
   display:grid;
-  grid-template-columns:120px 1fr 170px;
+  grid-template-columns:120px 1fr 190px;
   gap:12px;
   border:1px solid var(--line);
   padding:10px;
@@ -148,6 +147,14 @@ button.danger{ background:var(--accent); border:none; }
 .tailBox .k{ font-size:12px; color:var(--muted); font-weight:900; }
 .tailBox .v{ font-size:16px; margin-top:4px; color:var(--text); }
 .tailBox .v2{ font-size:13px; margin-top:6px; color:var(--text); font-weight:900; }
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:4px 8px;
+  border:1px solid var(--line);
+  font-size:12px;
+  font-weight:900;
+}
 
 /* ===== визуализация ===== */
 .viz{
@@ -229,6 +236,7 @@ button.danger{ background:var(--accent); border:none; }
   .mult{ border:1px solid #000; background:#fff; color:#000; }
   .tailBox{ border:1px solid #000; background:#fff; }
   .tailBox .k,.tailBox .v,.tailBox .v2{ color:#000; }
+  .badge{ border:1px solid #000; }
 
   .viz{ border:1px solid #000; background:#fff; height:28px; }
 
@@ -287,6 +295,9 @@ button.danger{ background:var(--accent); border:none; }
 
       <label>Ширина диска (мм)</label>
       <input id="kerfInput" type="number" value="5" min="0" step="0.1">
+
+      <label>Порог делового хвоста (мм)</label>
+      <input id="goodTailMin" type="number" value="200" min="0" step="1">
     </div>
 
     <div class="section no-print">
@@ -336,6 +347,7 @@ const el = {
   jobTitleView: document.getElementById("jobTitleView"),
 
   kerfInput: document.getElementById("kerfInput"),
+  goodTailMin: document.getElementById("goodTailMin"),
 
   stocksList: document.getElementById("stocksList"),
   partsList: document.getElementById("partsList"),
@@ -554,6 +566,12 @@ function calculate(){
     return;
   }
 
+  const goodMin = Number(el.goodTailMin.value);
+  if(!Number.isFinite(goodMin) || goodMin < 0){
+    showError("Ошибка: порог делового хвоста должен быть 0 или больше.");
+    return;
+  }
+
   const s = readStocks();
   if(!s.ok){ showError(s.error); return; }
 
@@ -574,7 +592,21 @@ function calculate(){
   const totalCutCount = bars.reduce((acc, pcs)=>acc + pcs.length, 0);
   const totalKerf = bars.reduce((acc, pcs)=>acc + kerfTotalForCount(pcs.length, kerf), 0);
 
-  const totalWaste = totalStockLen - totalCutsLen - totalKerf;
+  // общий хвост по всем палкам
+  const totalTailAll = bars.reduce((acc, pcs)=>acc + Math.max(0, remainingLen(stockLen, pcs, kerf)), 0);
+
+  // делим хвосты на отход/деловой по порогу
+  let tailWaste = 0;     // < goodMin
+  let tailGood = 0;      // >= goodMin
+  for(const pcs of bars){
+    const r = Math.max(0, remainingLen(stockLen, pcs, kerf));
+    if(r < goodMin) tailWaste += r;
+    else tailGood += r;
+  }
+
+  // общий отход “в мм”: резы + хвосты<порога
+  const totalWasteStrict = totalKerf + tailWaste;
+
   const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
 
   el.stats.classList.remove("hidden");
@@ -588,8 +620,16 @@ function calculate(){
     <div class="stat"><b>Резов (шт)</b><div class="v">${fmt(totalCutCount)}</div></div>
 
     <div class="stat"><b>Суммарный рез (мм)</b><div class="v">${fmt(totalKerf)}</div></div>
-    <div class="stat"><b>Отход общий (мм)</b><div class="v">${fmt(totalWaste)}</div></div>
+    <div class="stat"><b>Хвосты всего (мм)</b><div class="v">${fmt(totalTailAll)}</div></div>
+    <div class="stat"><b>Порог делового (мм)</b><div class="v">${fmt(goodMin)}</div></div>
+
+    <div class="stat"><b>Деловой хвост (мм)</b><div class="v">${fmt(tailGood)}</div></div>
+    <div class="stat"><b>Хвосты в отход (мм)</b><div class="v">${fmt(tailWaste)}</div></div>
+    <div class="stat"><b>Отход (рез + хвост&lt;порога)</b><div class="v">${fmt(totalWasteStrict)}</div></div>
+
+    <div class="stat"><b>Общая длина профиля (мм)</b><div class="v">${fmt(totalStockLen)}</div></div>
     <div class="stat"><b>Польза (%)</b><div class="v">${fmt(eff)}%</div></div>
+    <div class="stat"><b>Деловой остаток (%)</b><div class="v">${fmt(totalStockLen ? (tailGood/totalStockLen*100) : 0)}%</div></div>
   `;
 
   /* ===== Группируем одинаковые раскладки ===== */
@@ -608,11 +648,13 @@ function calculate(){
   for(const g of groupArr){
     const pieces = [...g.pieces].sort((a,b)=>b-a);
 
-    // хвост на 1 палку
-    const restPer = remainingLen(stockLen, pieces, kerf);
-
-    // ВАЖНО: хвост всего по этой одинаковой раскладке = хвост/палка * количество
+    const restPer = Math.max(0, remainingLen(stockLen, pieces, kerf));
     const restTotal = restPer * g.count;
+
+    const isGood = restPer >= goodMin;
+    const badgeText = isGood ? "Деловой" : "В отход";
+    const badgeBg = isGood ? "rgba(34,197,94,.12)" : "rgba(239,68,68,.12)";
+    const badgeBorder = isGood ? "1px solid rgba(34,197,94,.6)" : "1px solid rgba(239,68,68,.6)";
 
     const barEl = document.createElement("div");
     barEl.className = "bar";
@@ -645,18 +687,17 @@ function calculate(){
       viz.appendChild(rs);
     }
 
-    // метка хвоста в конце палки (на 1 палку)
     const tailLabel = document.createElement("div");
     tailLabel.className = "tailLabel";
     tailLabel.textContent = fmt(restPer);
     viz.appendChild(tailLabel);
 
-    // справа показываем "остаток/палка" и "остаток всего"
     const tailBox = document.createElement("div");
     tailBox.className = "tailBox";
     tailBox.innerHTML =
       `<div class="k">Остаток/палка</div><div class="v">${fmt(restPer)}</div>` +
-      `<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>`;
+      `<div class="k" style="margin-top:8px;">Остаток всего</div><div class="v2">${fmt(restTotal)}</div>` +
+      `<div class="badge" style="background:${badgeBg};border:${badgeBorder};">${badgeText}</div>`;
 
     barEl.appendChild(multEl);
     barEl.appendChild(viz);
