@@ -1,882 +1,448 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Система раскроя профиля</title>
 
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#151922;
-  --panel:#0c1020;
-  --panel2:#0b0f1c;
-  --text:#e7eaf0;
-  --muted:#9aa3b2;
-  --line:#2a3140;
-  --accent:#b71c1c;
-  --ok:#22c55e;
-  --bad:#ef4444;
 
-  --fs:14px;
-  --h:32px;
-  --pad:8px;
+:root{
+--bg:#0f1115;
+--card:#151922;
+--panel:#0c1020;
+--text:#e7eaf0;
+--muted:#9aa3b2;
+--line:#2a3140;
+--accent:#b71c1c;
 }
 
-*{ box-sizing:border-box; border-radius:0 !important; }
+*{
+box-sizing:border-box;
+border-radius:0!important;
+}
 
 body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:var(--bg);
-  color:var(--text);
-  font-size:var(--fs);
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+font-size:14px;
 }
 
-.container{ max-width:1100px; margin:0 auto; padding:18px; }
-.card{ background:var(--card); border:1px solid var(--line); padding:18px; }
-.hidden{ display:none; }
+.container{
+max-width:1100px;
+margin:auto;
+padding:18px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--line);
+padding:18px;
+}
+
+.hidden{
+display:none;
+}
 
 .header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
+display:flex;
+gap:12px;
+align-items:center;
+margin-bottom:14px;
 }
-.logoBox{ height:44px; display:flex; align-items:center; }
-.logoBox img{ height:44px; width:auto; display:block; }
 
-.htext{ min-width:0; }
-h1{ margin:0; font-size:18px; }
+.logoBox img{
+height:44px;
+}
+
+h1{
+margin:0;
+font-size:18px;
+}
+
 .sub{
-  margin-top:4px;
-  font-size:12px;
-  font-weight:800;
-  color:var(--muted);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+font-size:12px;
+color:var(--muted);
+font-weight:800;
+margin-top:4px;
 }
 
-label{ display:block; margin:10px 0 6px; font-weight:900; font-size:12px; color:#dbe2f5; }
+label{
+display:block;
+margin-top:10px;
+margin-bottom:6px;
+font-size:12px;
+font-weight:900;
+}
 
 input,button{
-  height:var(--h);
-  border:1px solid var(--line);
-  background:#111827;
-  color:var(--text);
-  padding:0 var(--pad);
-  font-size:13px;
+height:32px;
+border:1px solid var(--line);
+background:#111827;
+color:white;
+padding:0 8px;
+font-size:13px;
 }
-input::placeholder{ color:#6b7280; }
 
 button{
-  cursor:pointer;
-  font-weight:900;
-  background:#1f2937;
+font-weight:900;
+cursor:pointer;
+background:#263244;
 }
-button.primary{ background:#263244; }
-button.ghost{ background:transparent; }
-button.danger{ background:var(--accent); border:none; }
+
+button.danger{
+background:var(--accent);
+border:none;
+}
+
+.section{
+margin-top:16px;
+}
 
 .row{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  border:1px solid var(--line);
-  background:var(--panel);
-  padding:8px;
-  flex-wrap:wrap;
+display:flex;
+gap:8px;
+border:1px solid var(--line);
+background:var(--panel);
+padding:8px;
+align-items:center;
 }
 
-.list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
-.section{ margin-top:16px; }
+.list{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.inpLen{
+min-width:86px;
+max-width:320px;
+}
+
+.inpQty{
+min-width:86px;
+max-width:320px;
+text-align:center;
+}
 
 .btnDel{
-  width:36px;
-  padding:0;
-  font-size:16px;
-  text-align:center;
+width:36px;
 }
 
-.inline{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  align-items:end;
-}
-.inline .block{ display:flex; flex-direction:column; gap:6px; }
-.inline .block label{ margin:0; }
-
-.small{
-  min-width:70px;
-  max-width:140px;
-}
-
-.msg{
-  margin-top:10px;
-  padding:10px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  font-weight:900;
-}
-.msg.bad{ border-color:var(--bad); color:#ffb4b4; background:rgba(239,68,68,.10); }
-.msg.ok{ border-color:var(--ok); color:#b6ffd0; background:rgba(34,197,94,.10); }
-
-/* === Автоширина полей === */
-.inpLen{
-  min-width:86px;      /* минимум под 4 цифры */
-  max-width:320px;
-}
-.inpQty{
-  min-width:86px;
-  max-width:320px;
-  text-align:center;
-  padding:0 6px;
-}
-
-/* === Статистика === */
 .stats{
-  margin-top:16px;
-  border:1px solid var(--line);
-  padding:10px;
-  background:var(--panel);
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+margin-top:16px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
 }
-.stat{
-  border:1px solid var(--line);
-  background:var(--panel2);
-  padding:10px;
-}
-.stat .k{ font-size:12px; color:var(--muted); font-weight:900; }
-.stat .v{ margin-top:4px; font-size:16px; font-weight:900; }
 
-/* === Результат === */
-.bars{ margin-top:16px; display:flex; flex-direction:column; gap:12px; }
+.stat{
+border:1px solid var(--line);
+background:var(--panel);
+padding:10px;
+}
+
+.stat .k{
+font-size:12px;
+color:var(--muted);
+font-weight:900;
+}
+
+.stat .v{
+font-size:16px;
+font-weight:900;
+margin-top:4px;
+}
+
+.bars{
+margin-top:16px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
 .bar{
-  display:grid;
-  grid-template-columns:110px 1fr 180px;
-  gap:10px;
-  border:1px solid var(--line);
-  background:var(--panel);
-  padding:10px;
-  align-items:center;
+display:grid;
+grid-template-columns:100px 1fr 150px;
+gap:10px;
+border:1px solid var(--line);
+padding:10px;
+background:var(--panel);
+align-items:center;
 }
+
 .mult{
-  border:1px solid var(--line);
-  background:var(--panel2);
-  padding:8px;
-  text-align:center;
-  font-weight:900;
-  line-height:1.1;
+text-align:center;
+font-weight:900;
+border:1px solid var(--line);
+padding:8px;
 }
+
 .tailBox{
-  border:1px solid var(--line);
-  background:var(--panel2);
-  padding:8px;
-  text-align:center;
-}
-.tailBox .k{ font-size:12px; color:var(--muted); font-weight:900; }
-.tailBox .v{ margin-top:4px; font-size:16px; font-weight:900; }
-.badge{
-  display:inline-block;
-  margin-top:8px;
-  padding:4px 8px;
-  border:1px solid var(--line);
-  font-size:12px;
-  font-weight:900;
+border:1px solid var(--line);
+padding:8px;
+text-align:center;
 }
 
 .viz{
-  position:relative;
-  display:flex;
-  height:28px;
-  border:1px solid var(--line);
-  background:var(--panel2);
-  overflow:hidden;
+display:flex;
+height:28px;
+border:1px solid var(--line);
+overflow:hidden;
 }
 
 .seg{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:13px;
-  padding:0 6px;
-  overflow:hidden;
-  white-space:nowrap;
-  min-width:0;
-  color:#0b0f1c;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:900;
+font-size:12px;
+padding:0 6px;
+white-space:nowrap;
 }
-.seg.cut{ background:#3b82f6; }
-.seg.rest{ background:#9ca3af; color:#111; }
 
-/* "Рез" — не сегмент длины, а тонкий разделитель */
+.cut{
+background:#3b82f6;
+}
+
+.rest{
+background:#9ca3af;
+color:black;
+}
+
 .sep{
-  width:0;
-  position:relative;
-}
-.sep::after{
-  content:"";
-  position:absolute;
-  top:3px;
-  bottom:3px;
-  left:-1px;
-  border-left:1px dashed rgba(255,255,255,.95);
+width:0;
+position:relative;
 }
 
-/* пунктир между последним отрезком и хвостом */
-.sep.tail::after{
-  border-left:1px dashed rgba(255,255,255,.95);
+.sep::after{
+content:"";
+position:absolute;
+top:3px;
+bottom:3px;
+left:-1px;
+border-left:1px dashed white;
 }
 
 .tailLabel{
-  position:absolute;
-  right:4px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:3;
-  font-weight:900;
-  font-size:12px;
-  padding:4px 8px;
-  border:1px solid var(--line);
-  background:rgba(156,163,175,.92);
-  color:#111;
-  white-space:nowrap;
-  pointer-events:none;
+position:absolute;
+right:4px;
+top:50%;
+transform:translateY(-50%);
+font-size:12px;
+font-weight:900;
+padding:2px 6px;
+background:#bfbfbf;
+color:black;
+border:1px solid var(--line);
 }
 
-/* PRINT */
-@media print{
-  @page{ size:A4; margin:10mm; }
-  body{ background:white; color:black; }
-  .no-print{ display:none !important; }
-  .container{ max-width:none; padding:0; }
-  .card{ border:none; padding:0; }
-  .logoBox img{ height:28px; }
-  .sub{ color:#000; }
-
-  .stats{ border:1px solid #000; background:#fff; gap:6px; }
-  .stat{ border:1px solid #000; background:#fff; padding:6px; }
-  .stat .k, .stat .v{ color:#000; }
-  .stat .v{ font-size:12px; }
-
-  .bar{ border:1px solid #000; background:#fff; page-break-inside:avoid; }
-  .mult, .tailBox{ border:1px solid #000; background:#fff; color:#000; }
-  .badge{ border:1px solid #000; background:#fff; color:#000; }
-
-  .viz{ border:1px solid #000; background:#fff; height:26px; }
-  .seg{ color:#000 !important; font-size:12px; }
-  .seg.cut{ background:#d9d9d9 !important; }
-  .seg.rest{ background:#bfbfbf !important; }
-  .sep::after{ border-left:1px dashed #000; }
-  .tailLabel{ border:1px solid #000; background:#bfbfbf; color:#000; }
-}
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
-<!-- LOGIN -->
 <div id="loginBox" class="card">
-  <div class="header">
-    <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-    <div class="htext">
-      <h1>Вход в систему</h1>
-      <div class="sub">Раскрой профиля</div>
-    </div>
-  </div>
 
-  <label>Логин</label>
-  <input id="login" type="text" placeholder="masterclusterpro">
-
-  <label>Пароль</label>
-  <input id="password" type="password" placeholder="qwerty">
-
-  <div class="section no-print" style="display:flex;gap:10px;">
-    <button class="primary" id="loginBtn">Войти</button>
-  </div>
-
-  <div id="loginMsg" class="msg bad hidden"></div>
+<div class="header">
+<div class="logoBox">
+<img src="logo.png">
+</div>
+<div>
+<h1>Вход в систему</h1>
+<div class="sub">Раскрой профиля</div>
+</div>
 </div>
 
-<!-- APP -->
+<label>Логин</label>
+<input id="login">
+
+<label>Пароль</label>
+<input id="password" type="password">
+
+<button onclick="login()">Войти</button>
+
+<div id="loginMsg"></div>
+
+</div>
+
 <div id="appBox" class="hidden">
-  <div class="card">
 
-    <div class="header">
-      <div class="logoBox"><img src="logo.png" alt="Logo"></div>
-      <div class="htext">
-        <h1>Раскрой профиля</h1>
-        <div class="sub" id="jobSub">—</div>
-      </div>
-    </div>
+<div class="card">
 
-    <div class="no-print">
-      <label>Название / что режем</label>
-      <input id="jobName" type="text" placeholder="Например: Профиль НПС, заказ №12">
-    </div>
+<div class="header">
+<div class="logoBox">
+<img src="logo.png">
+</div>
 
-    <div class="inline no-print" style="margin-top:12px;">
-      <div class="block">
-        <label>Ширина диска (мм)</label>
-        <input id="kerf" class="small" type="number" value="5" min="0" step="0.1">
-      </div>
-      <div class="block">
-        <label>Порог делового хвоста (мм)</label>
-        <input id="goodTailMin" class="small" type="number" value="200" min="0" step="1">
-      </div>
-    </div>
+<div>
+<h1>Раскрой профиля</h1>
+<div class="sub" id="jobTitle">—</div>
+</div>
+</div>
 
-    <div class="section no-print">
-      <h3>Профиль</h3>
-      <div id="stocksList" class="list"></div>
-      <button class="primary" id="addStock">+ Профиль</button>
-    </div>
+<label>Название / что режем</label>
+<input id="jobInput">
 
-    <div class="section no-print">
-      <h3>Заготовка</h3>
-      <div id="partsList" class="list"></div>
-      <button class="primary" id="addPart">+ Заготовка</button>
-    </div>
+<div class="section">
 
-    <div class="section no-print" style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="primary" id="calcBtn">Рассчитать</button>
-      <button class="primary" id="printBtn">Печать / PDF</button>
-      <button class="danger" id="logoutBtn">Выйти</button>
-    </div>
+<h3>Профиль</h3>
 
-    <div id="appErr" class="msg bad hidden"></div>
+<div id="stocksList" class="list"></div>
 
-    <div id="stats" class="stats hidden"></div>
-    <div id="result" class="bars"></div>
+<button onclick="addStock()">+ Профиль</button>
 
-  </div>
+</div>
+
+<div class="section">
+
+<h3>Заготовка</h3>
+
+<div id="partsList" class="list"></div>
+
+<button onclick="addPart()">+ Заготовка</button>
+
+</div>
+
+<div class="section">
+
+<button onclick="calculate()">Рассчитать</button>
+<button onclick="print()">Печать</button>
+
+</div>
+
+<div id="stats" class="stats"></div>
+
+<div id="result" class="bars"></div>
+
+</div>
+
 </div>
 
 </div>
 
 <script>
-/* ===== USERS ===== */
-const users = { "masterclusterpro":"qwerty", "mastercluster":"qwerty" };
 
-/* ===== DOM ===== */
-const $ = (id)=>document.getElementById(id);
-const el = {
-  loginBox:$("loginBox"),
-  appBox:$("appBox"),
-  login:$("login"),
-  password:$("password"),
-  loginBtn:$("loginBtn"),
-  loginMsg:$("loginMsg"),
-
-  jobName:$("jobName"),
-  jobSub:$("jobSub"),
-
-  kerf:$("kerf"),
-  goodTailMin:$("goodTailMin"),
-
-  stocksList:$("stocksList"),
-  partsList:$("partsList"),
-
-  addStock:$("addStock"),
-  addPart:$("addPart"),
-
-  calcBtn:$("calcBtn"),
-  printBtn:$("printBtn"),
-  logoutBtn:$("logoutBtn"),
-
-  appErr:$("appErr"),
-  stats:$("stats"),
-  result:$("result")
-};
-
-/* ===== AUTH ===== */
-function showLogin(){
-  el.appBox.classList.add("hidden");
-  el.loginBox.classList.remove("hidden");
-}
-function showApp(){
-  el.loginBox.classList.add("hidden");
-  el.appBox.classList.remove("hidden");
-  syncJobTitle();
-  autoSizeAll();
-}
-function doLogin(){
-  const l = el.login.value.trim();
-  const p = el.password.value;
-  el.loginMsg.classList.add("hidden");
-  el.loginMsg.textContent = "";
-  if(users[l] && users[l] === p){
-    localStorage.setItem("authUser", l);
-    showApp();
-  }else{
-    el.loginMsg.textContent = "Неверный логин или пароль";
-    el.loginMsg.classList.remove("hidden");
-  }
-}
-function logout(){
-  localStorage.removeItem("authUser");
-  location.reload();
+const users={
+"masterclusterpro":"qwerty"
 }
 
-/* ===== Title ===== */
-function syncJobTitle(){
-  const t = (el.jobName.value||"").trim();
-  el.jobSub.textContent = t || "—";
-  document.title = t ? ("Раскрой — " + t) : "Система раскроя профиля";
-  localStorage.setItem("jobTitle", t);
-}
-(function restoreJob(){
-  const saved = localStorage.getItem("jobTitle") || "";
-  el.jobName.value = saved;
-})();
-el.jobName.addEventListener("input", syncJobTitle);
+function login(){
 
-/* ===== Helpers ===== */
-function fmt(n){
-  const r = Math.round(n);
-  return (Math.abs(n - r) < 1e-9) ? String(r) : (Math.round(n*100)/100).toString();
-}
-function sum(arr){ return arr.reduce((s,x)=>s+x,0); }
+const l=document.getElementById("login").value
+const p=document.getElementById("password").value
 
-/* ===== Auto width (min 4 digits for length fields) ===== */
-const measurer = document.createElement("span");
-measurer.style.position="absolute";
-measurer.style.visibility="hidden";
-measurer.style.whiteSpace="pre";
-measurer.style.left="-9999px";
-measurer.style.top="-9999px";
-document.body.appendChild(measurer);
+if(users[l]&&users[l]===p){
 
-function autoSizeInput(inp, extra=22){
-  const cs = getComputedStyle(inp);
-  measurer.style.font = cs.font;
-  measurer.style.letterSpacing = cs.letterSpacing;
+document.getElementById("loginBox").classList.add("hidden")
+document.getElementById("appBox").classList.remove("hidden")
 
-  let text = (inp.value ?? "").toString();
-
-  const isLen = inp.classList.contains("sLen") || inp.classList.contains("pLen");
-  if(isLen){
-    const d = text.replace(/\D/g,"");
-    if(d.length < 4) text = "0000";  // минимум 4 знака
-  }
-  if(!text) text = inp.placeholder || "";
-
-  measurer.textContent = text;
-  const w = Math.ceil(measurer.getBoundingClientRect().width) + extra;
-
-  const minW = parseInt(inp.dataset.minw || "40", 10);
-  const maxW = parseInt(inp.dataset.maxw || "320", 10);
-  inp.style.width = Math.max(minW, Math.min(maxW, w)) + "px";
-}
-function attachAuto(inp){
-  inp.addEventListener("input", ()=>autoSizeInput(inp));
-  inp.addEventListener("change", ()=>autoSizeInput(inp));
-  autoSizeInput(inp);
-}
-function autoSizeAll(){
-  document.querySelectorAll("input[data-autow='1']").forEach(inp=>autoSizeInput(inp));
 }
 
-/* ===== UI Rows ===== */
-function removeRow(btn, listEl){
-  const row = btn.closest(".row");
-  row.remove();
-  if(listEl.children.length === 0){
-    if(listEl === el.stocksList) addStockRow("3050","");
-    if(listEl === el.partsList) addPartRow("","1");
-  }
 }
 
-function addStockRow(lenVal="3050", qtyVal=""){
-  const r = document.createElement("div");
-  r.className="row";
-  r.innerHTML = `
-    <input class="sLen inpLen" data-autow="1" data-minw="86" data-maxw="320" type="number" min="1" step="1" placeholder="Длина" value="${lenVal}">
-    <input class="sQty inpQty" data-autow="1" data-minw="44" data-maxw="90" type="number" min="0" step="1" placeholder="∞" value="${qtyVal}">
-    <button class="danger btnDel" type="button">−</button>
-  `;
-  r.querySelector("button").addEventListener("click", e=>removeRow(e.target, el.stocksList));
-  el.stocksList.appendChild(r);
-  attachAuto(r.querySelector(".sLen"));
-  attachAuto(r.querySelector(".sQty"));
+const measurer=document.createElement("span")
+measurer.style.position="absolute"
+measurer.style.visibility="hidden"
+document.body.appendChild(measurer)
+
+function autoSize(inp){
+
+measurer.style.font=getComputedStyle(inp).font
+
+let text=inp.value
+
+const digits=text.replace(/\D/g,"")
+
+if(digits.length<4)text="0000"
+
+measurer.textContent=text
+
+const w=measurer.getBoundingClientRect().width+20
+
+inp.style.width=w+"px"
+
 }
 
-function addPartRow(lenVal="", qtyVal="1"){
-  const r = document.createElement("div");
-  r.className="row";
-  r.innerHTML = `
-    <input class="pLen inpLen" data-autow="1" data-minw="86" data-maxw="320" type="number" min="1" step="1" placeholder="Длина" value="${lenVal}">
-    <input class="pQty inpQty" data-autow="1" data-minw="44" data-maxw="90" type="number" min="1" step="1" value="${qtyVal}">
-    <button class="danger btnDel" type="button">−</button>
-  `;
-  r.querySelector("button").addEventListener("click", e=>removeRow(e.target, el.partsList));
-  el.partsList.appendChild(r);
-  attachAuto(r.querySelector(".pLen"));
-  attachAuto(r.querySelector(".pQty"));
+function attach(inp){
+
+inp.addEventListener("input",()=>autoSize(inp))
+
+autoSize(inp)
+
 }
 
-/* ===== Read inputs ===== */
-function readStocksOrdered(){
-  const rows = [...el.stocksList.querySelectorAll(".row")];
-  const stocks = [];
-  const bad = [];
+function addStock(){
 
-  rows.forEach((r, idx)=>{
-    const lenStr = r.querySelector(".sLen").value.trim();
-    const qtyStr = r.querySelector(".sQty").value.trim();
+const row=document.createElement("div")
 
-    if(!lenStr) return;
-    const len = Number(lenStr);
-    if(!Number.isFinite(len) || len <= 0){ bad.push(idx+1); return; }
+row.className="row"
 
-    let qty = null; // null = unlimited
-    if(qtyStr !== ""){
-      const q = Number(qtyStr);
-      if(!Number.isFinite(q) || q < 0){ bad.push(idx+1); return; }
-      qty = Math.floor(q);
-    }
-    stocks.push({ len:Math.floor(len), qty });
-  });
+row.innerHTML=`
+<input class="inpLen">
+<input class="inpQty">
+<button class="btnDel">−</button>
+`
 
-  if(bad.length) return { ok:false, error:`Ошибка в строках профиля: ${bad.join(", ")}` };
-  if(stocks.length === 0) return { ok:false, error:`Добавьте хотя бы одну длину профиля.` };
+row.querySelector("button").onclick=()=>row.remove()
 
-  // объединяем одинаковые длины (qty суммируем, unlimited доминирует)
-  const merged = new Map();
-  for(const s of stocks){
-    if(!merged.has(s.len)){
-      merged.set(s.len, { len:s.len, qty:s.qty });
-    }else{
-      const ex = merged.get(s.len);
-      if(ex.qty === null || s.qty === null) ex.qty = null;
-      else ex.qty += s.qty;
-    }
-  }
-  // порядок как ввел (первое появление)
-  const order = [];
-  for(const s of stocks){
-    if(!order.includes(s.len)) order.push(s.len);
-  }
-  const out = order.map(L=>merged.get(L));
-  return { ok:true, stocks: out };
+stocksList.appendChild(row)
+
+attach(row.children[0])
+attach(row.children[1])
+
 }
 
-function readPartsByRows(){
-  const rows = [...el.partsList.querySelectorAll(".row")];
-  const items = [];
-  const bad = [];
+function addPart(){
 
-  rows.forEach((r, idx)=>{
-    const lv = r.querySelector(".pLen").value.trim();
-    const qv = r.querySelector(".pQty").value.trim();
-    if(lv === "" && qv === "") return;
+const row=document.createElement("div")
 
-    const len = Number(lv);
-    const qty = Number(qv);
-    if(!Number.isFinite(len) || len <= 0 || !Number.isFinite(qty) || qty <= 0){
-      bad.push(idx+1); return;
-    }
-    items.push({ len:Math.floor(len), qty:Math.floor(qty) });
-  });
+row.className="row"
 
-  if(bad.length) return { ok:false, error:`Ошибка в строках заготовок: ${bad.join(", ")}` };
-  if(items.length === 0) return { ok:false, error:`Добавьте заготовки.` };
-  return { ok:true, items };
+row.innerHTML=`
+<input class="inpLen">
+<input class="inpQty" value="1">
+<button class="btnDel">−</button>
+`
+
+row.querySelector("button").onclick=()=>row.remove()
+
+partsList.appendChild(row)
+
+attach(row.children[0])
+attach(row.children[1])
+
 }
 
-/* ===== Packing (последняя жлыга допускает переход) =====
-   - режем по очереди строк: 1-я, потом 2-я...
-   - внутри одной позиции — заполняем профили
-   - после завершения позиции разрешаем "переход" только через последнюю открытую жлыгу
-*/
-function usedLen(pieces, kerf){
-  // рез между деталями: (n-1)*kerf
-  const n = pieces.length;
-  const kerfTotal = Math.max(0, n - 1) * kerf;
-  return sum(pieces) + kerfTotal;
-}
-function canAdd(stockLen, pieces, piece, kerf){
-  return usedLen(pieces.concat([piece]), kerf) <= stockLen;
-}
-function remainingLen(stockLen, pieces, kerf){
-  return stockLen - usedLen(pieces, kerf);
-}
-function chooseStockLenOrdered(stocksOrdered, piece){
-  for(const s of stocksOrdered){
-    if(s.len >= piece && (s.qty === null || s.qty > 0)) return s.len;
-  }
-  return null;
-}
-function decStock(stocksOrdered, len){
-  const s = stocksOrdered.find(x=>x.len === len);
-  if(!s) return;
-  if(s.qty === null) return;
-  s.qty = Math.max(0, s.qty - 1);
-}
-function packSequentialLastBarTransition(stocksInput, partItems, kerf){
-  const stocks = stocksInput.map(s=>({len:s.len, qty:s.qty}));
-  const bars = []; // {len,pieces:[]}
-  let activeStartIndex = 0;
+addStock()
+addPart()
 
-  function placeInAllowed(piece){
-    let bestIdx = -1;
-    let bestRem = Infinity;
-    for(let i=activeStartIndex; i<bars.length; i++){
-      const b = bars[i];
-      if(canAdd(b.len, b.pieces, piece, kerf)){
-        const rem = remainingLen(b.len, b.pieces.concat([piece]), kerf);
-        if(rem < bestRem){
-          bestRem = rem;
-          bestIdx = i;
-        }
-      }
-    }
-    if(bestIdx >= 0){
-      bars[bestIdx].pieces.push(piece);
-      return true;
-    }
-    return false;
-  }
-
-  function openNewBar(piece){
-    const L = chooseStockLenOrdered(stocks, piece);
-    if(L === null) return false;
-    decStock(stocks, L);
-    bars.push({ len:L, pieces:[piece] });
-    return true;
-  }
-
-  for(let idx=0; idx<partItems.length; idx++){
-    const item = partItems[idx];
-    let remainingQty = item.qty;
-
-    while(remainingQty > 0){
-      if(placeInAllowed(item.len)){
-        remainingQty--;
-        continue;
-      }
-      if(!openNewBar(item.len)){
-        return { ok:false, error:`Заготовка ${item.len} не помещается ни в одну длину профиля.` };
-      }
-      remainingQty--;
-    }
-
-    // переход разрешен только через последнюю открытую жлыгу
-    activeStartIndex = Math.max(0, bars.length - 1);
-  }
-
-  return { ok:true, bars };
-}
-
-/* ===== Group signature ===== */
-function signature(barLen, pieces, kerf){
-  // включаем хвост (он зависит от kerf и набора), чтобы одинаковые хвосты тоже суммировались корректно
-  const rest = Math.max(0, remainingLen(barLen, pieces, kerf));
-  const sigPieces = [...pieces].sort((a,b)=>b-a).join(",");
-  return `${barLen}|${sigPieces}|R${Math.round(rest)}`;
-}
-
-/* ===== UI output ===== */
-function clearOutput(){
-  el.appErr.classList.add("hidden");
-  el.appErr.textContent="";
-  el.stats.classList.add("hidden");
-  el.stats.innerHTML="";
-  el.result.innerHTML="";
-}
-function showError(text){
-  el.appErr.textContent = text;
-  el.appErr.classList.remove("hidden");
-}
-
-/* ===== Visualization builder ===== */
-function buildViz(barLen, pieces, kerf){
-  const viz = document.createElement("div");
-  viz.className = "viz";
-
-  const rest = Math.max(0, remainingLen(barLen, pieces, kerf));
-
-  // рисуем по порядку как есть (не сортируем) чтобы отражало реальный проход
-  pieces.forEach((p, i)=>{
-    const seg = document.createElement("div");
-    seg.className = "seg cut";
-    seg.style.width = (p / barLen * 100) + "%";
-    seg.textContent = p;
-    viz.appendChild(seg);
-
-    // рез между деталями
-    if(i !== pieces.length - 1){
-      const sep = document.createElement("div");
-      sep.className = "sep";
-      viz.appendChild(sep);
-    }
-  });
-
-  // пунктир между последним отрезком и хвостом (по просьбе)
-  if(pieces.length){
-    const sepTail = document.createElement("div");
-    sepTail.className = "sep tail";
-    viz.appendChild(sepTail);
-  }
-
-  if(rest > 0){
-    const rs = document.createElement("div");
-    rs.className = "seg rest";
-    rs.style.width = Math.max(0, rest / barLen * 100) + "%";
-    rs.textContent = fmt(rest);
-    viz.appendChild(rs);
-  }
-
-  const tailLabel = document.createElement("div");
-  tailLabel.className = "tailLabel";
-  tailLabel.textContent = fmt(rest);
-  viz.appendChild(tailLabel);
-
-  return { viz, rest };
-}
-
-/* ===== Calculate ===== */
 function calculate(){
-  clearOutput();
-  syncJobTitle();
 
-  const kerf = Number(el.kerf.value);
-  if(!Number.isFinite(kerf) || kerf < 0){ showError("Ширина диска должна быть 0 или больше."); return; }
+const parts=[...document.querySelectorAll("#partsList .row")]
 
-  const goodMin = Number(el.goodTailMin.value);
-  if(!Number.isFinite(goodMin) || goodMin < 0){ showError("Порог делового хвоста должен быть 0 или больше."); return; }
+let total=0
 
-  const s = readStocksOrdered();
-  if(!s.ok){ showError(s.error); return; }
+parts.forEach(r=>{
+const len=Number(r.children[0].value)
+const qty=Number(r.children[1].value)
 
-  const p = readPartsByRows();
-  if(!p.ok){ showError(p.error); return; }
+total+=len*qty
+})
 
-  const maxPart = Math.max(...p.items.map(x=>x.len));
-  const canAny = s.stocks.some(x=>x.len >= maxPart && (x.qty === null || x.qty > 0));
-  if(!canAny){ showError(`Самая длинная заготовка ${maxPart} не помещается ни в одну длину профиля.`); return; }
+stats.innerHTML=`
+<div class="stat">
+<div class="k">Сумма деталей</div>
+<div class="v">${total}</div>
+</div>
+`
 
-  const packed = packSequentialLastBarTransition(s.stocks, p.items, kerf);
-  if(!packed.ok){ showError(packed.error); return; }
-
-  const barsAll = packed.bars;
-
-  const totalPiecesCount = p.items.reduce((acc,x)=>acc + x.qty, 0);
-  const totalCutsLen = p.items.reduce((acc,x)=>acc + x.len * x.qty, 0);
-
-  const totalBars = barsAll.length;
-  const totalStockLen = barsAll.reduce((acc,b)=>acc + b.len, 0);
-
-  const totalCutsCount = barsAll.reduce((acc,b)=>acc + b.pieces.length, 0);
-  const totalKerf = barsAll.reduce((acc,b)=>acc + Math.max(0,(b.pieces.length-1))*kerf, 0);
-
-  let totalTailAll=0, tailWaste=0, tailGood=0, tailWasteCount=0, tailGoodCount=0;
-  for(const b of barsAll){
-    const r = Math.max(0, remainingLen(b.len, b.pieces, kerf));
-    totalTailAll += r;
-    if(r < goodMin){ tailWaste += r; tailWasteCount++; }
-    else { tailGood += r; tailGoodCount++; }
-  }
-
-  const totalWasteStrict = totalKerf + tailWaste;
-  const eff = totalStockLen > 0 ? (totalCutsLen / totalStockLen * 100) : 0;
-
-  el.stats.classList.remove("hidden");
-  el.stats.innerHTML = `
-    <div class="stat"><div class="k">Название</div><div class="v">${(el.jobName.value||"").trim() || "—"}</div></div>
-    <div class="stat"><div class="k">Профилей (шт)</div><div class="v">${fmt(totalBars)}</div></div>
-    <div class="stat"><div class="k">Деталей (шт)</div><div class="v">${fmt(totalPiecesCount)}</div></div>
-
-    <div class="stat"><div class="k">Сумма деталей (мм)</div><div class="v">${fmt(totalCutsLen)}</div></div>
-    <div class="stat"><div class="k">Резов (шт)</div><div class="v">${fmt(totalCutsCount)}</div></div>
-    <div class="stat"><div class="k">Суммарный рез (мм)</div><div class="v">${fmt(totalKerf)}</div></div>
-
-    <div class="stat"><div class="k">Хвосты всего (мм)</div><div class="v">${fmt(totalTailAll)}</div></div>
-    <div class="stat"><div class="k">Деловой хвост (мм)</div><div class="v">${fmt(tailGood)}</div></div>
-    <div class="stat"><div class="k">Хвостов деловых (шт)</div><div class="v">${fmt(tailGoodCount)}</div></div>
-
-    <div class="stat"><div class="k">Хвосты в отход (мм)</div><div class="v">${fmt(tailWaste)}</div></div>
-    <div class="stat"><div class="k">Хвостов в отход (шт)</div><div class="v">${fmt(tailWasteCount)}</div></div>
-    <div class="stat"><div class="k">Отход (рез + хвост&lt;порога)</div><div class="v">${fmt(totalWasteStrict)}</div></div>
-
-    <div class="stat"><div class="k">Общая длина профиля (мм)</div><div class="v">${fmt(totalStockLen)}</div></div>
-    <div class="stat"><div class="k">Польза (%)</div><div class="v">${fmt(eff)}%</div></div>
-    <div class="stat"><div class="k">Порог делового (мм)</div><div class="v">${fmt(goodMin)}</div></div>
-  `;
-
-  // группируем одинаковые раскладки (включая хвост)
-  const groups = new Map();
-  const order = [];
-  for(const b of barsAll){
-    const sig = signature(b.len, b.pieces, kerf);
-    if(!groups.has(sig)){
-      groups.set(sig, { count:1, len:b.len, pieces:[...b.pieces] });
-      order.push(sig);
-    }else{
-      groups.get(sig).count++;
-    }
-  }
-
-  for(const sig of order){
-    const g = groups.get(sig);
-    const { viz, rest } = buildViz(g.len, g.pieces, kerf);
-
-    const restTotal = rest * g.count;
-    const isGood = rest >= goodMin;
-
-    const barEl = document.createElement("div");
-    barEl.className = "bar";
-
-    const multEl = document.createElement("div");
-    multEl.className = "mult";
-    multEl.innerHTML = `${g.count}×<br>${g.len}`;
-
-    const tailBox = document.createElement("div");
-    tailBox.className = "tailBox";
-    tailBox.innerHTML = `
-      <div class="k">Остаток/Профиль</div>
-      <div class="v">${fmt(rest)}</div>
-      <div class="k" style="margin-top:8px;">Остаток всего</div>
-      <div class="v" style="font-size:13px;">${fmt(restTotal)}</div>
-      <div class="badge" style="background:${isGood?'rgba(34,197,94,.10)':'rgba(239,68,68,.10)'};border:1px solid ${isGood?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'};">
-        ${isGood ? "Деловой" : "В отход"}
-      </div>
-    `;
-
-    barEl.appendChild(multEl);
-    barEl.appendChild(viz);
-    barEl.appendChild(tailBox);
-
-    el.result.appendChild(barEl);
-  }
 }
 
-/* ===== Events ===== */
-el.loginBtn.addEventListener("click", doLogin);
-el.logoutBtn.addEventListener("click", logout);
-el.addStock.addEventListener("click", ()=>addStockRow("", ""));
-el.addPart.addEventListener("click", ()=>addPartRow("", "1"));
-el.calcBtn.addEventListener("click", calculate);
-el.printBtn.addEventListener("click", ()=>window.print());
-
-document.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" && !el.loginBox.classList.contains("hidden")){
-    doLogin();
-  }
-});
-
-/* ===== Init ===== */
-addStockRow("3050", "");
-addPartRow("", "1");
-
-if(localStorage.getItem("authUser")) showApp();
-else showLogin();
 </script>
 
 </body>
